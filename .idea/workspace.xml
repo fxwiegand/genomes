@@ -9,7 +9,56 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f97ba1d9-42f2-4078-a20b-62cb4b2a87ce" name="Default" comment="" />
+    <list default="true" id="f97ba1d9-42f2-4078-a20b-62cb4b2a87ce" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3.json" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3.dSYM/Contents/Resources/DWARF/hello_world-54f7b765e2e2c2c3" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3.dSYM/Contents/Resources/DWARF/hello_world-54f7b765e2e2c2c3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/hello_world" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/hello_world" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/13u2nn5eoss6cird.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/16rkn789rrhzu7gh.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/1nizvgk4n4m3s2c.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/1o1k8s1vkayh959w.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/1s9nccj8g6fimt2m.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/1sn9az25czaiqsyk.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/1u20vhvhumx35ssr.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/1vnzq7m7c6ljyc1i.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/21k6oq4tmrn9m66x.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/261k9odf86zu4iec.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2823047hdzbkfuns.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/297qf60j67e91wqx.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2kuo585jwaqs7q5d.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2lrah92qsjfgsb4t.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2madaggf382rljsy.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2r4iec0cp7mlfzlr.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2t7ibtzewpx7a54h.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2wtq5i9b0p7lq154.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/2wz41wm61h7cn67f.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/32meq1rbhukt91rl.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/33tdzl88i9kd120e.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/33u91l7r5wi7vc10.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/359rgpnz8hbj8wlh.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/39eqjdo2oj2ccjm6.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/3alygk679n2l1yg6.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/3idnyo7y5zg5egru.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/3nlncq3gc1v1jofo.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/3pngisrpzysu811n.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/3sltxogktufoz6ss.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/431znx5l84f505og.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/432bofr839whp5bz.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/4l3xlt2lc64ema04.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/4m5rbaxnlred10xs.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/4rt4lixmctfxktly.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/d5fk425yava1jrv.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/dep-graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/izcm1f1ml2k30xw.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/query-cache.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/uyy3ly9k0vgybmd.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94-1zf0550qvn48d/work-products.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5itd91hn-1kggf94.lock" beforeDir="false" />
+    </list>
     <ignored path="hello_world.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -41,12 +90,16 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file leaf-file-name="main.rs" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.rs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.rs">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="310">
+              <caret line="24" column="31" lean-forward="true" selection-start-line="24" selection-start-column="31" selection-end-line="24" selection-end-column="31" />
+            </state>
+          </provider>
         </entry>
       </file>
-      <file leaf-file-name="lib.rs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="lib.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lib.rs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="30">
@@ -81,6 +134,7 @@
       <list>
         <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/src/lib.rs" />
+        <option value="$PROJECT_DIR$/src/main.rs" />
       </list>
     </option>
   </component>
@@ -93,7 +147,8 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="x" value="154" />
     <option name="y" value="23" />
     <option name="width" value="1280" />
     <option name="height" value="720" />
@@ -114,12 +169,7 @@
             <path>
               <item name="genomes" type="b2602c69:ProjectViewProjectNode" />
               <item name="genomes" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="genomes" type="b2602c69:ProjectViewProjectNode" />
-              <item name="genomes" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -207,15 +257,16 @@
       <workItem from="1552042442249" duration="2000" />
       <workItem from="1552042458989" duration="112000" />
       <workItem from="1552042574167" duration="680000" />
-      <workItem from="1552043319370" duration="486000" />
+      <workItem from="1552043319370" duration="3589000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4184000" />
+    <option name="totallyTimeSpent" value="7287000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="720" extended-state="0" />
+    <frame x="0" y="0" width="1280" height="800" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -228,10 +279,10 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.47672552" />
+      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.40965518" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30533117" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.30533117" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -323,6 +374,13 @@
     <entry file="file://$PROJECT_DIR$/src/main.rs" />
     <entry file="file://$PROJECT_DIR$/src/main.rs" />
     <entry file="file://$PROJECT_DIR$/src/main.rs" />
+    <entry file="file://$PROJECT_DIR$/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/tests.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -333,20 +391,20 @@
     <entry file="file://$PROJECT_DIR$/.idea/hello_world.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.rs">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Cargo.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lib.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="20" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/test.bam">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="310">
+          <caret line="24" column="31" lean-forward="true" selection-start-line="24" selection-start-column="31" selection-end-line="24" selection-end-column="31" />
         </state>
       </provider>
     </entry>
