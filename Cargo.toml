@@ -1,0 +1,9 @@
+[package]
+name = "hello_world"
+version = "0.0.0"
+
+publish = false
+
+[dependencies]
+rocket = "0.4.0"
+rust-htslib = "*"

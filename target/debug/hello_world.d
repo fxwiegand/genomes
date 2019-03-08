@@ -1,0 +1,1 @@
+/Users/felixwiegand/Development/Rust/bachelor-arbeit/genomes/target/debug/hello_world.dSYM: /Users/felixwiegand/Development/Rust/bachelor-arbeit/genomes/src/lib.rs /Users/felixwiegand/Development/Rust/bachelor-arbeit/genomes/src/main.rs

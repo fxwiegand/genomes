@@ -1,0 +1,1 @@
+{"rustc":8387957518499840782,"features":"[\"default\", \"private-cookies\", \"rocket_http\"]","target":4944179213620976468,"profile":11870183705523825133,"path":14451762165049957602,"deps":[["version_check v0.1.5","version_check",15899380188998489093],["yansi v0.5.0","yansi",8503362446371265303]],"local":[{"Precalculated":"0.4.0"}],"rustflags":[],"edition":"Edition2015"}
