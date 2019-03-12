@@ -7,3 +7,4 @@ publish = false
 [dependencies]
 rocket = "0.4.0"
 rust-htslib = "*"
+bit-vec = "*"
