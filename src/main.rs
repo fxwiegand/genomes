@@ -98,8 +98,6 @@ fn main() {
         //Flags
         let flgs = record.flags();
         let flag_string = decode_flags(flgs);
-        //let bytes = format!()
-        //let bv = BitVec::from_bytes();
 
         //Header
         let mut hd = String::from("");
@@ -107,12 +105,21 @@ fn main() {
             hd.push(b as char);
         }
 
+        //Name
+        let n = record.qname();
+        let mut name = String::from("");
+            for a in n {
+                name.push(*a as char);
+        }
+
+
+
         println!("Header: {}", hd);
         println!("Sequenz: {}", sequenz);
         println!("Position: {}", pos);
         println!("CIGAR-String: {}", cigstring);
-        println!("Flags: {}", flag_string)
-        //println!("Was bin ich?: {}", name as usize);
+        println!("Flags: {}", flag_string);
+        println!("Name: {}", name);
     }
 }
 

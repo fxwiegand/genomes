@@ -11,60 +11,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f97ba1d9-42f2-4078-a20b-62cb4b2a87ce" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3.json" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/.fingerprint/hello_world-54f7b765e2e2c2c3/bin-hello_world-54f7b765e2e2c2c3.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3.dSYM/Contents/Resources/DWARF/hello_world-54f7b765e2e2c2c3" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/deps/hello_world-54f7b765e2e2c2c3.dSYM/Contents/Resources/DWARF/hello_world-54f7b765e2e2c2c3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/hello_world" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/hello_world" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/hello_world.dSYM" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/hello_world.dSYM" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/13u2nn5eoss6cird.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/16rkn789rrhzu7gh.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/1nizvgk4n4m3s2c.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/1o1k8s1vkayh959w.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/1s9nccj8g6fimt2m.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/1sn9az25czaiqsyk.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/1u20vhvhumx35ssr.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/1vnzq7m7c6ljyc1i.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/21k6oq4tmrn9m66x.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/25fy0ceji9eetbi3.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/261k9odf86zu4iec.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2823047hdzbkfuns.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/297qf60j67e91wqx.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2kuo585jwaqs7q5d.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2lrah92qsjfgsb4t.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2madaggf382rljsy.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2r4iec0cp7mlfzlr.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2t7ibtzewpx7a54h.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2wtq5i9b0p7lq154.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/2wz41wm61h7cn67f.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/32meq1rbhukt91rl.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/33tdzl88i9kd120e.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/33u91l7r5wi7vc10.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/359rgpnz8hbj8wlh.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/39eqjdo2oj2ccjm6.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/3alygk679n2l1yg6.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/3idnyo7y5zg5egru.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/3nlncq3gc1v1jofo.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/3pngisrpzysu811n.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/3sltxogktufoz6ss.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/431znx5l84f505og.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/432bofr839whp5bz.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/4l3xlt2lc64ema04.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/4m5rbaxnlred10xs.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/4rt4lixmctfxktly.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/d5fk425yava1jrv.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/dep-graph.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/izcm1f1ml2k30xw.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/query-cache.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/uyy3ly9k0vgybmd.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/v9glbq7cxqh5tfv.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc-3ornafzs8ca31/work-products.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/incremental/hello_world-24b86bokgpqw9/s-fa5lvty261-1c5nwfc.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/debug/libhello_world.rlib" beforeDir="false" afterPath="$PROJECT_DIR$/target/debug/libhello_world.rlib" afterDir="false" />
     </list>
     <ignored path="hello_world.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -100,8 +47,8 @@
       <file leaf-file-name="main.rs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="45" column="28" selection-start-line="45" selection-start-column="28" selection-end-line="45" selection-end-column="28" />
+            <state relative-caret-position="571">
+              <caret line="111" column="27" selection-start-line="111" selection-start-column="27" selection-end-line="111" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -279,12 +226,12 @@
       <workItem from="1552042442249" duration="2000" />
       <workItem from="1552042458989" duration="112000" />
       <workItem from="1552042574167" duration="680000" />
-      <workItem from="1552043319370" duration="17895000" />
+      <workItem from="1552043319370" duration="19329000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21593000" />
+    <option name="totallyTimeSpent" value="23027000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
@@ -427,8 +374,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="45" column="28" selection-start-line="45" selection-start-column="28" selection-end-line="45" selection-end-column="28" />
+        <state relative-caret-position="571">
+          <caret line="111" column="27" selection-start-line="111" selection-start-column="27" selection-end-line="111" selection-end-column="27" />
         </state>
       </provider>
     </entry>
