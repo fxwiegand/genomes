@@ -83,7 +83,7 @@ fn main() {
         let head = header.to_bytes();
 
         //Cigar String
-        let cigstring = record.cigar();
+        let cigstring = record.cigar().to_string();
 
         //Position
         let pos = record.pos();
@@ -108,10 +108,9 @@ fn main() {
         //Name
         let n = record.qname();
         let mut name = String::from("");
-            for a in n {
-                name.push(*a as char);
+        for a in n {
+            name.push(*a as char);
         }
-
 
 
         println!("Header: {}", hd);
@@ -120,7 +119,25 @@ fn main() {
         println!("CIGAR-String: {}", cigstring);
         println!("Flags: {}", flag_string);
         println!("Name: {}", name);
+
+
+        let read1 = Rd {
+            header: hd,
+            sequenz: sequenz,
+            position: pos,
+            cigar_str: cigstring,
+            flags: flag_string,
+            name: name,
+        };
     }
+
 }
 
-
+struct Rd {
+    header: String,
+    sequenz: String,
+    position: i32,
+    cigar_str: String,
+    flags: String,
+    name: String,
+}
