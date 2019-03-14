@@ -9,6 +9,7 @@
 use rust_htslib::bam;
 use rust_htslib::prelude::*;
 use bit_vec::BitVec;
+use std::fmt;
 
 
 #[get("/lisbert/<verb>")]
@@ -113,12 +114,12 @@ fn main() {
         }
 
 
-        println!("Header: {}", hd);
-        println!("Sequenz: {}", sequenz);
-        println!("Position: {}", pos);
-        println!("CIGAR-String: {}", cigstring);
-        println!("Flags: {}", flag_string);
-        println!("Name: {}", name);
+//        println!("Header: {}", hd);
+//        println!("Sequenz: {}", sequenz);
+//        println!("Position: {}", pos);
+//        println!("CIGAR-String: {}", cigstring);
+//        println!("Flags: {}", flag_string);
+//        println!("Name: {}", name);
 
 
         let read1 = Rd {
@@ -129,6 +130,9 @@ fn main() {
             flags: flag_string,
             name: name,
         };
+
+        println!("{}", read1);
+        println!();
     }
 
 }
@@ -140,4 +144,11 @@ struct Rd {
     cigar_str: String,
     flags: String,
     name: String,
+}
+
+impl fmt::Display for Rd {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {}, {}, {}, {}, {})", self.header, self.sequenz, self.position, self.cigar_str, self.flags,
+        self.name)
+    }
 }
