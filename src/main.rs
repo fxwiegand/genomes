@@ -18,18 +18,18 @@ fn hello(verb: String) -> String {format!("Lisa {}!", verb)}
 fn decode_flags(code :u16) -> String {
     let mut flag_string = String::from("");
 
-    let FLAG_1 = String::from("1: template having multiple segments in sequencing ");
-    let FLAG_2 = String::from("2: each segment properly aligned according to the aligner ");
-    let FLAG_3 = String::from("4: segment unmapped ");
-    let FLAG_4 = String::from("8: next segment in the template unmapped ");
-    let FLAG_5 = String::from("16: SEQ being reverse complemented ");
-    let FLAG_6 = String::from("32: SEQ of the next segment in the template being reverse complemented ");
-    let FLAG_7 = String::from("64: the first segment in the template ");
-    let FLAG_8 = String::from("128: the last segment in the template ");
-    let FLAG_9 = String::from("256: secondary alignment ");
-    let FLAG_10 = String::from("512: not passing filters, such as platform/vendor quality controls ");
-    let FLAG_11 = String::from("1024:PCR or optical duplicate ");
-    let FLAG_12 = String::from("2048: supplementary alignment ");
+    const FLAG_1: &'static str = "1: template having multiple segments in sequencing ";
+    const FLAG_2: &'static str = "2: each segment properly aligned according to the aligner ";
+    const FLAG_3: &'static str = "4: segment unmapped ";
+    const FLAG_4: &'static str = "8: next segment in the template unmapped ";
+    const FLAG_5: &'static str = "16: SEQ being reverse complemented ";
+    const FLAG_6: &'static str = "32: SEQ of the next segment in the template being reverse complemented ";
+    const FLAG_7: &'static str = "64: the first segment in the template ";
+    const FLAG_8: &'static str = "128: the last segment in the template ";
+    const FLAG_9: &'static str = "256: secondary alignment ";
+    const FLAG_10: &'static str = "512: not passing filters, such as platform/vendor quality controls ";
+    const FLAG_11: &'static str = "1024:PCR or optical duplicate ";
+    const FLAG_12: &'static str = "2048: supplementary alignment ";
 
     if (0x1 & code) == 0x1 {
         flag_string.push_str(&FLAG_1);
@@ -73,7 +73,7 @@ fn decode_flags(code :u16) -> String {
 
 
 fn main() {
-    //rocket::ignite().mount("/", routes![hello]).launch();
+    rocket::ignite().mount("/", routes![hello]).launch();
 
     let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
     let header = bam::Header::from_template(bam.header());
