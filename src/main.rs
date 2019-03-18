@@ -19,7 +19,7 @@ use rocket_contrib::json::Json;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 #[get("/api/v1/alignment/<index>")]
-fn genome(index: i32) -> Json<Rd> {Json(read_bam(index))}
+fn genome(index: i32) -> Json<Alignment> {Json(read_bam(index))}
 
 fn decode_flags(code :u16) -> String {
     let mut flag_string = String::from("");
@@ -77,11 +77,11 @@ fn decode_flags(code :u16) -> String {
     flag_string
 }
 
-fn read_bam (index: i32) -> Rd {
+fn read_bam (index: i32) -> Alignment {
     let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
     let header = bam::Header::from_template(bam.header());
 
-    let mut read:Rd = Rd {
+    let mut read:Alignment = Alignment {
         header: String::from(""),
         sequenz: String::from(""),
         position: 0,
@@ -124,7 +124,7 @@ fn read_bam (index: i32) -> Rd {
             name.push(*a as char);
         }
 
-        let read1 = Rd {
+        let read1 = Alignment {
             header: hd,
             sequenz: sequenz,
             position: pos,
@@ -145,7 +145,7 @@ fn main() {
 }
 
 #[derive(Serialize)]
-struct Rd {
+struct Alignment {
     header: String,
     sequenz: String,
     position: i32,
@@ -154,7 +154,7 @@ struct Rd {
     name: String,
 }
 
-impl fmt::Display for Rd {
+impl fmt::Display for Alignment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {}, {}, {}, {}, {})", self.header, self.sequenz, self.position, self.cigar_str, self.flags,
         self.name)
