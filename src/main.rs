@@ -3,6 +3,9 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rust_htslib;
 #[macro_use] extern crate bit_vec;
+#[macro_use] extern crate rocket_contrib;
+//#[macro_use] extern crate rustc_serialize;
+#[macro_use] extern crate serde;
 
 #[cfg(test)] mod tests;
 
@@ -10,10 +13,13 @@ use rust_htslib::bam;
 use rust_htslib::prelude::*;
 use bit_vec::BitVec;
 use std::fmt;
+//use rustc_serialize::json::{self, ToJson, Json};
+use std::collections::BTreeMap;
+use rocket_contrib::json::Json;
+use serde::ser::{Serialize, SerializeStruct, Serializer};
 
-
-#[get("/lisbert/<verb>")]
-fn hello(verb: String) -> String {format!("Lisa {}!", verb)}
+#[get("/api/v1/alignment/<index>")]
+fn genome(index: i32) -> Json<Rd> {Json(read_bam(index))}
 
 fn decode_flags(code :u16) -> String {
     let mut flag_string = String::from("");
@@ -71,13 +77,18 @@ fn decode_flags(code :u16) -> String {
     flag_string
 }
 
-
-fn main() {
-    rocket::ignite().mount("/", routes![hello]).launch();
-
+fn read_bam (index: i32) -> Rd {
     let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
     let header = bam::Header::from_template(bam.header());
-    let mut out = bam::Writer::from_path(&"data/out.bam", &header).unwrap();
+
+    let mut read:Rd = Rd {
+        header: String::from(""),
+        sequenz: String::from(""),
+        position: 0,
+        cigar_str: String::from(""),
+        flags: String::from(""),
+        name: String::from(""),
+    };
 
     for r in bam.records() {
         let record = r.unwrap();
@@ -113,15 +124,6 @@ fn main() {
             name.push(*a as char);
         }
 
-
-//        println!("Header: {}", hd);
-//        println!("Sequenz: {}", sequenz);
-//        println!("Position: {}", pos);
-//        println!("CIGAR-String: {}", cigstring);
-//        println!("Flags: {}", flag_string);
-//        println!("Name: {}", name);
-
-
         let read1 = Rd {
             header: hd,
             sequenz: sequenz,
@@ -131,12 +133,18 @@ fn main() {
             name: name,
         };
 
-        println!("{}", read1);
-        println!();
+        if index == read1.position {
+            read = read1;
+        }
     }
-
+    read
 }
 
+fn main() {
+    rocket::ignite().mount("/", routes![genome]).launch();
+}
+
+#[derive(Serialize)]
 struct Rd {
     header: String,
     sequenz: String,
