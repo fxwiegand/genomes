@@ -77,7 +77,18 @@ fn decode_flags(code :u16) -> String {
     flag_string
 }
 
-fn read_bam (index: i32) -> Alignment {
+fn count_alignments()-> u32 {
+    let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
+    let header = bam::Header::from_template(bam.header());
+    let mut count:u32= 0;
+    for r in bam.records() {
+        count += 1;
+    }
+
+    count
+}
+
+fn read_bam(index: i32) -> Alignment {
     let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
     let header = bam::Header::from_template(bam.header());
 
