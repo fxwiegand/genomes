@@ -21,6 +21,9 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 #[get("/api/v1/alignment/<index>")]
 fn genome(index: i32) -> Json<Alignment> {Json(read_bam(index))}
 
+#[get("/api/v1/count")]
+fn count() -> Json<u32> {Json(count_alignments())}
+
 fn decode_flags(code :u16) -> String {
     let mut flag_string = String::from("");
 
@@ -152,7 +155,7 @@ fn read_bam(index: i32) -> Alignment {
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![genome]).launch();
+    rocket::ignite().mount("/", routes![genome, count]).launch();
 }
 
 #[derive(Serialize)]
