@@ -6,7 +6,7 @@
 #[macro_use] extern crate rocket_contrib;
 //#[macro_use] extern crate rustc_serialize;
 #[macro_use] extern crate serde;
-#[macro_use] extern crate phf_macros;
+
 
 #[cfg(test)] mod tests;
 
@@ -19,10 +19,10 @@ use std::collections::BTreeMap;
 use rocket_contrib::json::Json;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use rocket_contrib::serve::StaticFiles;
-use phf_macros::phf_map;
+use rocket::State;
 
 #[get("/alignment/<index>")]
-fn genome(index: i32) -> Json<Alignment> {Json(read_bam(index))}
+fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}
 
 #[get("/count")]
 fn count() -> Json<u32> {Json(count_alignments())}
@@ -67,28 +67,22 @@ fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
 }
 
 fn count_alignments()-> u32 {
-    let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
+    let mut bam = bam::Reader::from_path(&"data/example.bam").unwrap();
     let header = bam::Header::from_template(bam.header());
     let mut count:u32= 0;
-    for r in bam.records() {
+    for _r in bam.records() {
         count += 1;
     }
 
     count
 }
 
-fn read_bam(index: i32) -> Alignment {
-    let mut bam = bam::Reader::from_path(&"data/test.bam").unwrap();
+fn read_bam() -> Vec<Alignment> {
+    let mut bam = bam::Reader::from_path(&"data/example.bam").unwrap();
     let header = bam::Header::from_template(bam.header());
 
-    let mut read:Alignment = Alignment {
-        header: String::from(""),
-        sequenz: String::from(""),
-        position: 0,
-        cigar_str: String::from(""),
-        flags: BTreeMap::new(),
-        name: String::from(""),
-    };
+    let mut alignments:Vec<Alignment> = Vec::new();
+    let mut ind = 0;
 
     for r in bam.records() {
         let record = r.unwrap();
@@ -124,37 +118,44 @@ fn read_bam(index: i32) -> Alignment {
             name.push(*a as char);
         }
 
-        let read1 = Alignment {
+        let read = Alignment {
+            index: ind,
             header: hd,
-            sequenz: sequenz,
-            position: pos,
-            cigar_str: cigstring,
+            sequence: sequenz,
+            pos: pos,
+            cigar: cigstring,
             flags: flag_string,
             name: name,
         };
 
-        if index == read1.position {
-            read = read1;
-        }
+        alignments.push(read);
+        ind +=1;
     }
-    read
+
+    alignments
+
 }
 
+
 fn main() {
-    //rocket::ignite().mount("/", routes![genome, count]).launch();
+
+    let alignments = read_bam();
+
     rocket::ignite()
-        .mount("/static", StaticFiles::from("./static"))
-        .mount("/api/v1", StaticFiles::from("./templates/index.html"))
+        .manage(alignments)
+        .mount("/home", StaticFiles::from("templates"))
+        .mount("/static", StaticFiles::from("static"))
         .mount("/api/v1", routes![genome, count])
         .launch();
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 struct Alignment {
+    index: i32,
     header: String,
-    sequenz: String,
-    position: i32,
-    cigar_str: String,
+    sequence: String,
+    pos: i32,
+    cigar: String,
     flags: BTreeMap<u16, &'static str>,
     name: String,
 }
@@ -165,7 +166,7 @@ impl fmt::Display for Alignment {
         for (_key, flag) in &self.flags {
             flag_string.push_str(flag);
         }
-        write!(f, "({}, {}, {}, {}, {}, {})", self.header, self.sequenz, self.position, self.cigar_str, flag_string,
+        write!(f, "({}, {}, {}, {}, {}, {})", self.header, self.sequence, self.pos, self.cigar, flag_string,
         self.name)
     }
 }
