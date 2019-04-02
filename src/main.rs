@@ -1,23 +1,23 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate rust_htslib;
-#[macro_use] extern crate bit_vec;
-#[macro_use] extern crate rocket_contrib;
 #[macro_use] extern crate serde;
+
+extern crate rocket_contrib;
+extern crate rust_htslib;
+extern crate bit_vec;
+
 
 
 #[cfg(test)] mod tests;
 
 use rust_htslib::bam;
 use rust_htslib::prelude::*;
-use bit_vec::BitVec;
 use std::fmt;
 use std::path::Path;
 use std::env;
 use std::collections::BTreeMap;
 use rocket_contrib::json::Json;
-use serde::ser::{Serialize, SerializeStruct, Serializer};
 use rocket_contrib::serve::StaticFiles;
 use rocket::State;
 
@@ -68,7 +68,7 @@ fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
 
 fn count_alignments(path: &Path)-> u32 {
     let mut bam = bam::Reader::from_path(path).unwrap();
-    let header = bam::Header::from_template(bam.header());
+    //let header = bam::Header::from_template(bam.header());
     let mut count:u32= 0;
     for _r in bam.records() {
         count += 1;
