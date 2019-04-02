@@ -4,7 +4,6 @@
 #[macro_use] extern crate rust_htslib;
 #[macro_use] extern crate bit_vec;
 #[macro_use] extern crate rocket_contrib;
-//#[macro_use] extern crate rustc_serialize;
 #[macro_use] extern crate serde;
 
 
@@ -14,7 +13,8 @@ use rust_htslib::bam;
 use rust_htslib::prelude::*;
 use bit_vec::BitVec;
 use std::fmt;
-//use rustc_serialize::json::{self, ToJson, Json};
+use std::path::Path;
+use std::env;
 use std::collections::BTreeMap;
 use rocket_contrib::json::Json;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -25,7 +25,7 @@ use rocket::State;
 fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}
 
 #[get("/count")]
-fn count() -> Json<u32> {Json(count_alignments())}
+fn count(size: State<u32>) -> Json<u32> {Json(size.clone())}
 
 fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
     let mut string_map = BTreeMap::new();
@@ -66,8 +66,8 @@ fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
     string_map
 }
 
-fn count_alignments()-> u32 {
-    let mut bam = bam::Reader::from_path(&"data/example.bam").unwrap();
+fn count_alignments(path: &Path)-> u32 {
+    let mut bam = bam::Reader::from_path(path).unwrap();
     let header = bam::Header::from_template(bam.header());
     let mut count:u32= 0;
     for _r in bam.records() {
@@ -77,8 +77,8 @@ fn count_alignments()-> u32 {
     count
 }
 
-fn read_bam() -> Vec<Alignment> {
-    let mut bam = bam::Reader::from_path(&"data/example.bam").unwrap();
+fn read_bam(path: &Path) -> Vec<Alignment> {
+    let mut bam = bam::Reader::from_path(path).unwrap();
     let header = bam::Header::from_template(bam.header());
 
     let mut alignments:Vec<Alignment> = Vec::new();
@@ -138,11 +138,17 @@ fn read_bam() -> Vec<Alignment> {
 
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    let filename = &args[1];
+    let path = Path::new(filename);
 
-    let alignments = read_bam();
+    let alignments = read_bam(path);
+
+    let size = count_alignments(path);
 
     rocket::ignite()
         .manage(alignments)
+        .manage(size)
         .mount("/home", StaticFiles::from("templates"))
         .mount("/static", StaticFiles::from("static"))
         .mount("/api/v1", routes![genome, count])
