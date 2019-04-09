@@ -1,0 +1,163 @@
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Genomes</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/optics/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/optics/css/gen-browser.css" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link rel="stylesheet" href="/optics/vendor/font-awesome-5/css/fontawesome.min.css">
+  <script defer src="/optics/vendor/font-awesome-5/js/fontawesome-all.min.js"></script>
+
+
+
+
+  <!-- Plugin CSS -->
+  <link href="/optics/vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/optics/favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/optics/favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/optics/favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/optics/favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/optics/favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/optics/favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/optics/favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/optics/favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/optics/favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/optics/favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/optics/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/optics/favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/optics/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/optics/favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/static/favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body>
+<div id="genom">
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand js-scroll-trigger" href="/">Genomes</a>
+    <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item mx-0 mx-lg-1">
+          <a class="nav-link py-3 px-0 px-lg-3" id="load">Laden</a>
+        </li>
+        <li class="nav-item mx-0 mx-lg-1">
+          <a class="nav-link py-3 px-0 px-lg-3" id="clear" v-on:click="clear">Verwerfen</a>
+        </li>
+        <li class="nav-item mx-0 mx-lg-1">
+          <a class="nav-link py-3 px-0 px-lg-3" href="/about">About</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!-- main -->
+<section class="main" id="main">
+  <div class="container">
+  <h2 class="text-center text-uppercase text-secondary mb-0">Alignment</h2>
+  <div class="row">
+    <div class="col-12 panel">
+      <div>
+        <table class="table">
+          <tr>
+            <th>Header</th><td id="bam_header"></td>
+          </tr>
+        </table>
+      </div>
+      <div id="alignment">
+        <table class="table seq-table">
+          <tr>
+            <th>Index</th><td>{{ index }}</td>
+          </tr>
+          <tr>
+            <th>Name</th><td>{{ name }}</td>
+          </tr>
+          <tr>
+            <th>Position</th><td>{{ pos }}</td>
+          </tr>
+          <tr>
+            <th>Cigar String</th><td>{{ cigar }}</td>
+          </tr>
+          <tr>
+            <th>Qualities</th><td>{{ qualities }}</td>
+          </tr>
+          <tr>
+            <th>Flags</th><td>{{ flags }}</td>
+          </tr>
+          <tr>
+            <th>Sequence</th><td>{{ sequence }}</td>
+          </tr>
+        </table>
+        <div class="row" style="margin-bottom: 10px;">
+          <div class="col-6">
+            <button class="btn btn-secondary" v-bind:disabled="atStart" v-on:click="first" id="first">
+              <i class="far fa-chevron-double-left "></i>
+            </button>
+            <button class="btn btn-secondary" v-bind:disabled="atStart" v-on:click="prev" id="prev">
+              <i class="far fa-chevron-left"></i>
+            </button>
+          </div>
+          <div class="col-6" style="text-align: right;">
+            <button class="btn btn-secondary" v-bind:disabled="atEnd" v-on:click="next" id="next">
+              <i class="far fa-chevron-right"></i>
+            </button>
+            <button class="btn btn-secondary" v-bind:disabled="atEnd" v-on:click="last" id="last">
+              <i class="far fa-chevron-double-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <span id="message"></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="copyright py-4 text-center text-white">
+  <div class="container">
+    <small>Copyright &copy; Felix Wiegand 2019</small>
+  </div>
+</div>
+
+<!--&lt;!&ndash; Bootstrap core JavaScript &ndash;&gt;-->
+<script src="/optics/vendor/jquery/jquery.min.js"></script>
+
+
+<!-- Scripts here ↓ -->
+<script src="static/node_modules/vue/dist/vue.js"></script>
+<script src="static/node_modules/axios/dist/axios.js"></script>
+<script src="static/gen-browser.js"></script>
+</div>
+</body>
+</html>

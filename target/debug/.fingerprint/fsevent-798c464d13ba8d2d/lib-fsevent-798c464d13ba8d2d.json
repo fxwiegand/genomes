@@ -1,0 +1,1 @@
+{"rustc":8387957518499840782,"features":"[]","target":9870666956117980655,"profile":11870183705523825133,"path":3509500999452105303,"deps":[["bitflags v0.7.0","bitflags",7799448544776795751],["fsevent-sys v0.1.6","fsevent_sys",7472959916036089979],["libc v0.2.50","libc",2134244309577219181]],"local":[{"Precalculated":"0.2.17"}],"rustflags":[],"edition":"Edition2015"}

@@ -21,6 +21,7 @@ use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket::State;
 
+
 #[get("/alignment/<index>")]
 fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}
 
@@ -146,13 +147,16 @@ fn main() {
 
     let size = count_alignments(path);
 
+
     rocket::ignite()
         .manage(alignments)
         .manage(size)
-        .mount("/home", StaticFiles::from("templates"))
-        .mount("/static", StaticFiles::from("static"))
+        .mount("/home", StaticFiles::from("client"))
+        .mount("/static", StaticFiles::from("client"))
+        .mount("/optics", StaticFiles::from("optics"))
         .mount("/api/v1", routes![genome, count])
         .launch();
+
 }
 
 #[derive(Serialize, Clone)]
