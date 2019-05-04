@@ -1,6 +1,3 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
-#[macro_use] extern crate serde;
 extern crate rust_htslib;
 extern crate bit_vec;
 
@@ -8,7 +5,6 @@ use rust_htslib::{bam};
 use rust_htslib::prelude::*;
 use std::fmt;
 use std::path::Path;
-use std::env;
 use std::collections::BTreeMap;
 
 #[derive(Serialize, Clone)]
