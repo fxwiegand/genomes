@@ -24,14 +24,14 @@ use alignment_reader:: read_bam;
 use alignment_reader::Alignment;
 use fasta_reader::read_fasta;
 
-
-
-
 #[get("/alignment/<index>")]
 fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}
 
 #[get("/count")]
 fn count(size: State<u32>) -> Json<u32> {Json(size.clone())}
+
+#[get("/reference/<chromosome>/<from>/<to>")]
+fn reference(fasta_path: State<&Path>, chromosome: u8, from: u64, to: u64) -> Json<String> {Json(read_fasta(&fasta_path, chromosome - 1, from, to))}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -42,23 +42,19 @@ fn main() {
 
     let size = count_alignments(path);
 
-
     let _index = Route::ranked(1, Method::Get, "/", StaticFiles::from("client"));
 
     let fasta_path = Path::new("data/human_b36_male.fa");
 
-    let fasta = read_fasta(fasta_path, 0, 1, 100);
-
-    println!("{}", fasta);
-
-//    rocket::ignite()
-//        .manage(alignments)
-//        .manage(size)
-//        .mount("/home",  StaticFiles::from("client"))
-//        .mount("/static", StaticFiles::from("client"))
-//        .mount("/optics", StaticFiles::from("optics"))
-//        .mount("/api/v1", routes![genome, count])
-//        .launch();
+    rocket::ignite()
+        .manage(alignments)
+        .manage(size)
+        .manage(fasta_path)
+        .mount("/home",  StaticFiles::from("client"))
+        .mount("/static", StaticFiles::from("client"))
+        .mount("/optics", StaticFiles::from("optics"))
+        .mount("/api/v1", routes![genome, count, reference])
+        .launch();
 
 }
 
