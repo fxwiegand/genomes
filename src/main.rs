@@ -6,8 +6,10 @@
 extern crate rocket_contrib;
 extern crate rust_htslib;
 extern crate bit_vec;
+extern crate bio;
 
 mod alignment_reader;
+mod fasta_reader;
 
 #[cfg(test)] mod tests;
 
@@ -20,6 +22,8 @@ use rocket::http::Method;
 use alignment_reader::count_alignments;
 use alignment_reader:: read_bam;
 use alignment_reader::Alignment;
+use fasta_reader::read_fasta;
+
 
 
 
@@ -41,14 +45,20 @@ fn main() {
 
     let _index = Route::ranked(1, Method::Get, "/", StaticFiles::from("client"));
 
-    rocket::ignite()
-        .manage(alignments)
-        .manage(size)
-        .mount("/home",  StaticFiles::from("client"))
-        .mount("/static", StaticFiles::from("client"))
-        .mount("/optics", StaticFiles::from("optics"))
-        .mount("/api/v1", routes![genome, count])
-        .launch();
+    let fasta_path = Path::new("data/human_b36_male.fa");
+
+    let fasta = read_fasta(fasta_path, 0, 1, 100);
+
+    println!("{}", fasta);
+
+//    rocket::ignite()
+//        .manage(alignments)
+//        .manage(size)
+//        .mount("/home",  StaticFiles::from("client"))
+//        .mount("/static", StaticFiles::from("client"))
+//        .mount("/optics", StaticFiles::from("optics"))
+//        .mount("/api/v1", routes![genome, count])
+//        .launch();
 
 }
 
