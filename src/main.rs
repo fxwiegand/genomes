@@ -22,7 +22,10 @@ use rocket::http::Method;
 use alignment_reader::count_alignments;
 use alignment_reader:: read_bam;
 use alignment_reader::Alignment;
+use fasta_reader::Nucleobase;
 use fasta_reader::read_fasta;
+use std::collections::BTreeMap;
+
 
 #[get("/alignment/<index>")]
 fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}
@@ -31,25 +34,34 @@ fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {J
 fn count(size: State<u32>) -> Json<u32> {Json(size.clone())}
 
 #[get("/reference/<chromosome>/<from>/<to>")]
-fn reference(fasta_path: State<&Path>, chromosome: u8, from: u64, to: u64) -> Json<String> {Json(read_fasta(&fasta_path, chromosome - 1, from, to))}
+fn reference(args: State<Vec<String>>, chromosome: u8, from: u64, to: u64) -> Json<Vec<Nucleobase>> {Json(read_fasta(Path::new(&args[2].clone()), chromosome - 1, from, to))}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let filename = &args[1];
-    let path = Path::new(filename);
 
-    let alignments = read_bam(path);
+    // The first argument is the path that was used to call the program.
+    ////println!("I got {:?} arguments: {:?}.", args.len() - 1, &args[1..]);
 
-    let size = count_alignments(path);
+
+    let bam_filename = args[1].clone();
+    //let fasta_filename   = args[2].clone();
+    let bam_path = Path::new(&bam_filename);
+    //let fasta_path: &Path = Path::new(&fasta_filename);
+
+
+
+    let alignments = read_bam(bam_path);
+
+    let size = count_alignments(bam_path);
 
     let _index = Route::ranked(1, Method::Get, "/", StaticFiles::from("client"));
 
-    let fasta_path = Path::new("data/human_b36_male.fa");
+
 
     rocket::ignite()
         .manage(alignments)
         .manage(size)
-        .manage(fasta_path)
+        .manage(args)
         .mount("/home",  StaticFiles::from("client"))
         .mount("/static", StaticFiles::from("client"))
         .mount("/optics", StaticFiles::from("optics"))

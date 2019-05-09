@@ -1,7 +1,7 @@
 use bio::io::fasta;
 use std::path::Path;
 
-pub fn read_fasta(path: &Path, chrom: u8, start: u64, stop: u64) -> String    {
+pub fn read_fasta(path: &Path, chrom: u8, start: u64, stop: u64) -> Vec<Nucleobase>    {
     let mut reader = fasta::IndexedReader::from_file(&path).unwrap();
     let index = fasta::Index::with_fasta_file(&path).unwrap();
     let sequences = index.sequences();
@@ -14,12 +14,23 @@ pub fn read_fasta(path: &Path, chrom: u8, start: u64, stop: u64) -> String    {
     reader.fetch(&seq_name.name, start, stop).unwrap();
     reader.read(& mut seq);
 
-    let mut fasta = String::from("");
+    let mut fasta = Vec::new();
+    let mut ind = start;
     for a in seq {
-        fasta.push(a as char);
+        let b = Nucleobase {
+            position: ind,
+            base: a as char
+        };
+        fasta.push(b);
+        ind += 1;
     }
 
     fasta
+
 }
 
-
+#[derive(Serialize, Clone)]
+pub struct Nucleobase {
+    position: u64,
+    base: char,
+}
