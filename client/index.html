@@ -1,10 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Fasta View</title>
+    <meta charset="utf-8" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.3.5/build/vega.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.2.1/build/vega-lite.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.0.0/build/vega-embed.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="home/style.css">
+    <style media="screen">
+        /* Add space between Vega-Embed links  */
+        .vega-actions a {
+            margin-right: 5px;
+        }
+    </style>
+
+
 </head>
 <body>
 
+<div id="head" >
+    <h1>Fasta View</h1>
+    <p>London is the capital city of England.</p>
+</div>
+
+<div id="content">
+    <!-- Container for the visualization -->
+    <div id="vis"></div>
+    <form>
+        <input type="number" name="quantity" min="1" max="22">Genom<br>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+
+</div>
+
+<div id="footer">
+    <p>Felix Wiegand</p>
+    <p>Contact information: <a href="mailto:fxwiegand@wgdnet.de.">
+        fxwiegand@wgdnet.de</a>.</p>
+</div>
+
+<script>
+    // Assign the specification to a local variable vlSpec.
+    var vlSpec = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v3.json',
+        data: {"url": "http://localhost:8000/api/v1/reference/8/0/121"},
+        width: 1600,
+        height: 25,
+        autosize: {
+            resize: "true",
+            //type: "fit",
+            contains: "padding"
+        },
+        mark: {
+            type: 'square',
+            filled: 'true',
+            shape: 'square',
+        },
+        encoding: {
+            x: {
+                field: 'position',
+                type: 'quantitative',
+                axis: {
+                    title: 'Position'
+                },
+            },
+            size: {value: 100},
+            color: {
+                field: 'base',
+            }
+        }
+    };
+
+    // Embed the visualization in the container with id `vis`
+    vegaEmbed('#vis', vlSpec);
+</script>
 </body>
 </html>

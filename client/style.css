@@ -1,0 +1,47 @@
+#head {
+    background-color: #555;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    font-size: 17px;
+    position:relative;
+    left:0;
+    height:150px;
+    width: 100%;
+    text-align: center;
+}
+
+#vis {
+    padding-top: 40px;
+}
+
+#content {
+    padding-top: 40px;
+    padding-left: 40px;
+    margin: auto;
+}
+
+#footer {
+    background-color: #555;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    font-size: 17px;
+    position:absolute;
+    bottom: 0px;
+    left:0;
+    height:150px;
+    width: 100%;
+    text-align: center;
+}
+
+.tabcontent {
+    color: white;
+    display: none;
+    padding: 50px;
+    text-align: center;
+}
