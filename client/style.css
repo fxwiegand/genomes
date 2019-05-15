@@ -1,20 +1,20 @@
+* {
+    font-size: 100%;
+    font-family: Futura;
+}
+
 #head {
-    background-color: #555;
-    color: white;
     float: left;
-    border: none;
-    outline: none;
-    padding: 14px 16px;
-    font-size: 17px;
     position:relative;
     left:0;
-    height:150px;
     width: 100%;
     text-align: center;
 }
 
 #vis {
     padding-top: 40px;
+    margin: auto;
+    width: 100%;
 }
 
 #content {
@@ -24,17 +24,16 @@
 }
 
 #footer {
-    background-color: #555;
-    color: white;
+    background-image: url(../optics/img/footer.png);
     float: left;
     border: none;
     outline: none;
     padding: 14px 16px;
-    font-size: 17px;
+    font-size: 25px;
+    color: white;
     position:absolute;
     bottom: 0px;
     left:0;
-    height:150px;
     width: 100%;
     text-align: center;
 }

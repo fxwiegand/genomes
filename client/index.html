@@ -23,11 +23,8 @@
 
 </head>
 <body>
+<img src="optics/img/header.png" id="head">
 
-<div id="head" >
-    <h1>Fasta View</h1>
-    <p>London is the capital city of England.</p>
-</div>
 
 <div id="content">
     <!-- Container for the visualization -->
@@ -49,9 +46,14 @@
     // Assign the specification to a local variable vlSpec.
     var vlSpec = {
         $schema: 'https://vega.github.io/schema/vega-lite/v3.json',
-        data: {"url": "http://localhost:8000/api/v1/reference/8/0/121"},
-        width: 1600,
+        data: {"url": "http://localhost:8000/api/v1/reference/8/0/1000"},
+        width: $(window).width() - 150,
         height: 25,
+        selection: {
+            grid: {
+                type: "interval", bind: "scales"
+            }
+        },
         autosize: {
             resize: "true",
             //type: "fit",
