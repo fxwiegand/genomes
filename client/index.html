@@ -29,9 +29,18 @@
 <div id="content">
     <!-- Container for the visualization -->
     <div id="vis"></div>
-    <form>Chromosom
+    <br>
+    <form>
+        <label for="gen">Chromosom</label>
         <input type="number" id="gen" name="quantity" min="1" max="22"><br>
-        <button type="button" class="btn btn-default" onclick="buildVega(document.getElementById('gen').value);">Submit</button>
+
+        <label for="from">Start</label>
+        <input type="number" id="from" name="quantity" min="1" max="100000"><br>
+
+        <label for="to">End</label>
+        <input type="number" id="to" name="quantity" min="2" max="1000000"><br>
+
+        <button type="button" class="btn btn-default" onclick="buildVega(document.getElementById('gen').value, document.getElementById('from').value, document.getElementById('to').value);">Submit</button>
     </form>
 
 </div>
@@ -43,8 +52,8 @@
 </div>
 
 <script>
-    async function fetchChrom(x) {
-        const rs = await fetch('http://localhost:8000/api/v1/reference/' + x +'/0/1000inde');
+    async function fetchChrom(chrom, fr, to) {
+        const rs = await fetch('http://localhost:8000/api/v1/reference/' + chrom +'/' + fr + '/' + to);
         return rs;
     }
 
@@ -96,15 +105,15 @@
     };
 
     // Embed the visualization in the container with id `vis`
-    async function buildVega(x) {
-        const genom = await fetchChrom(x);
+    async function buildVega(chrom, fr, to) {
+        const genom = await fetchChrom(chrom, fr, to);
         const body = await genom.json()
         let v = await vegaEmbed('#vis', vlSpec);
         v = v.view.insert('fasta', body);
         v.run();
     }
 
-    buildVega(1);
+    buildVega(1, 1, 1000);
 
     // vegaEmbed('#vis', vlSpec).then(res =>
     //     res.view
