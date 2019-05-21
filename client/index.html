@@ -6,8 +6,8 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5.3.5/build/vega.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.2.1/build/vega-lite.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.0.0/build/vega-embed.js"></script>
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
@@ -29,9 +29,9 @@
 <div id="content">
     <!-- Container for the visualization -->
     <div id="vis"></div>
-    <form>
-        <input type="number" name="quantity" min="1" max="22">Genom<br>
-        <button type="submit" class="btn btn-default">Submit</button>
+    <form>Chromosom
+        <input type="number" id="gen" name="quantity" min="1" max="22"><br>
+        <button type="button" class="btn btn-default" onclick="buildVega(document.getElementById('gen').value);">Submit</button>
     </form>
 
 </div>
@@ -43,17 +43,30 @@
 </div>
 
 <script>
+    async function fetchChrom(x) {
+        const rs = await fetch('http://localhost:8000/api/v1/reference/' + x +'/0/1000inde');
+        return rs;
+    }
+
     // Assign the specification to a local variable vlSpec.
     var vlSpec = {
         $schema: 'https://vega.github.io/schema/vega-lite/v3.json',
-        data: {"url": "http://localhost:8000/api/v1/reference/8/0/1000"},
+        //data: {"url": "http://localhost:8000/api/v1/reference/1/0/1000"},
+        data : {name : 'fasta'},
         width: $(window).width() - 150,
         height: 25,
+        title: 'Chromosom',
         selection: {
             grid: {
-                type: "interval", bind: "scales"
+                type: "interval",
+                bind: "scales",
             }
         },
+        scales: [
+            {
+                name: 'position',
+                domainMin: 0,
+            }],
         autosize: {
             resize: "true",
             //type: "fit",
@@ -69,18 +82,36 @@
                 field: 'position',
                 type: 'quantitative',
                 axis: {
-                    title: 'Position'
+                    title: 'Position',
                 },
+                domainMin: 0,
             },
             size: {value: 100},
             color: {
                 field: 'base',
-            }
+                title: 'Base',
+            },
+
         }
     };
 
     // Embed the visualization in the container with id `vis`
-    vegaEmbed('#vis', vlSpec);
+    async function buildVega(x) {
+        const genom = await fetchChrom(x);
+        const body = await genom.json()
+        let v = await vegaEmbed('#vis', vlSpec);
+        v = v.view.insert('fasta', body);
+        v.run();
+    }
+
+    buildVega(1);
+
+    // vegaEmbed('#vis', vlSpec).then(res =>
+    //     res.view
+    //         .insert('fasta', )
+    //         .run()
+    // );
+    //vegaEmbed('#vis', vlSpec);
 </script>
 </body>
 </html>
