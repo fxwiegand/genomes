@@ -80,6 +80,10 @@ pub fn count_alignments(path: &Path)-> u32 {
     count
 }
 
+pub fn read_indexed_bam(path: &Path, from: u32, to: u32) {
+    let mut bam = bam::IndexedReader::from_path(path).unwrap();
+}
+
 
 pub fn read_bam(path: &Path) -> Vec<Alignment> {
     let mut bam = bam::Reader::from_path(path).unwrap();

@@ -18,6 +18,7 @@ use std::env;
 use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket::{State, Route};
+use rocket::request::{Form, FromFormValue};
 use rocket::http::Method;
 use alignment_reader::count_alignments;
 use alignment_reader:: read_bam;
@@ -35,6 +36,7 @@ fn count(size: State<u32>) -> Json<u32> {Json(size.clone())}
 
 #[get("/reference/<chromosome>/<from>/<to>")]
 fn reference(args: State<Vec<String>>, chromosome: u8, from: u64, to: u64) -> Json<Vec<Nucleobase>> {Json(read_fasta(Path::new(&args[2].clone()), chromosome - 1, from, to))}
+
 
 fn main() {
     let args: Vec<String> = env::args().collect();
