@@ -1,2 +1,4 @@
 .idea/
-targed/
+target/
+data/
+node_modules/
