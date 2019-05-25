@@ -57,7 +57,7 @@
 
 <script>
     async function fetchChrom(chrom, fr, to) {
-        const rs = await fetch('http://localhost:8000/api/v1/reference/' + chrom +'/' + fr + '/' + to);
+        const rs = await fetch('/api/v1/reference/' + chrom +'/' + fr + '/' + to);
         return rs;
     }
 
@@ -70,11 +70,11 @@
     //         .insert(rs)
     //     res.view.change('fasta', changeSet).run();
     // }
+
     const vSpec = "vlSpec.json";
     // Assign the specification to a local variable vlSpec.
     const vlSpec = {
         $schema: 'https://vega.github.io/schema/vega-lite/v3.json',
-        //data: {"url": "http://localhost:8000/api/v1/reference/1/0/1000"},
         data : {name : 'fasta'},
         width: $(window).width() - 150,
         height: 25,
@@ -96,7 +96,7 @@
             contains: "padding"
         },
         mark: {
-            type: 'square',
+            type: 'point',
             filled: 'true',
             shape: 'square',
         },
@@ -134,7 +134,7 @@
         v.run();
     }
 
-    //buildVega(1, 1, 1000);
+    buildVega(1, 1, 1000);
 </script>
 </body>
 </html>
