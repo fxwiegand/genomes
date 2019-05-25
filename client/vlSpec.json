@@ -1,6 +1,5 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
-  //data: {"url": "http://localhost:8000/api/v1/reference/1/0/1000"},
   "data" : {"name" : "fasta"},
   "width": "$(window).width() - 150",
   "height": "25",
@@ -18,7 +17,7 @@
     }],
   "autosize": {
     "resize": "true",
-    //"type": "fit",
+    "type": "fit",
     "contains": "padding"
   },
   "mark": {
@@ -39,7 +38,7 @@
     "color": {
       "field": "base",
       "title": "Base"
-    },
+    }
 
   }
 }
