@@ -47,7 +47,7 @@
       "title": "Base",
       "scale": {
         "domain": ["A", "C", "G", "T", "N"],
-        "range": ["#007853", "#A00036", "#B57600", "#88EDF2", "#FF0700"],
+        "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A"],
         "type": "ordinal"
       }
     }
