@@ -12,7 +12,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="home/style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style media="screen">
         /* Add space between Vega-Embed links  */
         .vega-actions a {
@@ -62,7 +62,7 @@
     }
 
     async function fetchVegaSpecs() {
-        const vlSpec = await fetch( "home/vlSpec.json");
+        const vlSpec = await fetch( "vlSpec.json");
         return vlSpec;
     }
 
@@ -82,9 +82,7 @@
         const body = await genom.json();
         const spec = await fetchVegaSpecs();
         const vlSpec = await spec.json();
-        console.log(vlSpec);
         vlSpec["width"] = $(window).width() - 150;
-        console.log(vlSpec);
         let v = await vegaEmbed('#vis', vlSpec);
         v = v.view.insert("fasta", body);
         v.addEventListener('mousedown', async function(event, item) {

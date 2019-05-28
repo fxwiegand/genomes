@@ -10,7 +10,6 @@ use std::collections::BTreeMap;
 #[derive(Serialize, Clone)]
 pub struct Alignment {
     index: i32,
-    header: String,
     sequence: String,
     pos: i32,
     cigar: String,
@@ -24,7 +23,7 @@ impl fmt::Display for Alignment {
         for (_key, flag) in &self.flags {
             flag_string.push_str(flag);
         }
-        write!(f, "({}, {}, {}, {}, {}, {})", self.header, self.sequence, self.pos, self.cigar, flag_string,
+        write!(f, "({}, {}, {}, {}, {})", self.sequence, self.pos, self.cigar, flag_string,
                self.name)
     }
 }
@@ -80,8 +79,24 @@ pub fn count_alignments(path: &Path)-> u32 {
     count
 }
 
-pub fn read_indexed_bam(path: &Path, from: u32, to: u32) {
-    let mut bam = bam::IndexedReader::from_path(path).unwrap();
+pub fn read_indexed_bam(path: &Path, from: u32, to: u32) -> Vec<Alignment> {
+    let mut bam = bam::IndexedReader::from_path(&path).unwrap();
+    let tid = bam.header().tid(b"11").unwrap();
+
+    let mut alignments: Vec<Alignment> = Vec::new();
+
+    bam.fetch(tid, from, to).unwrap();
+
+    for r in bam.records() {
+
+        let rec = r.unwrap();
+
+        let a = make_alignment(rec);
+
+        alignments.push(a);
+    }
+
+    alignments
 }
 
 
@@ -128,7 +143,6 @@ pub fn read_bam(path: &Path) -> Vec<Alignment> {
 
         let read = Alignment {
             index: ind,
-            header: hd,
             sequence: sequenz,
             pos: pos,
             cigar: cigstring,
@@ -136,10 +150,51 @@ pub fn read_bam(path: &Path) -> Vec<Alignment> {
             name: name,
         };
 
+
         alignments.push(read);
         ind +=1;
     }
 
     alignments
 
+}
+
+
+fn make_alignment(record: bam::Record) -> Alignment {
+    let ind = 0;
+
+    //Cigar String
+    let cigstring = record.cigar().to_string();
+
+    //Position
+    let pos = record.pos();
+
+    //Sequenz
+    let seq = record.seq().as_bytes();
+    let mut sequenz = String::from("");
+    for b in seq {
+        sequenz.push(b as char);
+    }
+
+    //Flags
+    let flgs = record.flags();
+    let flag_string = decode_flags(flgs);
+
+    //Name
+    let n = record.qname();
+    let mut name = String::from("");
+    for a in n {
+        name.push(*a as char);
+    }
+
+    let read = Alignment {
+        index: ind,
+        sequence: sequenz,
+        pos: pos,
+        cigar: cigstring,
+        flags: flag_string,
+        name: name,
+    };
+
+    read
 }

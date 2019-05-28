@@ -43,11 +43,13 @@ fn main() {
     let bam_filename = args[1].clone();
     let bam_path = Path::new(&bam_filename);
 
-    read_indexed_bam(bam_path, 1, 10);
+    read_indexed_bam(bam_path, 70000, 70050);
+
 
     let alignments = read_bam(bam_path);
 
     let size = count_alignments(bam_path);
+
 
     //let _index = Route::ranked(1, Method::Get, "/", StaticFiles::from("client"));
 
