@@ -27,11 +27,8 @@ use fasta_reader::Nucleobase;
 use fasta_reader::read_fasta;
 use rocket::response::Redirect;
 
-#[get("/alignment/<index>")]
-fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}
-
-#[get("/count")]
-fn count(size: State<u32>) -> Json<u32> {Json(size.clone())}
+/*#[get("/alignment/<index>")]
+fn genome(index: usize, alignments: State<Vec<Alignment>>) -> Json<Alignment> {Json(alignments[index].clone())}*/
 
 #[get("/reference/<chromosome>/<from>/<to>")]
 fn reference(args: State<Vec<String>>, chromosome: u8, from: u64, to: u64) -> Json<Vec<Nucleobase>> {Json(read_fasta(Path::new(&args[2].clone()), chromosome - 1, from, to))}
@@ -43,24 +40,12 @@ fn main() {
     let bam_filename = args[1].clone();
     let bam_path = Path::new(&bam_filename);
 
-    read_indexed_bam(bam_path, 70000, 70050);
-
-
-    let alignments = read_bam(bam_path);
-
-    let size = count_alignments(bam_path);
-
-
-    //let _index = Route::ranked(1, Method::Get, "/", StaticFiles::from("client"));
-
-
+    //read_indexed_bam(bam_path, 70000, 70050);
 
     rocket::ignite()
-        .manage(alignments)
-        .manage(size)
         .manage(args)
         .mount("/",  StaticFiles::from("client"))
-        .mount("/api/v1", routes![genome, count, reference])
+        .mount("/api/v1", routes![reference])
         .launch();
 
 }
