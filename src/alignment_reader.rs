@@ -9,12 +9,36 @@ use std::collections::BTreeMap;
 
 #[derive(Serialize, Clone)]
 pub struct Alignment {
-    index: i32,
     sequence: String,
     pos: i32,
+    length: u16,
     cigar: String,
     flags: BTreeMap<u16, &'static str>,
     name: String,
+}
+
+#[derive(Serialize, Clone)]
+pub struct AlignmentNucleobase {
+    base: char,
+    position: i32,
+    flags: BTreeMap<u16, &'static str>,
+    name: String,
+    row: u8,
+}
+
+#[derive(Serialize, Clone)]
+pub struct Snippet {
+    alignment: Alignment,
+    row: u8,
+}
+
+impl Snippet {
+    fn new(alignment: Alignment) -> Snippet {
+        Snippet {
+            alignment: alignment,
+            row: 0,
+        }
+    }
 }
 
 impl fmt::Display for Alignment {
@@ -79,9 +103,11 @@ pub fn count_alignments(path: &Path)-> u32 {
     count
 }
 
-pub fn read_indexed_bam(path: &Path, from: u32, to: u32) -> Vec<Alignment> {
+pub fn read_indexed_bam(path: &Path, chrom: u8, from: u32, to: u32) -> Vec<Alignment> {
+    let chr = chrom.to_string();
+    let c = chr.as_bytes();
     let mut bam = bam::IndexedReader::from_path(&path).unwrap();
-    let tid = bam.header().tid(b"11").unwrap();
+    let tid = bam.header().tid(c).unwrap();
 
     let mut alignments: Vec<Alignment> = Vec::new();
 
@@ -105,54 +131,14 @@ pub fn read_bam(path: &Path) -> Vec<Alignment> {
     let header = bam::Header::from_template(bam.header());
 
     let mut alignments:Vec<Alignment> = Vec::new();
-    let mut ind = 0;
 
     for r in bam.records() {
         let record = r.unwrap();
-        let head = header.to_bytes();
+        let _head = header.to_bytes();
 
-        //Cigar String
-        let cigstring = record.cigar().to_string();
-
-        //Position
-        let pos = record.pos();
-
-        //Sequenz
-        let seq = record.seq().as_bytes();
-        let mut sequenz = String::from("");
-        for b in seq {
-            sequenz.push(b as char);
-        }
-
-        //Flags
-        let flgs = record.flags();
-        let flag_string = decode_flags(flgs);
-
-        //Header
-        let mut hd = String::from("");
-        for b in head {
-            hd.push(b as char);
-        }
-
-        //Name
-        let n = record.qname();
-        let mut name = String::from("");
-        for a in n {
-            name.push(*a as char);
-        }
-
-        let read = Alignment {
-            index: ind,
-            sequence: sequenz,
-            pos: pos,
-            cigar: cigstring,
-            flags: flag_string,
-            name: name,
-        };
-
+        let read = make_alignment(record);
 
         alignments.push(read);
-        ind +=1;
     }
 
     alignments
@@ -161,13 +147,15 @@ pub fn read_bam(path: &Path) -> Vec<Alignment> {
 
 
 fn make_alignment(record: bam::Record) -> Alignment {
-    let ind = 0;
 
     //Cigar String
-    let cigstring = record.cigar().to_string();
+    let cigstring = record.cigar();
 
     //Position
     let pos = record.pos();
+
+    //Länge
+    let le = record.seq().len() as u16;
 
     //Sequenz
     let seq = record.seq().as_bytes();
@@ -188,13 +176,73 @@ fn make_alignment(record: bam::Record) -> Alignment {
     }
 
     let read = Alignment {
-        index: ind,
         sequence: sequenz,
         pos: pos,
-        cigar: cigstring,
+        length: le,
+        cigar: cigstring.to_string(),
         flags: flag_string,
         name: name,
     };
 
     read
+}
+
+fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet>  {
+    // TODO: Change for mor efficient use of height/rows
+
+    let mut r = 1;
+    let mut last_end = 0;
+    let mut snippets: Vec<Snippet> = Vec::new();
+    for alignment in reads {
+        let position = alignment.pos;
+        let length = alignment.length as i32;
+        let mut snippet = Snippet::new(alignment);
+
+        if position > last_end {
+            snippet.row = r;
+            r = 1;
+        } else {
+            snippet.row = r + 1;
+            r +=1;
+        }
+        snippets.push(snippet);
+        last_end = length + position;
+    }
+    snippets
+}
+
+fn make_nucleobases(snippets: Vec<Snippet>) -> Vec<AlignmentNucleobase> {
+
+
+    let mut bases: Vec<AlignmentNucleobase> = Vec::new();
+    for s in snippets {
+        let mut offset = 0;
+        let base_string = s.alignment.sequence.clone();
+        for b in base_string.chars() {
+            let snip = s.clone();
+            let p= snip.alignment.pos + offset;
+            let f = snip.alignment.flags;
+            let n = snip.alignment.name;
+            let r= snip.row;
+
+            let base = AlignmentNucleobase {
+                base: b,
+                position: p,
+                flags: f,
+                name: n,
+                row: r,
+            };
+            offset +=1;
+            bases.push(base);
+        }
+    }
+    bases
+}
+
+pub fn get_reads(path: &Path, chrom: u8, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
+    let alignments = read_indexed_bam(path, chrom, from, to);
+    let snippets = calculate_read_row(alignments);
+    let bases = make_nucleobases(snippets);
+
+    bases
 }

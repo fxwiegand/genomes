@@ -7,7 +7,7 @@
     "contains": "content",
     "resize": true
   },
-  "height": 100,
+  "height": 200,
   "title": "Chromosom",
   "selection": {
     "grid": {
@@ -31,6 +31,11 @@
     "shape": "square"
   },
   "encoding": {
+    "y": {
+      "field": "row",
+      "type": "ordinal",
+      "axis": null
+    },
     "x": {
       "field": "position",
       "type": "quantitative",
