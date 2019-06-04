@@ -1,13 +1,12 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
   "data" : {"name" : "fasta"},
-  "range": ["A", "C", "G", "T", "N"],
   "autosize": {
     "type": "fit",
     "contains": "content",
     "resize": true
   },
-  "height": 200,
+  "height": 300,
   "title": "Chromosom",
   "selection": {
     "grid": {
@@ -17,8 +16,7 @@
   },
   "scales": [
     {
-      "name": "position",
-      "domainMin": "0"
+      "name": "position"
     }],
   "autosize": {
     "resize": "true",
@@ -28,7 +26,8 @@
   "mark": {
     "type": "square",
     "filled": "true",
-    "shape": "square"
+    "shape": "square",
+    "clip": true
   },
   "encoding": {
     "y": {
@@ -40,9 +39,10 @@
       "field": "position",
       "type": "quantitative",
       "axis": {
-        "title": "Position"
-      },
-      "domainMin": "0"
+        "title": "Position",
+        "minExtent": 100,
+        "maxExtent": 100
+      }
     },
     "size": {"value": 100},
     "color": {
