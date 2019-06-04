@@ -94,17 +94,17 @@
         vlSpec["width"] = $(window).width() - 150;
         let v = await vegaEmbed('#vis', vlSpec);
         v = v.view.insert("fasta", $.merge(body, albody));
-        v.addEventListener('mousedown', async function(event, item) {
-            console.log('Zieh mich', event, item);
-            const n = await fetchChrom(chrom, parseInt(to) + 1, parseInt(to) + 100);
-            const upd = await n.json();
-
-            const m = await fetchAlignments(chrom, parseInt(to) + 1, parseInt(to) + 100);
-            const alupd = await m.json();
-
-            v.insert('fasta', $.merge(upd, alupd));
-            to = parseInt(to)  + 100;
-        });
+        // v.addEventListener('mousedown', async function(event, item) {
+        //     console.log('Zieh mich', event, item);
+        //     const n = await fetchChrom(chrom, parseInt(to) + 1, parseInt(to) + 100);
+        //     const upd = await n.json();
+        //
+        //     const m = await fetchAlignments(chrom, parseInt(to) + 1, parseInt(to) + 100);
+        //     const alupd = await m.json();
+        //
+        //     v.insert('fasta', $.merge(upd, alupd));
+        //     to = parseInt(to)  + 100;
+        // });
         v.run();
     }
 

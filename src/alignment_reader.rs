@@ -187,27 +187,25 @@ fn make_alignment(record: bam::Record) -> Alignment {
     read
 }
 
-fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet>  {
-    // TODO: Change for mor efficient use of height/rows
-
-    let mut r = 1;
-    let mut last_end = 0;
+fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet> {
+    let mut read_ends = vec![0; 20];
     let mut snippets: Vec<Snippet> = Vec::new();
+
     for alignment in reads {
         let position = alignment.pos;
         let length = alignment.length as i32;
         let mut snippet = Snippet::new(alignment);
 
-        if position > last_end {
-            snippet.row = r;
-            r = 1;
-        } else {
-            snippet.row = r + 1;
-            r +=1;
+        for i in 1..20 {
+            if position > read_ends[i] as i32 {
+                snippet.row = i as u8;
+                read_ends[i] = length + position;
+                break;
+            }
         }
         snippets.push(snippet);
-        last_end = length + position;
     }
+
     snippets
 }
 
