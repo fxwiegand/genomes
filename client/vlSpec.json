@@ -55,7 +55,12 @@
         "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A"],
         "type": "ordinal"
       }
-    }
-
+    },
+    "tooltip": [
+      {"field": "base", "type": "nominal"},
+      {"field": "name", "type": "nominal"},
+      {"field": "position", "type": "quantitative"},
+      {"field": "flags", "type": "nominal"}
+    ]
   }
 }
