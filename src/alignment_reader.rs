@@ -188,7 +188,7 @@ fn make_alignment(record: bam::Record) -> Alignment {
 }
 
 fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet> {
-    let mut read_ends = vec![0; 20];
+    let mut read_ends = vec![0; 30];
     let mut snippets: Vec<Snippet> = Vec::new();
 
     for alignment in reads {
