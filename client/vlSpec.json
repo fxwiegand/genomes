@@ -6,7 +6,7 @@
     "contains": "content",
     "resize": true
   },
-  "height": 300,
+  "height": 250,
   "title": "Chromosom",
   "selection": {
     "grid": {
@@ -39,9 +39,7 @@
       "field": "position",
       "type": "quantitative",
       "axis": {
-        "title": "Position",
-        "minExtent": 100,
-        "maxExtent": 100
+        "title": "Position"
       }
     },
     "size": {"value": 100},

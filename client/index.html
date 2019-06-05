@@ -3,6 +3,7 @@
     <title>Fasta View</title>
     <meta charset="utf-8" />
 
+
     <script src="https://cdn.jsdelivr.net/npm/vega@5.3.5/build/vega.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.2.1/build/vega-lite.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.0.0/build/vega-embed.js"></script>
@@ -10,6 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="vega.js"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -22,7 +24,7 @@
 
 
 </head>
-<body>
+<body onload="buildVega(1,1,1000)">
 <img src="optics/img/header.png" id="head">
 
 
@@ -32,13 +34,13 @@
     <br>
     <form>
         <label for="gen">Chromosom</label>
-        <input type="number" id="gen" name="quantity" min="1" max="22"><br>
+        <input type="number" id="gen" name="quantity" min="1" max="22">
 
         <label for="from">Start</label>
-        <input type="number" id="from" name="quantity" min="1" max="100000"><br>
+        <input type="number" id="from" name="quantity" min="1" max="100000">
 
         <label for="to">End</label>
-        <input type="number" id="to" name="quantity" min="2" max="1000000"><br>
+        <input type="number" id="to" name="quantity" min="2" max="1000000">
 
         <button type="button" class="btn btn-info" onclick="buildVega(document.getElementById('gen').value, document.getElementById('from').value, document.getElementById('to').value);">Show</button>
 
@@ -52,60 +54,6 @@
         fxwiegand@wgdnet.de</a>.</p>
 </div>
 
-<script>
-    async function fetchChrom(chrom, fr, to) {
-        const rs = await fetch('/api/v1/reference/' + chrom +'/' + fr + '/' + to);
-        return rs;
-    }
 
-    async function fetchAlignments(chrom, fr, to) {
-        const rs = await fetch('/api/v1/alignment/' + chrom +'/' + fr + '/' + to);
-        return rs;
-    }
-
-    async function fetchVegaSpecs() {
-        const vlSpec = await fetch( "vlSpec.json");
-        return vlSpec;
-    }
-
-    // async function addBases(chrom, n, end) {
-    //     const r = fetchChrom(chrom, end, end + n);
-    //     const body = await r.json();
-    //     let vega = await vegaEmbed('#vis', vlSpec);
-    //     var changeSet = vega
-    //         .changeset()
-    //         .insert(rs)
-    //     res.view.change('fasta', changeSet).run();
-    // }
-
-    // Embed the visualization in the container with id `vis`
-    async function buildVega(chrom, fr, to) {
-        const genom = await fetchChrom(chrom, fr, to);
-        const body = await genom.json();
-
-        const al = await fetchAlignments(chrom, fr, to);
-        const albody = await al.json();
-
-        const spec = await fetchVegaSpecs();
-        const vlSpec = await spec.json();
-        vlSpec["width"] = $(window).width() - 150;
-        let v = await vegaEmbed('#vis', vlSpec);
-        v = v.view.insert("fasta", $.merge(body, albody));
-        // v.addEventListener('mousedown', async function(event, item) {
-        //     console.log('Zieh mich', event, item);
-        //     const n = await fetchChrom(chrom, parseInt(to) + 1, parseInt(to) + 100);
-        //     const upd = await n.json();
-        //
-        //     const m = await fetchAlignments(chrom, parseInt(to) + 1, parseInt(to) + 100);
-        //     const alupd = await m.json();
-        //
-        //     v.insert('fasta', $.merge(upd, alupd));
-        //     to = parseInt(to)  + 100;
-        // });
-        v.run();
-    }
-
-    buildVega(1, 1, 1000);
-</script>
 </body>
 </html>
