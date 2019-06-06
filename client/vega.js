@@ -1,5 +1,3 @@
-self.importScripts('https://cdn.jsdelivr.net/npm/vega-embed@4.0.0/build/vega-embed.js', 'https://cdn.jsdelivr.net/npm/vega-lite@3.2.1/build/vega-lite.js', 'https://cdn.jsdelivr.net/npm/vega@5.3.5/build/vega.js')
-
 async function fetchChrom(chrom, fr, to) {
     const rs = await fetch('/api/v1/reference/' + chrom +'/' + fr + '/' + to);
     return rs;
@@ -15,18 +13,15 @@ async function fetchVegaSpecs() {
     return vlSpec;
 }
 
-// async function addBases(chrom, n, end) {
-//     const r = fetchChrom(chrom, end, end + n);
-//     const body = await r.json();
-//     let vega = await vegaEmbed('#vis', vlSpec);
-//     var changeSet = vega
-//         .changeset()
-//         .insert(rs)
-//     res.view.change('fasta', changeSet).run();
-// }
+var lastLowerBound;
+var lastUpperBound;
+
 
 // Embed the visualization in the container with id `vis`
 async function buildVega(chrom, fr, to) {
+    lastLowerBound = fr;
+    lastUpperBound = to;
+
     const genom = await fetchChrom(chrom, fr, to);
     const body = await genom.json();
 
@@ -38,16 +33,58 @@ async function buildVega(chrom, fr, to) {
     vlSpec["width"] = $(window).width() - 150;
     let v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", $.merge(body, albody));
-    // v.addEventListener('mousedown', async function(event, item) {
-    //     console.log('Zieh mich', event, item);
-    //     const n = await fetchChrom(chrom, parseInt(to) + 1, parseInt(to) + 100);
-    //     const upd = await n.json();
-    //
-    //     const m = await fetchAlignments(chrom, parseInt(to) + 1, parseInt(to) + 100);
-    //     const alupd = await m.json();
-    //
-    //     v.insert('fasta', $.merge(upd, alupd));
-    //     to = parseInt(to)  + 100;
-    // });
+
+    v.addEventListener('mousedown', function(event, item) {
+        var myState = v.getState();
+        if(myState.signals){
+            if(myState.signals.grid_position){
+                myState.signals.grid_position[0] = 1337;
+                myState.signals.grid_position[1] = 2337;
+                console.log(myState.signals.grid_position);
+
+                v.setState(myState);
+            } else {
+                console.log("Fehler Null")
+            }
+        }
+    });
+
+
+   v.addEventListener('mouseup', async function (event, item) {
+        const lowerBound = Math.round(v.getState().signals.grid_position[0]);
+        const upperBound = Math.round(v.getState().signals.grid_position[1]);
+
+        var upd;
+
+
+        if (lastUpperBound < upperBound) {
+            const n = await fetchChrom(chrom, lastUpperBound, upperBound);
+            const upper_upd_ref = await n.json();
+
+            const m = await fetchAlignments(chrom, lastUpperBound, upperBound);
+            const upper_upd_al = await m.json();
+
+            upd = $.merge(upper_upd_al, upper_upd_ref);
+        } else {
+            const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
+            const lower_upd_ref = await o.json();
+
+            const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
+            const lower_upd_al = await p.json();
+
+            upd = $.merge(lower_upd_al, lower_upd_ref);
+        }
+
+        v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
+            return (d.position < lowerBound) || (d.position > upperBound);
+        }))
+
+
+
+        lastLowerBound = lowerBound;
+        lastUpperBound = upperBound;
+    });
     v.run();
+
+
 }

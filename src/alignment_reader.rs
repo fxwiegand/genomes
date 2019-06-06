@@ -196,7 +196,7 @@ fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet> {
         let length = alignment.length as i32;
         let mut snippet = Snippet::new(alignment);
 
-        for i in 1..20 {
+        for i in 1..30 {
             if position > read_ends[i] as i32 {
                 snippet.row = i as u8;
                 read_ends[i] = length + position;

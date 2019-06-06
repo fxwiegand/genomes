@@ -18,11 +18,6 @@
     {
       "name": "position"
     }],
-  "autosize": {
-    "resize": "true",
-    "type": "fit",
-    "contains": "padding"
-  },
   "mark": {
     "type": "square",
     "filled": "true",
