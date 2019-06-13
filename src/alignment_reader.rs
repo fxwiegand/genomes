@@ -23,23 +23,10 @@ pub struct AlignmentNucleobase {
     position: i32,
     flags: BTreeMap<u16, &'static str>,
     name: String,
-    row: u8,
+    read_start: u32,
+    read_end: u32,
 }
 
-#[derive(Serialize, Clone)]
-pub struct Snippet {
-    alignment: Alignment,
-    row: u8,
-}
-
-impl Snippet {
-    fn new(alignment: Alignment) -> Snippet {
-        Snippet {
-            alignment: alignment,
-            row: 0,
-        }
-    }
-}
 
 impl fmt::Display for Alignment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -187,51 +174,34 @@ fn make_alignment(record: bam::Record) -> Alignment {
     read
 }
 
-fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet> {
-    let mut read_ends = vec![0; 30];
-    let mut snippets: Vec<Snippet> = Vec::new();
-
-    for alignment in reads {
-        let position = alignment.pos;
-        let length = alignment.length as i32;
-        let mut snippet = Snippet::new(alignment);
-
-        for i in 1..30 {
-            if position > read_ends[i] as i32 {
-                snippet.row = i as u8;
-                read_ends[i] = length + position;
-                break;
-            }
-        }
-        snippets.push(snippet);
-    }
-
-    snippets
-}
-
-fn make_nucleobases(snippets: Vec<Snippet>) -> Vec<AlignmentNucleobase> {
+fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
 
 
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
     for s in snippets {
         let mut offset = 0;
-        let base_string = s.alignment.sequence.clone();
+        let base_string = s.sequence.clone();
         for b in base_string.chars() {
             let snip = s.clone();
-            let p= snip.alignment.pos + offset;
-            let f = snip.alignment.flags;
-            let n = snip.alignment.name;
-            let r= snip.row;
+            let p= snip.pos + offset;
+            let f = snip.flags;
+            let n = snip.name;
+            let rs = snip.pos;
+            let re = snip.pos + snip.length as i32;
 
             let base = AlignmentNucleobase {
                 base: b,
                 position: p,
                 flags: f,
                 name: n,
-                row: r,
+                read_start: rs as u32,
+                read_end: re as u32,
             };
             offset +=1;
-            bases.push(base);
+            if from as i32 <= base.position && base.position <= to as i32 {
+                bases.push(base);
+            }
+
         }
     }
     bases
@@ -239,8 +209,7 @@ fn make_nucleobases(snippets: Vec<Snippet>) -> Vec<AlignmentNucleobase> {
 
 pub fn get_reads(path: &Path, chrom: u8, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
     let alignments = read_indexed_bam(path, chrom, from, to);
-    let snippets = calculate_read_row(alignments);
-    let bases = make_nucleobases(snippets);
+    let bases = make_nucleobases(alignments, from, to);
 
     bases
 }
