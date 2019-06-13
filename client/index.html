@@ -33,6 +33,7 @@
     <div id="vis"></div>
     <br>
     <form>
+        <div class="form-group">
         <label for="gen">Chromosom</label>
         <input type="number" id="gen" name="quantity" min="1" max="22">
 
@@ -43,15 +44,9 @@
         <input type="number" id="to" name="quantity" min="2" max="1000000">
 
         <button type="button" class="btn btn-info" onclick="buildVega(document.getElementById('gen').value, document.getElementById('from').value, document.getElementById('to').value);">Show</button>
-
+        </div>
     </form>
 
-</div>
-
-<div id="footer">
-    <p>Felix Wiegand</p>
-    <p>Contact information: <a href="mailto:fxwiegand@wgdnet.de.">
-        fxwiegand@wgdnet.de</a>.</p>
 </div>
 
 
