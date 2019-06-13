@@ -30,7 +30,6 @@ async function buildVega(chrom, fr, to) {
         let r = {min_start: -1, max_end: 0}
         rows.push(r);
     }
-    console.log(rows[3]);
     max_row = 0;
 
 
@@ -53,12 +52,10 @@ async function buildVega(chrom, fr, to) {
         });
         if (!already_in) {
             for (let i = 1; i < 30; i++) {
-                console.log(a.name + " Read St/End" + a.read_start + "/" + a.read_end + " Row/St/End" + i + "/" + rows[i].min_start + "/" + rows[i].max_end);
                 if (rows[i].min_start == -1) {
                     a.row = i;
                     rows[i].min_start = a.read_start;
                     rows[i].max_end = a.read_end;
-                    console.log("Leer");
                     var read = {name:a.name, read_end:a.read_end, row: a.row};
                     reads.push(read);
 
@@ -66,7 +63,6 @@ async function buildVega(chrom, fr, to) {
                 } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
                     a.row = i;
                     rows[i].max_end = a.read_end;
-                    console.log("Hinter");
                     var read = {name:a.name, read_end:a.read_end, row: a.row};
                     reads.push(read);
 
@@ -74,7 +70,6 @@ async function buildVega(chrom, fr, to) {
                 } else if (rows[i].min_start > a.read_end) {
                     a.row = i;
                     rows[i].min_start = a.read_start;
-                    console.log("Vor");
                     var read = {name:a.name, read_end:a.read_end, row: a.row};
                     reads.push(read);
 
@@ -87,8 +82,6 @@ async function buildVega(chrom, fr, to) {
 
     });
 
-    console.log(rows);
-    console.log(reads);
 
     const cont = $.merge(body, albody);
 
@@ -99,23 +92,6 @@ async function buildVega(chrom, fr, to) {
     let v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", cont);
 
-
-
-
-    // v.addEventListener('blub', function(event, item) {
-    //     var myState = v.getState();
-    //     if(myState.signals){
-    //         if(myState.signals.grid_position){
-    //             var startState = v.getState();
-    //             startState.signals.grid.position[0] = fr;
-    //             startState.signals.grid.position[1] = to;
-    //             console.log(startState);
-    //             v.setState(startState);
-    //         } else {
-    //             console.log("No State Yet")
-    //         }
-    //     }
-    // });
 
 
    v.addEventListener('mouseup', async function (event, item) {
@@ -144,12 +120,10 @@ async function buildVega(chrom, fr, to) {
                 });
                 if (!already_in) {
                     for (let i = 1; i < 30; i++) {
-                        console.log(a.name + " Read St/End" + a.read_start + "/" + a.read_end + " Row/St/End" + i + "/" + rows[i].min_start + "/" + rows[i].max_end);
                         if (rows[i].min_start == -1) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
                             rows[i].max_end = a.read_end;
-                            console.log("Leer");
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
 
@@ -157,7 +131,6 @@ async function buildVega(chrom, fr, to) {
                         } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
                             a.row = i;
                             rows[i].max_end = a.read_end;
-                            console.log("Hinter");
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
 
@@ -165,7 +138,6 @@ async function buildVega(chrom, fr, to) {
                         } else if (rows[i].min_start > a.read_end) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
-                            console.log("Vor");
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
 
@@ -200,12 +172,10 @@ async function buildVega(chrom, fr, to) {
                 });
                 if (!already_in) {
                     for (let i = 1; i < 30; i++) {
-                        console.log(a.name + " Read St/End" + a.read_start + "/" + a.read_end + " Row/St/End" + i + "/" + rows[i].min_start + "/" + rows[i].max_end);
                         if (rows[i].min_start == -1) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
                             rows[i].max_end = a.read_end;
-                            console.log("Leer");
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
 
@@ -213,7 +183,6 @@ async function buildVega(chrom, fr, to) {
                         } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
                             a.row = i;
                             rows[i].max_end = a.read_end;
-                            console.log("Hinter");
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
 
@@ -221,7 +190,6 @@ async function buildVega(chrom, fr, to) {
                         } else if (rows[i].min_start > a.read_end) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
-                            console.log("Vor");
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
 
