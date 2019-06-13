@@ -39,7 +39,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 * **Felix Wiegand** - (https://github.com/fxwiegand)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of contributors who participated in this project.
 
 ## License
 
@@ -47,6 +47,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Created for the bachelor thesis of **Felix Wiegand** as TU Dormtund Univerity
+* Created for the bachelor thesis of **Felix Wiegand** as TU Dortmund University
 
 
