@@ -33,6 +33,7 @@
     "x": {
       "field": "position",
       "type": "quantitative",
+      "scale": {},
       "axis": {
         "title": "Position"
       }

@@ -88,10 +88,10 @@ async function buildVega(chrom, fr, to) {
 
     const spec = await fetchVegaSpecs();
     const vlSpec = await spec.json();
-    vlSpec["width"] = $(window).width() - 150;
+    vlSpec.width = $(window).width() - 150;
+    vlSpec.encoding.x.scale.domain = [fr,to];
     let v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", cont);
-
 
 
    v.addEventListener('mouseup', async function (event, item) {
@@ -152,7 +152,7 @@ async function buildVega(chrom, fr, to) {
 
 
             upd = $.merge(upper_upd_al, upper_upd_ref);
-        } else {
+        } else { //TODO: change to else if to load both sides when zooming out
             const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
             const lower_upd_ref = await o.json();
 
@@ -203,6 +203,7 @@ async function buildVega(chrom, fr, to) {
             });
 
             upd = $.merge(lower_upd_al, lower_upd_ref);
+
         }
 
 
@@ -219,6 +220,9 @@ async function buildVega(chrom, fr, to) {
        lastLowerBound = lowerBound;
        lastUpperBound = upperBound;
     });
-    v.runAsync();
+
 
 }
+
+//TODO: Basen in Reads die wie das Referenzgenom sind grau färben
+//TODO: Insertion: Neue Base auf Position 32,5 mit Tooltip mit Basen die Insertions sind
