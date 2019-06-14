@@ -98,7 +98,9 @@ async function buildVega(chrom, fr, to) {
         const lowerBound = Math.round(v.getState().signals.grid.position[0]);
         const upperBound = Math.round(v.getState().signals.grid.position[1]);
 
-        var upd;
+        let upd1 = [];
+        let upd2 = [];
+        let upd = [];
 
 
         if (lastUpperBound < upperBound) {
@@ -151,8 +153,13 @@ async function buildVega(chrom, fr, to) {
             });
 
 
-            upd = $.merge(upper_upd_al, upper_upd_ref);
-        } else { //TODO: change to else if to load both sides when zooming out
+            upd1 = $.merge(upper_upd_al, upper_upd_ref);
+
+
+
+        }
+
+        if (lastLowerBound > lowerBound){
             const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
             const lower_upd_ref = await o.json();
 
@@ -201,12 +208,10 @@ async function buildVega(chrom, fr, to) {
 
 
             });
-
-            upd = $.merge(lower_upd_al, lower_upd_ref);
-
+            upd2 = $.merge(lower_upd_al, lower_upd_ref);
         }
 
-
+       upd = $.merge(upd1, upd2);
 
         v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
             return (((d.position < lowerBound) || (d.position > upperBound))) ;
