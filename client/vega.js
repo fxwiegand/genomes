@@ -3,6 +3,11 @@ async function fetchChrom(chrom, fr, to) {
     return rs;
 }
 
+async function fetchVariants(chrom, fr, to) {
+    const rs = await fetch('/api/v1/variant/' + chrom +'/' + fr + '/' + to);
+    return rs;
+}
+
 async function fetchAlignments(chrom, fr, to) {
     const rs = await fetch('/api/v1/alignment/' + chrom +'/' + fr + '/' + to);
     return rs;
@@ -36,6 +41,9 @@ async function buildVega(chrom, fr, to) {
 
     const genom = await fetchChrom(chrom, fr, to);
     const body = await genom.json();
+
+    const variants = await fetchVariants(chrom, fr, to);
+    const vabody = await variants.json();
 
     const al = await fetchAlignments(chrom, fr, to);
     const albody = await al.json();
@@ -82,8 +90,10 @@ async function buildVega(chrom, fr, to) {
 
     });
 
+    const with_variants = $.merge(body, vabody);
+    const cont = $.merge(with_variants, albody);
 
-    const cont = $.merge(body, albody);
+    console.log(cont);
 
 
     const spec = await fetchVegaSpecs();
@@ -106,6 +116,9 @@ async function buildVega(chrom, fr, to) {
         if (lastUpperBound < upperBound) {
             const n = await fetchChrom(chrom, lastUpperBound, upperBound);
             const upper_upd_ref = await n.json();
+
+            const l = await fetchVariants(chrom, lastUpperBound, upperBound);
+            const upper_upd_var = await l.json();
 
             const m = await fetchAlignments(chrom, lastUpperBound, upperBound);
             var upper_upd_al = await m.json();
@@ -152,8 +165,8 @@ async function buildVega(chrom, fr, to) {
 
             });
 
-
-            upd1 = $.merge(upper_upd_al, upper_upd_ref);
+            let with_variants = $.merge(upper_upd_al, upper_upd_var);
+            upd1 = $.merge(with_variants, upper_upd_ref);
 
 
 
@@ -163,6 +176,8 @@ async function buildVega(chrom, fr, to) {
             const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
             const lower_upd_ref = await o.json();
 
+            const q = await fetchVariants(chrom, lowerBound, lastLowerBound);
+            const lower_upd_var = await q.json();
 
             const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
             var lower_upd_al = await p.json();
@@ -208,7 +223,9 @@ async function buildVega(chrom, fr, to) {
 
 
             });
-            upd2 = $.merge(lower_upd_al, lower_upd_ref);
+
+            let with_variants2 = $.merge(lower_upd_al, lower_upd_var);
+            upd2 = $.merge(with_variants2, lower_upd_ref);
         }
 
        upd = $.merge(upd1, upd2);

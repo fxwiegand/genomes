@@ -45,13 +45,15 @@
       "field": "base",
       "title": "Base",
       "scale": {
-        "domain": ["A", "C", "G", "T", "N"],
-        "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A"],
+        "domain": ["A", "C", "G", "T", "N", "Variant"],
+        "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A", "#AAAAAA"],
         "type": "ordinal"
       }
     },
     "tooltip": [
       {"field": "base", "type": "nominal"},
+      {"field": "reference", "type": "nominal"},
+      {"field": "alternatives", "type": "nominal"},
       {"field": "name", "type": "nominal"},
       {"field": "position", "type": "quantitative"},
       {"field": "flags[1]", "type": "nominal"},
