@@ -135,6 +135,8 @@ pub fn read_bam(path: &Path) -> Vec<Alignment> {
 
 fn make_alignment(record: bam::Record) -> Alignment {
 
+    //TODO: Cigar String View hinzufügen
+
     //Cigar String
     let cigstring = record.cigar();
 
@@ -175,6 +177,10 @@ fn make_alignment(record: bam::Record) -> Alignment {
 }
 
 fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
+
+    //TODO: Softclips am Anfang mit Cigar String View Interation rausrechnen
+    // Deletions markieren
+    // Für Insertions neue Base auf Position ,5 mit späterem Tooltip mit Basen
 
 
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
