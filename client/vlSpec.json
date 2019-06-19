@@ -54,7 +54,14 @@
       {"field": "base", "type": "nominal"},
       {"field": "name", "type": "nominal"},
       {"field": "position", "type": "quantitative"},
-      {"field": "flags", "type": "nominal"}
+      {"field": "flags[1]", "type": "nominal"},
+      {"field": "flags[2]", "type": "nominal"},
+      {"field": "flags[4]", "type": "nominal"},
+      {"field": "flags[8]", "type": "nominal"},
+      {"field": "flags[16]", "type": "nominal"},
+      {"field": "flags[32]", "type": "nominal"},
+      {"field": "flags[64]", "type": "nominal"},
+      {"field": "flags[128]", "type": "nominal"}
     ]
   }
 }
