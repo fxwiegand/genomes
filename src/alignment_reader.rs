@@ -6,15 +6,16 @@ use rust_htslib::prelude::*;
 use std::fmt;
 use std::path::Path;
 use std::collections::BTreeMap;
+use rust_htslib::bam::record::CigarStringView;
 
-#[derive(Serialize, Clone)]
+#[derive(Clone)]
 pub struct Alignment {
     sequence: String,
     pos: i32,
     length: u16,
-    cigar: String,
     flags: BTreeMap<u16, &'static str>,
     name: String,
+    cigar: CigarStringView,
 }
 
 #[derive(Serialize, Clone)]
@@ -168,7 +169,7 @@ fn make_alignment(record: bam::Record) -> Alignment {
         sequence: sequenz,
         pos: pos,
         length: le,
-        cigar: cigstring.to_string(),
+        cigar: cigstring,
         flags: flag_string,
         name: name,
     };
@@ -182,32 +183,81 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
     // Deletions markieren
     // Für Insertions neue Base auf Position ,5 mit späterem Tooltip mit Basen
 
-
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
     for s in snippets {
-        let mut offset = 0;
+        let mut offset: i32 = 0;
         let base_string = s.sequence.clone();
-        for b in base_string.chars() {
-            let snip = s.clone();
-            let p= snip.pos + offset;
-            let f = snip.flags;
-            let n = snip.name;
-            let rs = snip.pos;
-            let re = snip.pos + snip.length as i32;
+        let char_vec: Vec<char> = base_string.chars().collect();
+        for c in s.cigar.iter() {
+            match c {
+                rust_htslib::bam::record::Cigar::Match(c) => {
+                    for i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
+                        let snip = s.clone();
+                        let b = char_vec[offset as usize];
+                        let p = snip.pos + offset;
+                        let f = snip.flags;
+                        let n = snip.name;
+                        let rs = snip.pos;
+                        let re = snip.pos + snip.length as i32;
 
-            let base = AlignmentNucleobase {
-                base: b,
-                position: p,
-                flags: f,
-                name: n,
-                read_start: rs as u32,
-                read_end: re as u32,
-            };
-            offset +=1;
-            if from as i32 <= base.position && base.position <= to as i32 {
-                bases.push(base);
+
+                        let base = AlignmentNucleobase {
+                            base: b,
+                            position: p,
+                            flags: f,
+                            name: n,
+                            read_start: rs as u32,
+                            read_end: re as u32,
+                        };
+                        offset += 1;
+                        if from as i32 <= base.position && base.position <= to as i32 {
+                            bases.push(base);
+                        }
+                    }
+                }
+                rust_htslib::bam::record::Cigar::Ins(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Ins(*c).len() {
+                        //TODO: Neue Base auf Position Offset,5 erzeugen mit Basen-String,
+                        // zusätzlich neuen Struct dafür etwerfen
+                    }
+                }
+                rust_htslib::bam::record::Cigar::Del(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Del(*c).len() {
+                        //offset += 1;
+                        //TODO: Deletion Marker für Vega erzeugen
+                    }
+                }
+                rust_htslib::bam::record::Cigar::RefSkip(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::RefSkip(*c).len() {
+                        //offset += 1;
+                    }
+                }
+                rust_htslib::bam::record::Cigar::SoftClip(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
+                        //offset += 1;
+                    }
+                }
+                rust_htslib::bam::record::Cigar::HardClip(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::HardClip(*c).len() {
+                        //offset += 1;
+                    }
+                }
+                rust_htslib::bam::record::Cigar::Pad(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Pad(*c).len() {
+                        //offset += 1;
+                    }
+                }
+                rust_htslib::bam::record::Cigar::Equal(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Equal(*c).len() {
+                        //offset += 1;
+                    }
+                }
+                rust_htslib::bam::record::Cigar::Diff(c) => {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Diff(*c).len() {
+                        //offset += 1;
+                    }
+                }
             }
-
         }
     }
     bases
