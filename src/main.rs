@@ -35,7 +35,6 @@ fn reference(args: State<Vec<String>>, chromosome: u8, from: u64, to: u64) -> Js
 fn alignment(args: State<Vec<String>>, chromosome: u8, from: u32, to: u32) -> Json<Vec<AlignmentNucleobase>> {
     Json(get_reads(Path::new(&args[1].clone()), chromosome, from, to))
 }
-
 #[get("/variant/<chromosome>/<from>/<to>")]
 fn variant(args: State<Vec<String>>, chromosome: u8, from: u32, to: u32) -> Json<Vec<Variant>> {
     Json(read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from, to))

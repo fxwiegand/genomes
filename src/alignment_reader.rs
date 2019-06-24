@@ -8,6 +8,17 @@ use std::path::Path;
 use std::collections::BTreeMap;
 use rust_htslib::bam::record::CigarStringView;
 
+#[derive(Serialize, Clone)]
+pub enum Marker {
+    A,
+    T,
+    C,
+    G,
+    N,
+    Deletion,
+    Insertion,
+}
+
 #[derive(Clone)]
 pub struct Alignment {
     sequence: String,
@@ -20,13 +31,34 @@ pub struct Alignment {
 
 #[derive(Serialize, Clone)]
 pub struct AlignmentNucleobase {
-    base: char,
+    marker_type: Marker,
+    bases: String,
     position: i32,
     flags: BTreeMap<u16, &'static str>,
     name: String,
     read_start: u32,
     read_end: u32,
 }
+
+#[derive(Serialize, Clone)]
+pub struct Insertion {
+    bases: String,
+    position: i32,
+    flags: BTreeMap<u16, &'static str>,
+    name: String,
+    read_start: u32,
+    read_end: u32,
+}
+
+#[derive(Serialize, Clone)]
+pub struct Deletion {
+    position: i32,
+    flags: BTreeMap<u16, &'static str>,
+    name: String,
+    read_start: u32,
+    read_end: u32,
+}
+
 
 
 impl fmt::Display for Alignment {
@@ -194,6 +226,15 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                     for i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[offset as usize];
+                        let m: Marker;
+                        match b {
+                            'A' => m = Marker::A,
+                            'T' => m = Marker::T,
+                            'C' => m = Marker::C,
+                            'N' => m = Marker::N,
+                            'G' => m = Marker::G,
+                            _ => m = Marker::Deletion,
+                        }
                         let p = snip.pos + offset;
                         let f = snip.flags;
                         let n = snip.name;
@@ -202,7 +243,8 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
 
 
                         let base = AlignmentNucleobase {
-                            base: b,
+                            marker_type: m,
+                            bases: b.to_string(),
                             position: p,
                             flags: f,
                             name: n,
@@ -223,7 +265,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                 }
                 rust_htslib::bam::record::Cigar::Del(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::Del(*c).len() {
-                        //offset += 1;
+                        //let del = Deletion{}
                         //TODO: Deletion Marker für Vega erzeugen
                     }
                 }

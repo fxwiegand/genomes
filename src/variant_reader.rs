@@ -9,7 +9,7 @@ use rust_htslib::bcf::Read;
 
 #[derive(Serialize, Clone)]
 pub struct Variant {
-    base: String,
+    marker_type: String,
     reference: String,
     alternatives: Vec<String>,
     position: u32,
@@ -57,7 +57,7 @@ pub fn read_indexed_vcf(path: &Path, chrom: u8, from: u32, to: u32) -> Vec<Varia
         let var_string = String::from("Variant");
 
         let var = Variant {
-            base: var_string,
+            marker_type: var_string,
             reference: rfrce,
             alternatives: altve,
             position: pos,
@@ -116,7 +116,7 @@ pub fn read_vcf(path: &Path) -> Vec<Variant> {
         let var_string = String::from("Variant");
 
         let var = Variant {
-            base: var_string,
+            marker_type: var_string,
             reference: rfrce,
             alternatives: altve,
             position: pos,

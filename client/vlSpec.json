@@ -42,7 +42,7 @@
     "color": {
       "name": "color",
       "type": "nominal",
-      "field": "base",
+      "field": "marker_type",
       "title": "Base",
       "scale": {
         "domain": ["A", "C", "G", "T", "N", "Variant"],
