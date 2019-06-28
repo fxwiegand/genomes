@@ -45,13 +45,14 @@
       "field": "marker_type",
       "title": "Base",
       "scale": {
-        "domain": ["A", "C", "G", "T", "N", "Variant"],
-        "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A", "#AAAAAA"],
+        "domain": ["A", "C", "G", "T", "N", "Variant", "Insertion", "Deletion"],
+        "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A", "#AAAAAA", "#000000", "222222"],
         "type": "ordinal"
       }
     },
     "tooltip": [
-      {"field": "base", "type": "nominal"},
+      {"field": "marker_type", "type": "nominal"},
+      {"field": "bases", "type": "nominal"},
       {"field": "reference", "type": "nominal"},
       {"field": "alternatives", "type": "nominal"},
       {"field": "name", "type": "nominal"},

@@ -27,13 +27,15 @@ pub struct Alignment {
     flags: BTreeMap<u16, &'static str>,
     name: String,
     cigar: CigarStringView,
+    paired: bool,
+    mate_pos: i32,
 }
 
 #[derive(Serialize, Clone)]
 pub struct AlignmentNucleobase {
     marker_type: Marker,
     bases: String,
-    position: i32,
+    position: f32,
     flags: BTreeMap<u16, &'static str>,
     name: String,
     read_start: u32,
@@ -87,7 +89,7 @@ pub fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
     const FLAG_9: &'static str = "secondary alignment";
     const FLAG_10: &'static str = "not passing filters, such as platform/vendor quality controls";
     const FLAG_11: &'static str = "PCR or optical duplicate";
-    const FLAG_12: &'static str = "supplementary alignment";
+    const FLAG_12: &'static str = "vega lite lines";
 
     let mut flags_map = BTreeMap::new();
     flags_map.insert(0x1, FLAG_1);
@@ -168,7 +170,9 @@ pub fn read_bam(path: &Path) -> Vec<Alignment> {
 
 fn make_alignment(record: bam::Record) -> Alignment {
 
-    //TODO: Cigar String View hinzufügen
+    let has_pair = record.is_paired();
+
+    let mate_pos = record.mpos();
 
     //Cigar String
     let cigstring = record.cigar();
@@ -204,6 +208,8 @@ fn make_alignment(record: bam::Record) -> Alignment {
         cigar: cigstring,
         flags: flag_string,
         name: name,
+        paired: has_pair,
+        mate_pos: mate_pos,
     };
 
     read
@@ -211,13 +217,10 @@ fn make_alignment(record: bam::Record) -> Alignment {
 
 fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
 
-    //TODO: Softclips am Anfang mit Cigar String View Interation rausrechnen
-    // Deletions markieren
-    // Für Insertions neue Base auf Position ,5 mit späterem Tooltip mit Basen
-
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
     for s in snippets {
-        let mut offset: i32 = 0;
+        let mut cigar_offset: i32 = 0;
+        let mut read_offset: i32 = 0;
         let base_string = s.sequence.clone();
         let char_vec: Vec<char> = base_string.chars().collect();
         for c in s.cigar.iter() {
@@ -225,7 +228,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                 rust_htslib::bam::record::Cigar::Match(c) => {
                     for i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
                         let snip = s.clone();
-                        let b = char_vec[offset as usize];
+                        let b = char_vec[cigar_offset as usize];
                         let m: Marker;
                         match b {
                             'A' => m = Marker::A,
@@ -235,38 +238,105 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                             'G' => m = Marker::G,
                             _ => m = Marker::Deletion,
                         }
-                        let p = snip.pos + offset;
+                        let p = snip.pos as i32 + read_offset;
                         let f = snip.flags;
                         let n = snip.name;
-                        let rs = snip.pos;
-                        let re = snip.pos + snip.length as i32;
+
+                        let rs: i32;
+                        let re: i32;
+
+                        if snip.paired {
+                            if (snip.pos < snip.mate_pos) {
+                                re = snip.mate_pos + 100;
+                                rs = snip.pos;
+                            } else {
+                                rs = snip.mate_pos;
+                                re = snip.pos as i32 + snip.length as i32;
+                            }
+                        } else {
+                            rs = snip.pos;
+                            re = snip.pos as i32 + snip.length as i32;
+                        }
 
 
                         let base = AlignmentNucleobase {
                             marker_type: m,
                             bases: b.to_string(),
-                            position: p,
+                            position: p as f32,
                             flags: f,
                             name: n,
                             read_start: rs as u32,
                             read_end: re as u32,
                         };
-                        offset += 1;
-                        if from as i32 <= base.position && base.position <= to as i32 {
+                        cigar_offset += 1;
+                        read_offset += 1;
+                        if from as f32 <= base.position && base.position <= to as f32 {
                             bases.push(base);
                         }
                     }
                 }
                 rust_htslib::bam::record::Cigar::Ins(c) => {
-                    for _i in 0..rust_htslib::bam::record::Cigar::Ins(*c).len() {
-                        //TODO: Neue Base auf Position Offset,5 erzeugen mit Basen-String,
-                        // zusätzlich neuen Struct dafür etwerfen
+                    let snip = s.clone();
+                    let p: f32 = snip.pos as f32 + read_offset as f32 - 0.5;
+                    let m: Marker = Marker::Insertion;
+                    let rs = snip.pos;
+                    let re = snip.pos as i32 + snip.length as i32;
+
+
+                    let mut b = String::from("");
+                    for i in 0..rust_htslib::bam::record::Cigar::Ins(*c).len() {
+
+                        let char = char_vec[cigar_offset as usize + i as usize];
+                        b.push(char);
+
+                    }
+
+                    cigar_offset += 1;
+
+                    println!("Insertion at {}", p.clone());
+
+                    let base = AlignmentNucleobase {
+                        marker_type: m,
+                        bases: b,
+                        position: p,
+                        flags: snip.flags,
+                        name: snip.name,
+                        read_start: rs as u32,
+                        read_end: re as u32,
+                    };
+
+
+
+                    if from as f32 <= base.position && base.position <= to as f32 {
+                        bases.push(base);
                     }
                 }
                 rust_htslib::bam::record::Cigar::Del(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::Del(*c).len() {
-                        //let del = Deletion{}
-                        //TODO: Deletion Marker für Vega erzeugen
+                        let snip = s.clone();
+                        let m = Marker::Deletion;
+                        let p = snip.pos as i32 + read_offset;
+                        let f = snip.flags;
+                        let n = snip.name;
+                        let rs = snip.pos;
+                        let re = snip.pos as i32 + snip.length as i32;
+                        let b = String::from("");
+
+                        let base = AlignmentNucleobase {
+                            marker_type: m,
+                            bases: b,
+                            position: p as f32,
+                            flags: f,
+                            name: n,
+                            read_start: rs as u32,
+                            read_end: re as u32,
+                        };
+
+                        read_offset += 1;
+
+                        if from as f32 <= base.position && base.position <= to as f32 {
+                            bases.push(base);
+                        }
                     }
                 }
                 rust_htslib::bam::record::Cigar::RefSkip(c) => {
@@ -275,13 +345,46 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                     }
                 }
                 rust_htslib::bam::record::Cigar::SoftClip(c) => {
-                    for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
-                        //offset += 1;
+                    for i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
+                        let snip = s.clone();
+                        let b = char_vec[cigar_offset as usize];
+                        let m: Marker;
+                        match b {
+                            'A' => m = Marker::A,
+                            'T' => m = Marker::T,
+                            'C' => m = Marker::C,
+                            'N' => m = Marker::N,
+                            'G' => m = Marker::G,
+                            _ => m = Marker::Deletion,
+                        }
+                        let p = snip.pos as i32 + read_offset;
+                        let f = snip.flags;
+                        let n = snip.name;
+                        let rs = snip.pos;
+                        let re = snip.pos as i32 + snip.length as i32;
+
+
+                        let base = AlignmentNucleobase {
+                            marker_type: m,
+                            bases: b.to_string(),
+                            position: p as f32,
+                            flags: f,
+                            name: n,
+                            read_start: rs as u32,
+                            read_end: re as u32,
+                        };
+                        cigar_offset += 1;
+                        read_offset += 1;
+                        if from as f32 <= base.position && base.position <= to as f32 {
+                            bases.push(base);
+                        }
+                        //TODO: Basen erzeugen farbe
                     }
+                    println!("Softclip")
                 }
                 rust_htslib::bam::record::Cigar::HardClip(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::HardClip(*c).len() {
-                        //offset += 1;
+                        cigar_offset += 1;
                     }
                 }
                 rust_htslib::bam::record::Cigar::Pad(c) => {
@@ -301,6 +404,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                 }
             }
         }
+        println!("Cigar Offset:{}, Read Offset {}", cigar_offset, read_offset);
     }
     bases
 }

@@ -101,6 +101,22 @@ async function buildVega(chrom, fr, to) {
     let v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", cont);
 
+ /*   v.tooltip(function(handler, event, item, value) {
+            for (key in value) {
+                if (value[key] == "undefined") {
+                    //delete value[key];
+                }
+            }
+
+
+
+            //const hndlr = new Handler({});
+            //hndlr.call(handler, event, item, value);
+
+            //console.log(value);
+        });*/
+
+
 
    v.addEventListener('mouseup', async function (event, item) {
         const lowerBound = Math.round(v.getState().signals.grid.position[0]);
@@ -232,6 +248,8 @@ async function buildVega(chrom, fr, to) {
             return (((d.position < lowerBound) || (d.position > upperBound))) ;
         }));
 
+
+        console.log(reads);
         // reads = reads.filter(function (f) {
         //     return (f.read_end < lowerBound) || (f.read_start > upperBound)
         // });
@@ -243,6 +261,7 @@ async function buildVega(chrom, fr, to) {
 
 
 }
+
 
 //TODO: Basen in Reads die wie das Referenzgenom sind grau färben
 //TODO: Insertion: Neue Base auf Position 32,5 mit Tooltip mit Basen die Insertions sind
