@@ -4,7 +4,7 @@ use std::path::Path;
 pub fn read_fasta(path: &Path, chrom: String, start: u64, stop: u64) -> Vec<Nucleobase>    {
     let mut reader = fasta::IndexedReader::from_file(&path).unwrap();
     let index = fasta::Index::with_fasta_file(&path).unwrap();
-    let sequences = index.sequences();
+    let _sequences = index.sequences();
 
     let mut seq:Vec<u8> = Vec::new();
 

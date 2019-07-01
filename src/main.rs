@@ -19,11 +19,9 @@ use std::env;
 use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket::State;
-use alignment_reader::{get_reads, AlignmentNucleobase, read_indexed_bam};
-use alignment_reader::Alignment;
+use alignment_reader::{get_reads, AlignmentNucleobase};
 use fasta_reader::Nucleobase;
 use fasta_reader::read_fasta;
-use variant_reader::read_vcf;
 use variant_reader::read_indexed_vcf;
 use variant_reader::Variant;
 
@@ -43,14 +41,6 @@ fn variant(args: State<Vec<String>>, chromosome: u8, from: u32, to: u32) -> Json
 fn main() {
 
     let args: Vec<String> = env::args().collect();
-
-    let bam_filename = args[1].clone();
-    let bam_path = Path::new(&bam_filename);
-
-    let vcf_filename = args[3].clone();
-    let vcf_path = Path::new(&vcf_filename);
-
-
 
     rocket::ignite()
         .manage(args)

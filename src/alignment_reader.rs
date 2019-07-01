@@ -226,7 +226,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
         for c in s.cigar.iter() {
             match c {
                 rust_htslib::bam::record::Cigar::Match(c) => {
-                    for i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[cigar_offset as usize];
                         let m: Marker;
@@ -246,7 +246,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                         let re: i32;
 
                         if snip.paired {
-                            if (snip.pos < snip.mate_pos) {
+                            if snip.pos < snip.mate_pos {
                                 re = snip.mate_pos + 100;
                                 rs = snip.pos;
                             } else {
@@ -345,7 +345,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                     }
                 }
                 rust_htslib::bam::record::Cigar::SoftClip(c) => {
-                    for i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
+                    for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[cigar_offset as usize];
                         let m: Marker;

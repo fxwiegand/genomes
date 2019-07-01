@@ -1,9 +1,7 @@
 extern crate rust_htslib;
 extern crate bit_vec;
 
-use rust_htslib::bcf;
-use rust_htslib::prelude::*;
-use std::{fmt, str};
+use std::{str};
 use std::path::Path;
 use rust_htslib::bcf::Read;
 
@@ -85,8 +83,6 @@ pub fn read_vcf(path: &Path) -> Vec<Variant> {
 
         let mut chr_str = String::new();
         chr_str.push_str(str::from_utf8(c).unwrap());
-
-        let chrom: u8 = chr_str.parse().unwrap();
 
 
         let pos = rec.pos();
