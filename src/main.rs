@@ -29,7 +29,7 @@ use variant_reader::Variant;
 
 
 #[get("/reference/<chromosome>/<from>/<to>")]
-fn reference(args: State<Vec<String>>, chromosome: u8, from: u64, to: u64) -> Json<Vec<Nucleobase>> {Json(read_fasta(Path::new(&args[2].clone()), chromosome, from, to))}
+fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Nucleobase>> {Json(read_fasta(Path::new(&args[2].clone()), chromosome, from, to))}
 
 #[get("/alignment/<chromosome>/<from>/<to>")]
 fn alignment(args: State<Vec<String>>, chromosome: u8, from: u32, to: u32) -> Json<Vec<AlignmentNucleobase>> {

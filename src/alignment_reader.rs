@@ -404,7 +404,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                 }
             }
         }
-        println!("Cigar Offset:{}, Read Offset {}", cigar_offset, read_offset);
+        //println!("Cigar Offset:{}, Read Offset {}", cigar_offset, read_offset);
     }
     bases
 }
