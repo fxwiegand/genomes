@@ -7,6 +7,7 @@ use std::fmt;
 use std::path::Path;
 use std::collections::BTreeMap;
 use rust_htslib::bam::record::CigarStringView;
+use fasta_reader::read_fasta_at_pos;
 
 #[derive(Serialize, Clone)]
 pub enum Marker {
@@ -17,6 +18,7 @@ pub enum Marker {
     N,
     Deletion,
     Insertion,
+    Match,
 }
 
 #[derive(Clone)]
@@ -41,26 +43,6 @@ pub struct AlignmentNucleobase {
     read_start: u32,
     read_end: u32,
 }
-
-#[derive(Serialize, Clone)]
-pub struct Insertion {
-    bases: String,
-    position: i32,
-    flags: BTreeMap<u16, &'static str>,
-    name: String,
-    read_start: u32,
-    read_end: u32,
-}
-
-#[derive(Serialize, Clone)]
-pub struct Deletion {
-    position: i32,
-    flags: BTreeMap<u16, &'static str>,
-    name: String,
-    read_start: u32,
-    read_end: u32,
-}
-
 
 
 impl fmt::Display for Alignment {
@@ -215,7 +197,7 @@ fn make_alignment(record: bam::Record) -> Alignment {
     read
 }
 
-fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
+fn make_nucleobases(fasta_path: &Path, chrom: u8, snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
 
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
     for s in snippets {
@@ -229,15 +211,22 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                     for _i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[cigar_offset as usize];
+                        let ref_base = read_fasta_at_pos(fasta_path, String::from("11"), snip.pos as u64 + read_offset as u64); //TODO: Change all chrom parameters to String
                         let m: Marker;
-                        match b {
-                            'A' => m = Marker::A,
-                            'T' => m = Marker::T,
-                            'C' => m = Marker::C,
-                            'N' => m = Marker::N,
-                            'G' => m = Marker::G,
-                            _ => m = Marker::Deletion,
+                        if ref_base.get_marker_type() == b {
+                            m = Marker::Match; // Match with reference fasta
+                        } else {
+                            match b { // Mismatch
+                                'A' => m = Marker::A,
+                                'T' => m = Marker::T,
+                                'C' => m = Marker::C,
+                                'N' => m = Marker::N,
+                                'G' => m = Marker::G,
+                                _ => m = Marker::Deletion,
+                            }
                         }
+
+
                         let p = snip.pos as i32 + read_offset;
                         let f = snip.flags;
                         let n = snip.name;
@@ -348,20 +337,42 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                     for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[cigar_offset as usize];
+                        let ref_base = read_fasta_at_pos(fasta_path, String::from("11"), snip.pos as u64 + read_offset as u64); //TODO: Change all chrom parameters to String
                         let m: Marker;
-                        match b {
-                            'A' => m = Marker::A,
-                            'T' => m = Marker::T,
-                            'C' => m = Marker::C,
-                            'N' => m = Marker::N,
-                            'G' => m = Marker::G,
-                            _ => m = Marker::Deletion,
+
+                        if ref_base.get_marker_type() == b {
+                            m = Marker::Match; // Match with reference fasta
+                        } else {
+                            match b { // Mismatch
+                                'A' => m = Marker::A,
+                                'T' => m = Marker::T,
+                                'C' => m = Marker::C,
+                                'N' => m = Marker::N,
+                                'G' => m = Marker::G,
+                                _ => m = Marker::Deletion,
+                            }
                         }
+
+
                         let p = snip.pos as i32 + read_offset;
                         let f = snip.flags;
                         let n = snip.name;
-                        let rs = snip.pos;
-                        let re = snip.pos as i32 + snip.length as i32;
+
+                        let rs: i32;
+                        let re: i32;
+
+                        if snip.paired {
+                            if snip.pos < snip.mate_pos {
+                                re = snip.mate_pos + 100;
+                                rs = snip.pos;
+                            } else {
+                                rs = snip.mate_pos;
+                                re = snip.pos as i32 + snip.length as i32;
+                            }
+                        } else {
+                            rs = snip.pos;
+                            re = snip.pos as i32 + snip.length as i32;
+                        }
 
 
                         let base = AlignmentNucleobase {
@@ -378,9 +389,7 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
                         if from as f32 <= base.position && base.position <= to as f32 {
                             bases.push(base);
                         }
-                        //TODO: Basen erzeugen farbe
                     }
-                    println!("Softclip")
                 }
                 rust_htslib::bam::record::Cigar::HardClip(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::HardClip(*c).len() {
@@ -409,9 +418,9 @@ fn make_nucleobases(snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<Alignme
     bases
 }
 
-pub fn get_reads(path: &Path, chrom: u8, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
-    let alignments = read_indexed_bam(path, chrom, from, to);
-    let bases = make_nucleobases(alignments, from, to);
+pub fn get_reads(path: &Path, fasta_path: &Path, chrom: u8, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
+    let alignments = read_indexed_bam(path,chrom, from, to);
+    let bases = make_nucleobases(fasta_path, chrom, alignments, from, to);
 
     bases
 }

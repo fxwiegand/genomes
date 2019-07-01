@@ -31,7 +31,7 @@ fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -
 
 #[get("/alignment/<chromosome>/<from>/<to>")]
 fn alignment(args: State<Vec<String>>, chromosome: u8, from: u32, to: u32) -> Json<Vec<AlignmentNucleobase>> {
-    Json(get_reads(Path::new(&args[1].clone()), chromosome, from, to))
+    Json(get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from, to))
 }
 #[get("/variant/<chromosome>/<from>/<to>")]
 fn variant(args: State<Vec<String>>, chromosome: u8, from: u32, to: u32) -> Json<Vec<Variant>> {
