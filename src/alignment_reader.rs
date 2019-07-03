@@ -196,7 +196,6 @@ fn make_alignment(record: bam::Record) -> Alignment {
 }
 
 fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
-
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
 
     let ref_bases = read_fasta(fasta_path, chrom, from as u64, to as u64);
@@ -206,6 +205,9 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
         let mut read_offset: i32 = 0;
         let base_string = s.sequence.clone();
         let char_vec: Vec<char> = base_string.chars().collect();
+
+        let mut soft_clip_begin = true;
+
         for c in s.cigar.iter() {
             match c {
                 rust_htslib::bam::record::Cigar::Match(c) => {
@@ -271,6 +273,9 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                         read_offset += 1;
 
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::Ins(c) => {
                     let snip = s.clone();
@@ -290,8 +295,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                     cigar_offset += 1;
 
-                    println!("Insertion at {}", p.clone());
-
                     let base = AlignmentNucleobase {
                         marker_type: m,
                         bases: b,
@@ -307,6 +310,9 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                     if from as f32 <= base.position && base.position <= to as f32 {
                         bases.push(base);
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::Del(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::Del(*c).len() {
@@ -335,94 +341,182 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                             bases.push(base);
                         }
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::RefSkip(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::RefSkip(*c).len() {
                         //offset += 1;
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::SoftClip(c) => {
-                    for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
-                        let snip = s.clone();
-                        let b = char_vec[cigar_offset as usize];
-
-                        if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
-                            let ref_index = snip.pos + read_offset - from as i32;
-                            let ref_base = &ref_bases[ref_index as usize];
+                    if soft_clip_begin {
 
 
-                            let m: Marker;
-                            if ref_base.get_marker_type() == b {
-                                m = Marker::Match; // Match with reference fasta
-                            } else {
-                                match b { // Mismatch
-                                    'A' => m = Marker::A,
-                                    'T' => m = Marker::T,
-                                    'C' => m = Marker::C,
-                                    'N' => m = Marker::N,
-                                    'G' => m = Marker::G,
-                                    _ => m = Marker::Deletion,
-                                }
-                            }
+                        for i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
+                            let snip = s.clone();
+                            let b = char_vec[cigar_offset as usize];
 
+                            let dif = rust_htslib::bam::record::Cigar::SoftClip(*c).len() - i;
 
-                            let p = snip.pos as i32 + read_offset;
-                            let f = snip.flags;
-                            let n = snip.name;
-
-                            let rs: i32;
-                            let re: i32;
-
-                            if snip.paired {
-                                if snip.pos < snip.mate_pos {
-                                    re = snip.mate_pos + 100;
-                                    rs = snip.pos;
+                            if snip.pos - dif as i32 >= from as i32 && (snip.pos - dif as i32) < to as i32 {
+                                let ref_index = snip.pos - dif as i32 - from as i32;
+                                let ref_base = &ref_bases[ref_index as usize];
+                                let m: Marker;
+                                if ref_base.get_marker_type() == b {
+                                    m = Marker::Match; // Match with reference fasta
                                 } else {
-                                    rs = snip.mate_pos;
+                                    match b { // Mismatch
+                                        'A' => m = Marker::A,
+                                        'T' => m = Marker::T,
+                                        'C' => m = Marker::C,
+                                        'N' => m = Marker::N,
+                                        'G' => m = Marker::G,
+                                        _ => m = Marker::Deletion,
+                                    }
+                                }
+
+
+
+
+                                let p = snip.pos as i32 - dif as i32;
+                                let f = snip.flags;
+                                let n = snip.name;
+
+                                let rs: i32;
+                                let re: i32;
+
+                                if snip.paired {
+                                    if snip.pos < snip.mate_pos {
+                                        re = snip.mate_pos + 100;
+                                        rs = snip.pos - rust_htslib::bam::record::Cigar::SoftClip(*c).len() as i32;
+                                    } else {
+                                        rs = snip.mate_pos;
+                                        re = snip.pos as i32 + snip.length as i32;
+                                    }
+                                } else {
+                                    rs = snip.pos - rust_htslib::bam::record::Cigar::SoftClip(*c).len() as i32;
                                     re = snip.pos as i32 + snip.length as i32;
                                 }
-                            } else {
-                                rs = snip.pos;
-                                re = snip.pos as i32 + snip.length as i32;
+
+
+                                let base = AlignmentNucleobase {
+                                    marker_type: m,
+                                    bases: b.to_string(),
+                                    position: p as f32,
+                                    flags: f,
+                                    name: n,
+                                    read_start: rs as u32,
+                                    read_end: re as u32,
+                                };
+
+
+                                bases.push(base);
                             }
-
-
-                            let base = AlignmentNucleobase {
-                                marker_type: m,
-                                bases: b.to_string(),
-                                position: p as f32,
-                                flags: f,
-                                name: n,
-                                read_start: rs as u32,
-                                read_end: re as u32,
-                            };
-
-
-                            bases.push(base);
+                            cigar_offset += 1;
                         }
-                        cigar_offset += 1;
-                        read_offset += 1;
+                    } else {
+                        for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
+                            let snip = s.clone();
+                            let b = char_vec[cigar_offset as usize];
+
+                            if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
+                                let ref_index = snip.pos + read_offset - from as i32;
+                                let ref_base = &ref_bases[ref_index as usize];
+
+
+                                let m: Marker;
+                                if ref_base.get_marker_type() == b {
+                                    m = Marker::Match; // Match with reference fasta
+                                } else {
+                                    match b { // Mismatch
+                                        'A' => m = Marker::A,
+                                        'T' => m = Marker::T,
+                                        'C' => m = Marker::C,
+                                        'N' => m = Marker::N,
+                                        'G' => m = Marker::G,
+                                        _ => m = Marker::Deletion,
+                                    }
+                                }
+
+
+                                let p = snip.pos as i32 + read_offset;
+                                let f = snip.flags;
+                                let n = snip.name;
+
+                                let rs: i32;
+                                let re: i32;
+
+                                if snip.paired {
+                                    if snip.pos < snip.mate_pos {
+                                        re = snip.mate_pos + 100;
+                                        rs = snip.pos;
+                                    } else {
+                                        rs = snip.mate_pos;
+                                        re = snip.pos as i32 + snip.length as i32;
+                                    }
+                                } else {
+                                    rs = snip.pos;
+                                    re = snip.pos as i32 + snip.length as i32;
+                                }
+
+
+                                let base = AlignmentNucleobase {
+                                    marker_type: m,
+                                    bases: b.to_string(),
+                                    position: p as f32,
+                                    flags: f,
+                                    name: n,
+                                    read_start: rs as u32,
+                                    read_end: re as u32,
+                                };
+
+
+                                bases.push(base);
+                            }
+                            cigar_offset += 1;
+                            read_offset += 1;
+                        }
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::HardClip(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::HardClip(*c).len() {
                         cigar_offset += 1;
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::Pad(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::Pad(*c).len() {
                         //offset += 1;
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::Equal(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::Equal(*c).len() {
                         //offset += 1;
                     }
+
+                    soft_clip_begin = false;
+
                 }
                 rust_htslib::bam::record::Cigar::Diff(c) => {
                     for _i in 0..rust_htslib::bam::record::Cigar::Diff(*c).len() {
                         //offset += 1;
                     }
+
+                    soft_clip_begin = false;
+
                 }
             }
         }
