@@ -46,7 +46,7 @@
       "title": "Base",
       "scale": {
         "domain": ["A", "C", "G", "T", "N", "Variant", "Insertion", "Deletion", "Match"],
-        "range": ["#94DB6B", "#F2B671", "#F28CC2", "#7284A8", "#F26A6A", "#666666", "#000000", "222222", "BBBBBB"],
+        "range": ["#CADB69", "#F2B671", "#F28CC2", "#7284A8", "#A23E11", "#000000", "#047C0A", "#CC1414", "#BBBBBB"],
         "type": "ordinal"
       }
     },
