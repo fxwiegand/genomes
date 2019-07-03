@@ -7,7 +7,7 @@ use std::fmt;
 use std::path::Path;
 use std::collections::BTreeMap;
 use rust_htslib::bam::record::CigarStringView;
-use fasta_reader::read_fasta_at_pos;
+use fasta_reader::{read_fasta_at_pos, read_fasta};
 
 #[derive(Serialize, Clone)]
 pub enum Marker {
@@ -107,11 +107,9 @@ pub fn count_alignments(path: &Path)-> u32 {
     count
 }
 
-pub fn read_indexed_bam(path: &Path, chrom: u8, from: u32, to: u32) -> Vec<Alignment> {
-    let chr = chrom.to_string();
-    let c = chr.as_bytes();
+pub fn read_indexed_bam(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Alignment> {
     let mut bam = bam::IndexedReader::from_path(&path).unwrap();
-    let tid = bam.header().tid(c).unwrap();
+    let tid = bam.header().tid(chrom.as_bytes()).unwrap();
 
     let mut alignments: Vec<Alignment> = Vec::new();
 
@@ -197,9 +195,12 @@ fn make_alignment(record: bam::Record) -> Alignment {
     read
 }
 
-fn make_nucleobases(fasta_path: &Path, chrom: u8, snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
+fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
 
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
+
+    let ref_bases = read_fasta(fasta_path, chrom, from as u64, to as u64);
+
     for s in snippets {
         let mut cigar_offset: i32 = 0;
         let mut read_offset: i32 = 0;
@@ -211,57 +212,64 @@ fn make_nucleobases(fasta_path: &Path, chrom: u8, snippets: Vec<Alignment>, from
                     for _i in 0..rust_htslib::bam::record::Cigar::Match(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[cigar_offset as usize];
-                        let ref_base = read_fasta_at_pos(fasta_path, String::from("11"), snip.pos as u64 + read_offset as u64); //TODO: Change all chrom parameters to String
-                        let m: Marker;
-                        if ref_base.get_marker_type() == b {
-                            m = Marker::Match; // Match with reference fasta
-                        } else {
-                            match b { // Mismatch
-                                'A' => m = Marker::A,
-                                'T' => m = Marker::T,
-                                'C' => m = Marker::C,
-                                'N' => m = Marker::N,
-                                'G' => m = Marker::G,
-                                _ => m = Marker::Deletion,
-                            }
-                        }
+
+                        if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
+                            let ref_index = snip.pos + read_offset - from as i32;
+                            let ref_base = &ref_bases[ref_index as usize];
 
 
-                        let p = snip.pos as i32 + read_offset;
-                        let f = snip.flags;
-                        let n = snip.name;
-
-                        let rs: i32;
-                        let re: i32;
-
-                        if snip.paired {
-                            if snip.pos < snip.mate_pos {
-                                re = snip.mate_pos + 100;
-                                rs = snip.pos;
+                            let m: Marker;
+                            if ref_base.get_marker_type() == b {
+                                m = Marker::Match; // Match with reference fasta
                             } else {
-                                rs = snip.mate_pos;
+                                match b { // Mismatch
+                                    'A' => m = Marker::A,
+                                    'T' => m = Marker::T,
+                                    'C' => m = Marker::C,
+                                    'N' => m = Marker::N,
+                                    'G' => m = Marker::G,
+                                    _ => m = Marker::Deletion,
+                                }
+                            }
+
+
+                            let p = snip.pos as i32 + read_offset;
+                            let f = snip.flags;
+                            let n = snip.name;
+
+                            let rs: i32;
+                            let re: i32;
+
+                            if snip.paired {
+                                if snip.pos < snip.mate_pos {
+                                    re = snip.mate_pos + 100;
+                                    rs = snip.pos;
+                                } else {
+                                    rs = snip.mate_pos;
+                                    re = snip.pos as i32 + snip.length as i32;
+                                }
+                            } else {
+                                rs = snip.pos;
                                 re = snip.pos as i32 + snip.length as i32;
                             }
-                        } else {
-                            rs = snip.pos;
-                            re = snip.pos as i32 + snip.length as i32;
-                        }
 
 
-                        let base = AlignmentNucleobase {
-                            marker_type: m,
-                            bases: b.to_string(),
-                            position: p as f32,
-                            flags: f,
-                            name: n,
-                            read_start: rs as u32,
-                            read_end: re as u32,
-                        };
-                        cigar_offset += 1;
-                        read_offset += 1;
-                        if from as f32 <= base.position && base.position <= to as f32 {
+                            let base = AlignmentNucleobase {
+                                marker_type: m,
+                                bases: b.to_string(),
+                                position: p as f32,
+                                flags: f,
+                                name: n,
+                                read_start: rs as u32,
+                                read_end: re as u32,
+                            };
+
+
                             bases.push(base);
                         }
+                        cigar_offset += 1;
+                        read_offset += 1;
+
                     }
                 }
                 rust_htslib::bam::record::Cigar::Ins(c) => {
@@ -337,58 +345,63 @@ fn make_nucleobases(fasta_path: &Path, chrom: u8, snippets: Vec<Alignment>, from
                     for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
                         let snip = s.clone();
                         let b = char_vec[cigar_offset as usize];
-                        let ref_base = read_fasta_at_pos(fasta_path, String::from("11"), snip.pos as u64 + read_offset as u64); //TODO: Change all chrom parameters to String
-                        let m: Marker;
 
-                        if ref_base.get_marker_type() == b {
-                            m = Marker::Match; // Match with reference fasta
-                        } else {
-                            match b { // Mismatch
-                                'A' => m = Marker::A,
-                                'T' => m = Marker::T,
-                                'C' => m = Marker::C,
-                                'N' => m = Marker::N,
-                                'G' => m = Marker::G,
-                                _ => m = Marker::Deletion,
-                            }
-                        }
+                        if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
+                            let ref_index = snip.pos + read_offset - from as i32;
+                            let ref_base = &ref_bases[ref_index as usize];
 
 
-                        let p = snip.pos as i32 + read_offset;
-                        let f = snip.flags;
-                        let n = snip.name;
-
-                        let rs: i32;
-                        let re: i32;
-
-                        if snip.paired {
-                            if snip.pos < snip.mate_pos {
-                                re = snip.mate_pos + 100;
-                                rs = snip.pos;
+                            let m: Marker;
+                            if ref_base.get_marker_type() == b {
+                                m = Marker::Match; // Match with reference fasta
                             } else {
-                                rs = snip.mate_pos;
+                                match b { // Mismatch
+                                    'A' => m = Marker::A,
+                                    'T' => m = Marker::T,
+                                    'C' => m = Marker::C,
+                                    'N' => m = Marker::N,
+                                    'G' => m = Marker::G,
+                                    _ => m = Marker::Deletion,
+                                }
+                            }
+
+
+                            let p = snip.pos as i32 + read_offset;
+                            let f = snip.flags;
+                            let n = snip.name;
+
+                            let rs: i32;
+                            let re: i32;
+
+                            if snip.paired {
+                                if snip.pos < snip.mate_pos {
+                                    re = snip.mate_pos + 100;
+                                    rs = snip.pos;
+                                } else {
+                                    rs = snip.mate_pos;
+                                    re = snip.pos as i32 + snip.length as i32;
+                                }
+                            } else {
+                                rs = snip.pos;
                                 re = snip.pos as i32 + snip.length as i32;
                             }
-                        } else {
-                            rs = snip.pos;
-                            re = snip.pos as i32 + snip.length as i32;
-                        }
 
 
-                        let base = AlignmentNucleobase {
-                            marker_type: m,
-                            bases: b.to_string(),
-                            position: p as f32,
-                            flags: f,
-                            name: n,
-                            read_start: rs as u32,
-                            read_end: re as u32,
-                        };
-                        cigar_offset += 1;
-                        read_offset += 1;
-                        if from as f32 <= base.position && base.position <= to as f32 {
+                            let base = AlignmentNucleobase {
+                                marker_type: m,
+                                bases: b.to_string(),
+                                position: p as f32,
+                                flags: f,
+                                name: n,
+                                read_start: rs as u32,
+                                read_end: re as u32,
+                            };
+
+
                             bases.push(base);
                         }
+                        cigar_offset += 1;
+                        read_offset += 1;
                     }
                 }
                 rust_htslib::bam::record::Cigar::HardClip(c) => {
@@ -418,8 +431,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: u8, snippets: Vec<Alignment>, from
     bases
 }
 
-pub fn get_reads(path: &Path, fasta_path: &Path, chrom: u8, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
-    let alignments = read_indexed_bam(path,chrom, from, to);
+pub fn get_reads(path: &Path, fasta_path: &Path, chrom: String, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
+    let alignments = read_indexed_bam(path,chrom.clone(), from, to);
     let bases = make_nucleobases(fasta_path, chrom, alignments, from, to);
 
     bases
