@@ -7,7 +7,7 @@ use std::fmt;
 use std::path::Path;
 use std::collections::BTreeMap;
 use rust_htslib::bam::record::CigarStringView;
-use fasta_reader::{read_fasta_at_pos, read_fasta};
+use fasta_reader::{read_fasta};
 
 #[derive(Serialize, Clone)]
 pub enum Marker {

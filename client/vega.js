@@ -1,16 +1,25 @@
 async function fetchChrom(chrom, fr, to) {
     const rs = await fetch('/api/v1/reference/' + chrom +'/' + fr + '/' + to);
-    return rs;
+    const rsu = await rs.json();
+    const unpacker = new jsonm.Unpacker();
+    const result = unpacker.unpack(rsu);
+    return result;
 }
 
 async function fetchVariants(chrom, fr, to) {
     const rs = await fetch('/api/v1/variant/' + chrom +'/' + fr + '/' + to);
-    return rs;
+    const rsu = await rs.json();
+    const unpacker = new jsonm.Unpacker();
+    const result = unpacker.unpack(rsu);
+    return result;
 }
 
 async function fetchAlignments(chrom, fr, to) {
     const rs = await fetch('/api/v1/alignment/' + chrom +'/' + fr + '/' + to);
-    return rs;
+    const rsu = await rs.json();
+    const unpacker = new jsonm.Unpacker();
+    const result = unpacker.unpack(rsu);
+    return result;
 }
 
 async function fetchVegaSpecs() {
@@ -39,14 +48,15 @@ async function buildVega(chrom, fr, to) {
 
 
 
+
     const genom = await fetchChrom(chrom, fr, to);
-    const body = await genom.json();
+    const body = await genom;
 
     const variants = await fetchVariants(chrom, fr, to);
-    const vabody = await variants.json();
+    const vabody = await variants;
 
     const al = await fetchAlignments(chrom, fr, to);
-    const albody = await al.json();
+    const albody = await al;
 
     albody.forEach(function (a) {
         var already_in = false;
@@ -129,13 +139,13 @@ async function buildVega(chrom, fr, to) {
 
         if (lastUpperBound < upperBound) {
             const n = await fetchChrom(chrom, lastUpperBound, upperBound);
-            const upper_upd_ref = await n.json();
+            const upper_upd_ref = await n;
 
             const l = await fetchVariants(chrom, lastUpperBound, upperBound);
-            const upper_upd_var = await l.json();
+            const upper_upd_var = await l;
 
             const m = await fetchAlignments(chrom, lastUpperBound, upperBound);
-            var upper_upd_al = await m.json();
+            var upper_upd_al = await m;
 
             upper_upd_al.forEach(function (a) {
                 var already_in = false;
@@ -188,13 +198,13 @@ async function buildVega(chrom, fr, to) {
 
         if (lastLowerBound > lowerBound){
             const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
-            const lower_upd_ref = await o.json();
+            const lower_upd_ref = await o;
 
             const q = await fetchVariants(chrom, lowerBound, lastLowerBound);
-            const lower_upd_var = await q.json();
+            const lower_upd_var = await q;
 
             const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
-            var lower_upd_al = await p.json();
+            var lower_upd_al = await p;
 
             lower_upd_al.forEach(function (a) {
                 var already_in = false;
