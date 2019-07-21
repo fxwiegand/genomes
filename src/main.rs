@@ -9,15 +9,19 @@ extern crate bit_vec;
 extern crate bio;
 extern crate rust_htslib;
 extern crate jsonm;
+extern crate rustc_serialize;
 
 mod alignment_reader;
 mod fasta_reader;
 mod variant_reader;
+mod json_generator;
 
 #[cfg(test)] mod tests;
 
 use std::path::Path;
 use std::env;
+use std::process::Command;
+use std::str::FromStr;
 use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
 use rocket::State;
@@ -26,6 +30,7 @@ use alignment_reader::{get_reads};
 use fasta_reader::read_fasta;
 use variant_reader::read_indexed_vcf;
 use serde_json::Value;
+use json_generator::create_data;
 
 
 #[get("/reference/<chromosome>/<from>/<to>")]
@@ -59,12 +64,26 @@ fn main() {
 
     let args: Vec<String> = env::args().collect();
 
-    rocket::ignite()
-        .manage(args)
-        .mount("/",  StaticFiles::from("client"))
-        .mount("/api/v1", routes![reference, alignment, variant])
-        .launch();
+    if (&args[1].clone()) == "static_json" {
+        create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u32::from_str(&args[6].clone()).unwrap(), u32::from_str(&args[7].clone()).unwrap());
+        let output = {
+            Command::new("python")
+                .arg("src/jsonMerge.py")
+                .output()
+                .expect("failed to execute process")
+        };
 
+
+        let msg = output.stdout;
+
+        println!("{}", String::from_utf8(msg).unwrap())
+    } else {
+        rocket::ignite()
+            .manage(args)
+            .mount("/",  StaticFiles::from("client"))
+            .mount("/api/v1", routes![reference, alignment, variant])
+            .launch();
+    }
 }
 
 

@@ -2,3 +2,5 @@
 target/
 data/
 node_modules/
+data.json
+static_vega.json

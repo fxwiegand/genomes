@@ -44,6 +44,16 @@ pub struct AlignmentNucleobase {
     read_end: u32,
 }
 
+#[derive(Serialize, Clone)]
+pub struct StaticAlignmentNucleobase {
+    marker_type: Marker,
+    bases: String,
+    position: f32,
+    flags: BTreeMap<u16, &'static str>,
+    name: String,
+    row:u8,
+}
+
 
 impl fmt::Display for Alignment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -525,9 +535,75 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
     bases
 }
 
+
+/*fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet> {
+    let mut read_ends = vec![0; 30];
+    let mut snippets: Vec<Snippet> = Vec::new();
+        for alignment in reads {
+            let position = alignment.pos;
+            let length = alignment.length as i32;
+            let mut snippet = Snippet::new(alignment);
+                for i in 1..30 {
+                    if position > read_ends[i] as i32 {
+                        snippet.row = i as u8;
+                        read_ends[i] = length + position;
+                        break;
+                    }
+                }
+                snippets.push(snippet);
+            }
+    snippets
+}*/
+
+fn calc_rows(reads: Vec<AlignmentNucleobase>) -> Vec<StaticAlignmentNucleobase> {
+    let mut row_ends = vec![0; 30];
+
+    let mut read_names:BTreeMap<String, u8> = BTreeMap::new();
+
+    let mut reads_wr: Vec<StaticAlignmentNucleobase> = Vec::new();
+
+    for r in reads {
+        let mut row: u8 = 0;
+
+        if read_names.contains_key(&r.name) {
+            row = *read_names.get(&r.name).unwrap();
+        } else {
+            for i in 1..30 {
+                if r.read_start > row_ends[i] {
+                    row = i as u8;
+                    row_ends[i] = r.read_end;
+                    read_names.insert(r.name.clone(), i as u8);
+                    break;
+                }
+            }
+        }
+        let base = StaticAlignmentNucleobase {
+            marker_type: r.marker_type,
+            bases: r.bases,
+            position: r.position,
+            flags: r.flags,
+            name: r.name,
+            row: row,
+        };
+
+        reads_wr.push(base);
+
+    }
+    reads_wr
+}
+
+
 pub fn get_reads(path: &Path, fasta_path: &Path, chrom: String, from: u32, to: u32) -> Vec<AlignmentNucleobase> {
     let alignments = read_indexed_bam(path,chrom.clone(), from, to);
     let bases = make_nucleobases(fasta_path, chrom, alignments, from, to);
 
     bases
+}
+
+pub fn get_static_reads(path: &Path, fasta_path: &Path, chrom: String, from: u32, to: u32) -> Vec<StaticAlignmentNucleobase> {
+    let alignments = read_indexed_bam(path,chrom.clone(), from, to);
+    let bases = make_nucleobases(fasta_path, chrom, alignments, from, to);
+    let static_bases = calc_rows(bases);
+
+    static_bases
 }

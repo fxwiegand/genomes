@@ -273,5 +273,3 @@ async function buildVega(chrom, fr, to) {
 }
 
 
-//TODO: Basen in Reads die wie das Referenzgenom sind grau färben
-//TODO: Insertion: Neue Base auf Position 32,5 mit Tooltip mit Basen die Insertions sind
