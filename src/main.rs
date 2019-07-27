@@ -66,9 +66,16 @@ fn main() {
 
     if (&args[1].clone()) == "static_json" {
         create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u32::from_str(&args[6].clone()).unwrap(), u32::from_str(&args[7].clone()).unwrap());
+        //let args= String::from("");
+        let a :String = args[6].clone();
+        let b :String = args[7].clone();
+        let py = String::from("src/jsonMerge.py");
+
         let output = {
             Command::new("python")
-                .arg("src/jsonMerge.py")
+                .arg(py)
+                .arg(a)
+                .arg(b)
                 .output()
                 .expect("failed to execute process")
         };

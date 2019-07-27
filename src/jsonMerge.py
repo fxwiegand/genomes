@@ -1,4 +1,7 @@
 import json
+import sys
+
+print(sys.argv)
 
 with open('client/vlSpec.json', 'r') as vlspec:
     vldata = json.load(vlspec)
@@ -11,8 +14,12 @@ values['values'] = data
 
 vldata['width'] = 700
 
+domain = {}
+domain['domain'] = [sys.argv[1], sys.argv[2]]
+vldata['encoding']['x']['scale'] = domain
+
 vldata['data'] = values
-with open('static_vega.json', 'w') as newvlspec:
+with open('static_vega_lite.json', 'w') as newvlspec:
     json.dump(vldata, newvlspec, indent=4)
 
-print('created static_vega.json')
+print('created static_vega_lite.json')
