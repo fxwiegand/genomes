@@ -3,4 +3,4 @@ target/
 data/
 node_modules/
 data.json
-static_vega.json
+static_vega_lite.json
