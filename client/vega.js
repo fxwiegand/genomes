@@ -19,7 +19,10 @@ async function fetchAlignments(chrom, fr, to) {
     const rsu = await rs.json();
     const unpacker = new jsonm.Unpacker();
     const result = unpacker.unpack(rsu);
-    return result;
+    const r0 = result[0];
+    const r1 = result[1];
+    const r = $.merge(r1, r0);
+    return r;
 }
 
 async function fetchVegaSpecs() {
@@ -57,6 +60,7 @@ async function buildVega(chrom, fr, to) {
 
     const al = await fetchAlignments(chrom, fr, to);
     const albody = await al;
+
 
     albody.forEach(function (a) {
         var already_in = false;
@@ -129,8 +133,8 @@ async function buildVega(chrom, fr, to) {
 
 
    v.addEventListener('mouseup', async function (event, item) {
-        const lowerBound = Math.round(v.getState().signals.grid.position[0]);
-        const upperBound = Math.round(v.getState().signals.grid.position[1]);
+        const lowerBound = Math.round(v.getState().signals.grid.start_position[0]);
+        const upperBound = Math.round(v.getState().signals.grid.start_position[1]);
 
         let upd1 = [];
         let upd2 = [];
@@ -255,11 +259,11 @@ async function buildVega(chrom, fr, to) {
        upd = $.merge(upd1, upd2);
 
         v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
-            return (((d.position < lowerBound) || (d.position > upperBound))) ;
+            return (((d.end_position - 0.5 < lowerBound) || (d.start_position + 0.5 > upperBound))) ;
         }));
 
 
-        console.log(reads);
+
         // reads = reads.filter(function (f) {
         //     return (f.read_end < lowerBound) || (f.read_start > upperBound)
         // });

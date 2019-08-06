@@ -26,7 +26,7 @@ use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
 use rocket::State;
 use jsonm::packer::{PackOptions, Packer};
-use alignment_reader::{get_reads};
+use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::read_fasta;
 use variant_reader::read_indexed_vcf;
 use serde_json::Value;
@@ -61,7 +61,6 @@ fn variant(args: State<Vec<String>>, chromosome: String, from: u32, to: u32) -> 
 }
 
 fn main() {
-
     let args: Vec<String> = env::args().collect();
 
     if (&args[1].clone()) == "static_json" {

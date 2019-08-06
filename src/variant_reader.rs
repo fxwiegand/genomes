@@ -10,7 +10,8 @@ pub struct Variant {
     marker_type: String,
     reference: String,
     alternatives: Vec<String>,
-    position: u32,
+    start_position: f32,
+    end_position: f32,
     row: i8,
 }
 
@@ -56,7 +57,8 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<V
             marker_type: var_string,
             reference: rfrce,
             alternatives: altve,
-            position: pos,
+            start_position: pos as f32 - 0.5,
+            end_position: pos as f32 + 0.5,
             row: -1,
         };
 
@@ -113,7 +115,8 @@ pub fn read_vcf(path: &Path) -> Vec<Variant> {
             marker_type: var_string,
             reference: rfrce,
             alternatives: altve,
-            position: pos,
+            start_position: pos as f32 - 0.5,
+            end_position: pos as f32 + 0.5,
             row: -1,
         };
 

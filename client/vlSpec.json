@@ -19,10 +19,7 @@
       "name": "position"
     }],
   "mark": {
-    "type": "square",
-    "filled": "true",
-    "shape": "square",
-    "clip": true
+    "type": "rule"
   },
   "encoding": {
     "y": {
@@ -31,14 +28,20 @@
       "axis": null
     },
     "x": {
-      "field": "position",
+      "field": "start_position",
       "type": "quantitative",
       "scale": {},
       "axis": {
         "title": "Position"
       }
     },
-    "size": {"value": 100},
+    "x2": {
+      "field": "end_position"
+    },
+    "size": {"value": 5},
+    "opacity": {
+      "value": 0.8
+    },
     "color": {
       "name": "color",
       "type": "nominal",

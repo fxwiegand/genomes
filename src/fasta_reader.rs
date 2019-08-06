@@ -17,7 +17,8 @@ pub fn read_fasta(path: &Path, chrom: String, start: u64, stop: u64) -> Vec<Nucl
     let mut ind = start;
     for a in seq {
         let b = Nucleobase {
-            position: ind,
+            start_position: ind as f64 - 0.5,
+            end_position: ind as f64 + 0.5,
             marker_type: a as char,
             row: 0
         };
@@ -42,7 +43,8 @@ pub fn read_fasta_at_pos(path: &Path, chrom: String, pos: u64) -> Nucleobase {
 
     let a = seq[0];
     let base = Nucleobase {
-        position: pos,
+        start_position: pos as f64 - 0.5,
+        end_position: pos as f64 + 0.5,
         marker_type: a as char,
         row: 0
     };
@@ -52,7 +54,8 @@ pub fn read_fasta_at_pos(path: &Path, chrom: String, pos: u64) -> Nucleobase {
 
 #[derive(Serialize, Clone)]
 pub struct Nucleobase {
-    position: u64,
+    start_position: f64,
+    end_position: f64,
     marker_type: char,
     row: u8,
 }

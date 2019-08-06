@@ -19,8 +19,8 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
 
 
     let alignment_string = alignments.to_string();
-    let mut a = alignment_string.trim_start_matches('[');
-    a = a.trim_end_matches(']');
+    let mut a = alignment_string.replace('[', "");
+    a = a.replace(']',"");
 
 
     let variant_string = variant.to_string();
@@ -32,11 +32,11 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
     let mut r= String::from("[]");
 
     if v_empty.is_empty() {
-        r = [f,T,a,v].concat();
+        r = [f,T,&a,v].concat();
     } else if a.is_empty() {
         r = [f,T,v].concat();
     } else {
-        r = [f,T,a,T,v].concat();
+        r = [f,T,&a,T,v].concat();
     }
 
     let values = Json::from_str(&r).unwrap();
