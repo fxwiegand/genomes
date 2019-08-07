@@ -59,7 +59,6 @@
       {"field": "reference", "type": "nominal"},
       {"field": "alternatives", "type": "nominal"},
       {"field": "name", "type": "nominal"},
-      {"field": "position", "type": "quantitative"},
       {"field": "flags[1]", "type": "nominal"},
       {"field": "flags[2]", "type": "nominal"},
       {"field": "flags[4]", "type": "nominal"},
