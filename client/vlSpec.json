@@ -51,6 +51,9 @@
         "domain": ["A", "C", "G", "T", "N", "Variant", "Insertion", "Deletion", "Match"],
         "range": ["#CADB69", "#F2B671", "#F28CC2", "#7284A8", "#A23E11", "#000000", "#047C0A", "#CC1414", "#BBBBBB"],
         "type": "ordinal"
+      },
+      "legend": {
+        "symbolType" : "stroke"
       }
     },
     "tooltip": [
