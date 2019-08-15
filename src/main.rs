@@ -56,7 +56,7 @@ fn uncompressed_alignment(args: State<Vec<String>>, chromosome: String, from: u6
 }
 
 #[get("/uncompressed-variant/<chromosome>/<from>/<to>")]
-fn uncompressed_varaiant(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
+fn uncompressed_var(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
     let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from as u32, to as u32);
     Json(response)
 }
@@ -108,7 +108,7 @@ fn main() {
         rocket::ignite()
             .manage(args)
             .mount("/",  StaticFiles::from("client"))
-            .mount("/api/v1", routes![reference, alignment, variant, uncompressed_reference, uncompressed_alignment, uncompressed_variant])
+            .mount("/api/v1", routes![reference, alignment, variant, uncompressed_reference, uncompressed_alignment, uncompressed_var])
             .attach(Compression::fairing())
             .launch();
     }
