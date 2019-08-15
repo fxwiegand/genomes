@@ -79,7 +79,7 @@ pub fn read_vcf(path: &Path) -> Vec<Variant> {
         let mut rec = r.unwrap();
         let header = rec.header();
         let rid = rec.rid().unwrap();
-        let c = header.rid2name(rid);
+        let c = header.rid2name(rid).unwrap();
 
         let mut chr_str = String::new();
         chr_str.push_str(str::from_utf8(c).unwrap());
