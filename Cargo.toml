@@ -18,4 +18,4 @@ serde_json = "1.0"
 [dependencies.rocket_contrib]
 git = "https://github.com/SergioBenitez/Rocket"
 default-features = false
-features = ["compression","json","serve"]
+features = ["gzip_compression","json","serve"]
