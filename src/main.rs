@@ -29,7 +29,7 @@ use rocket::State;
 use jsonm::packer::{PackOptions, Packer};
 use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::{read_fasta, Nucleobase};
-use variant_reader::read_indexed_vcf;
+use variant_reader::{read_indexed_vcf, Variant};
 use serde_json::Value;
 use json_generator::create_data;
 
@@ -46,6 +46,18 @@ fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -
 #[get("/uncompressed-reference/<chromosome>/<from>/<to>")]
 fn uncompressed_reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Nucleobase>> {
     let response = read_fasta(Path::new(&args[2].clone()), chromosome, from, to);
+    Json(response)
+}
+
+#[get("/uncompressed-alignment/<chromosome>/<from>/<to>")]
+fn uncompressed_alignment(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<(Vec<AlignmentNucleobase>,Vec<AlignmentMatch>)> {
+    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from as u32, to as u32);
+    Json(response)
+}
+
+#[get("/uncompressed-variant/<chromosome>/<from>/<to>")]
+fn uncompressed_varaiant(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
+    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from as u32, to as u32);
     Json(response)
 }
 
