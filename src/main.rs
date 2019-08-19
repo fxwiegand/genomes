@@ -109,6 +109,7 @@ fn main() {
             .manage(args)
             .mount("/",  StaticFiles::from("client"))
             .mount("/api/v1", routes![reference, alignment, variant, uncompressed_reference, uncompressed_alignment, uncompressed_var])
+            .attach(Compression::fairing())
             .launch();
     }
 }
