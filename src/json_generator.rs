@@ -13,10 +13,8 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
     let alignments = json!(get_static_reads(bam_path, fasta_path, chrom.clone(), from, to));
     let variant = json!(read_indexed_vcf(vcf_path, chrom.clone(), from, to));
 
-
     let fasta_string = fasta.to_string();
     let f = fasta_string.trim_end_matches(']');
-
 
     let alignment_string = alignments.to_string();
     let mut a = alignment_string.replace('[', "");
@@ -29,7 +27,7 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
 
     static T: &str = ",";
 
-    let mut r= String::from("[]");
+    let r:String;
 
     if v_empty.is_empty() {
         r = [f,T,&a,v].concat();
@@ -40,7 +38,6 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
     }
 
     let values = Json::from_str(&r).unwrap();
-
 
     let mut file = File::create("data.json")?;
     file.write_all(values.to_string().as_bytes())?;

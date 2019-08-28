@@ -85,7 +85,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if (&args[1].clone()) == "static_json" {
-        create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u32::from_str(&args[6].clone()).unwrap(), u32::from_str(&args[7].clone()).unwrap());
+        create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u32::from_str(&args[6].clone()).unwrap(), u32::from_str(&args[7].clone()).unwrap()).expect("not enough argument, try: cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf chromosom from to");
         //let args= String::from("");
         let a :String = args[6].clone();
         let b :String = args[7].clone();
@@ -99,7 +99,6 @@ fn main() {
                 .output()
                 .expect("failed to execute process")
         };
-
 
         let msg = output.stdout;
 

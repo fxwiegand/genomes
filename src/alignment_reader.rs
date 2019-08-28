@@ -129,17 +129,6 @@ pub fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
     string_map
 }
 
-pub fn count_alignments(path: &Path)-> u32 {
-    let mut bam = bam::Reader::from_path(path).unwrap();
-    //let header = bam::Header::from_template(bam.header());
-    let mut count:u32= 0;
-    for _r in bam.records() {
-        count += 1;
-    }
-
-    count
-}
-
 pub fn read_indexed_bam(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Alignment> {
     let mut bam = bam::IndexedReader::from_path(&path).unwrap();
     let tid = bam.header().tid(chrom.as_bytes()).unwrap();
@@ -158,26 +147,6 @@ pub fn read_indexed_bam(path: &Path, chrom: String, from: u32, to: u32) -> Vec<A
     }
 
     alignments
-}
-
-
-pub fn read_bam(path: &Path) -> Vec<Alignment> {
-    let mut bam = bam::Reader::from_path(path).unwrap();
-    let header = bam::Header::from_template(bam.header());
-
-    let mut alignments:Vec<Alignment> = Vec::new();
-
-    for r in bam.records() {
-        let record = r.unwrap();
-        let _head = header.to_bytes();
-
-        let read = make_alignment(record);
-
-        alignments.push(read);
-    }
-
-    alignments
-
 }
 
 
@@ -345,7 +314,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                         // Mismatch detection at end
 
                         let snip = s.clone();
-                        let p = snip.pos as i32 + read_offset;
                         let f = snip.flags;
                         let n = snip.name;
 
@@ -375,8 +343,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                             read_end: re.clone() as u32,
                         };
 
-                        match_count = 0;
-                        match_start = 0;
                         matches.push(mtch);
                     }
 
@@ -411,8 +377,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                         read_start: rs as u32,
                         read_end: re as u32,
                     };
-
-
 
                     if from as f32 <= (base.start_position + 0.5) && (base.start_position + 0.5) <= to as f32 {
                         bases.push(base);
@@ -464,11 +428,9 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                 rust_htslib::bam::record::Cigar::SoftClip(c) => {
                     if soft_clip_begin {
 
-
-                        for i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
+                        for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
                             let snip = s.clone();
                             let b = char_vec[cigar_offset as usize];
-
 
                             if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
                                 let ref_index = snip.pos + read_offset - from as i32;
@@ -484,7 +446,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                     match_count += 1;
                                     match_ending = true;
 
-                                    m = Marker::Match; // Match with reference fasta
                                 } else {
                                     match b { // Mismatch
                                         'A' => m = Marker::A,
@@ -535,7 +496,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                                     }
 
-
                                     let base = AlignmentNucleobase {
                                         marker_type: m,
                                         bases: b.to_string(),
@@ -549,9 +509,7 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                                     bases.push(base);
 
-
                                 }
-
 
                             }
 
@@ -562,7 +520,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                             // Mismatch detection at end
 
                             let snip = s.clone();
-                            let p = snip.pos as i32 + read_offset;
                             let f = snip.flags;
                             let n = snip.name;
 
@@ -592,9 +549,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                 read_end: re.clone() as u32,
                             };
 
-                            match_count = 0;
-                            match_start = 0;
-
                             matches.push(mtch);
                         }
 
@@ -602,7 +556,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                         for _i in 0..rust_htslib::bam::record::Cigar::SoftClip(*c).len() {
                             let snip = s.clone();
                             let b = char_vec[cigar_offset as usize];
-
 
                             if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
                                 let ref_index = snip.pos + read_offset - from as i32;
@@ -618,7 +571,7 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                     match_count += 1;
                                     match_ending = true;
 
-                                    m = Marker::Match; // Match with reference fasta
+
                                 } else {
                                     match b { // Mismatch
                                         'A' => m = Marker::A,
@@ -669,7 +622,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                                     }
 
-
                                     let base = AlignmentNucleobase {
                                         marker_type: m,
                                         bases: b.to_string(),
@@ -681,15 +633,9 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                         read_end: re as u32,
                                     };
 
-
                                     bases.push(base);
 
-
-
                                 }
-
-
-
 
                             }
                             cigar_offset += 1;
@@ -700,7 +646,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                             // Mismatch detection at end
 
                             let snip = s.clone();
-                            let p = snip.pos as i32 + read_offset;
                             let f = snip.flags;
                             let n = snip.name;
 
@@ -729,11 +674,6 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                 read_start: rs.clone() as u32,
                                 read_end: re.clone() as u32,
                             };
-
-                            match_count = 0;
-                            match_start = 0;
-
-
 
                             matches.push(mtch);
                         }
@@ -777,30 +717,10 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                 }
             }
         }
-        //println!("Cigar Offset:{}, Read Offset {}", cigar_offset, read_offset);
     }
     (bases, matches)
 }
 
-
-/*fn calculate_read_row(reads: Vec<Alignment>) -> Vec<Snippet> {
-    let mut read_ends = vec![0; 30];
-    let mut snippets: Vec<Snippet> = Vec::new();
-        for alignment in reads {
-            let position = alignment.pos;
-            let length = alignment.length as i32;
-            let mut snippet = Snippet::new(alignment);
-                for i in 1..30 {
-                    if position > read_ends[i] as i32 {
-                        snippet.row = i as u8;
-                        read_ends[i] = length + position;
-                        break;
-                    }
-                }
-                snippets.push(snippet);
-            }
-    snippets
-}*/
 
 fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
     let mut row_ends = vec![0; 30];
