@@ -26,59 +26,29 @@ use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::compression::Compression;
 use rocket::State;
-use jsonm::packer::{PackOptions, Packer};
 use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::{read_fasta, Nucleobase};
 use variant_reader::{read_indexed_vcf, Variant};
-use serde_json::Value;
 use json_generator::create_data;
 
 
 #[get("/reference/<chromosome>/<from>/<to>")]
-fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Value> {
+fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Nucleobase>> {
     let response = read_fasta(Path::new(&args[2].clone()), chromosome, from, to);
-    let mut packer = Packer::new();
-    let options = PackOptions::new();
-    let packed = packer.pack(&json!(response), &options).unwrap();
-    Json(packed)
-}
-
-#[get("/uncompressed-reference/<chromosome>/<from>/<to>")]
-fn uncompressed_reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Nucleobase>> {
-    let response = read_fasta(Path::new(&args[2].clone()), chromosome, from, to);
-    Json(response)
-}
-
-#[get("/uncompressed-alignment/<chromosome>/<from>/<to>")]
-fn uncompressed_alignment(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<(Vec<AlignmentNucleobase>,Vec<AlignmentMatch>)> {
-    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from as u32, to as u32);
-    Json(response)
-}
-
-#[get("/uncompressed-variant/<chromosome>/<from>/<to>")]
-fn uncompressed_var(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
-    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from as u32, to as u32);
     Json(response)
 }
 
 #[get("/alignment/<chromosome>/<from>/<to>")]
-fn alignment(args: State<Vec<String>>, chromosome: String, from: u32, to: u32) -> Json<Value> {
-    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from, to);
-    let mut packer = Packer::new();
-    let options = PackOptions::new();
-    let packed = packer.pack(&json!(response), &options).unwrap();
-    Json(packed)
+fn alignment(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<(Vec<AlignmentNucleobase>,Vec<AlignmentMatch>)> {
+    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from as u32, to as u32);
+    Json(response)
 }
 
 #[get("/variant/<chromosome>/<from>/<to>")]
-fn variant(args: State<Vec<String>>, chromosome: String, from: u32, to: u32) -> Json<Value> {
-    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from, to);
-    let mut packer = Packer::new();
-    let options = PackOptions::new();
-    let packed = packer.pack(&json!(response), &options).unwrap();
-    Json(packed)
+fn variant(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
+    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from as u32, to as u32);
+    Json(response)
 }
-
 
 
 fn main() {
@@ -107,7 +77,7 @@ fn main() {
         rocket::ignite()
             .manage(args)
             .mount("/",  StaticFiles::from("client"))
-            .mount("/api/v1", routes![reference, alignment, variant, uncompressed_reference, uncompressed_alignment, uncompressed_var])
+            .mount("/api/v1", routes![reference, alignment, variant])
             .attach(Compression::fairing())
             .launch();
     }

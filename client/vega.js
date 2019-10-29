@@ -1,24 +1,18 @@
 async function fetchChrom(chrom, fr, to) {
     const rs = await fetch('/api/v1/reference/' + chrom +'/' + fr + '/' + to);
-    const rsu = await rs.json();
-    const unpacker = new jsonm.Unpacker();
-    const result = unpacker.unpack(rsu);
+    const result = await rs.json();
     return result;
 }
 
 async function fetchVariants(chrom, fr, to) {
     const rs = await fetch('/api/v1/variant/' + chrom +'/' + fr + '/' + to);
-    const rsu = await rs.json();
-    const unpacker = new jsonm.Unpacker();
-    const result = unpacker.unpack(rsu);
+    const result = await rs.json();
     return result;
 }
 
 async function fetchAlignments(chrom, fr, to) {
     const rs = await fetch('/api/v1/alignment/' + chrom +'/' + fr + '/' + to);
-    const rsu = await rs.json();
-    const unpacker = new jsonm.Unpacker();
-    const result = unpacker.unpack(rsu);
+    const result = await rs.json();
     const r0 = result[0];
     const r1 = result[1];
     const r = $.merge(r1, r0);
