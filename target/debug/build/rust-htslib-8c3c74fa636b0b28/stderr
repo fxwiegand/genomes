@@ -1,2 +1,0 @@
-error: toolchain 'nightly-x86_64-apple-darwin' does not have the binary `rustfmt`
-Custom { kind: Other, error: StringError("Internal rustfmt error") }
