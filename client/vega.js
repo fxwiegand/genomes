@@ -20,7 +20,7 @@ async function fetchAlignments(chrom, fr, to) {
 }
 
 async function fetchVegaSpecs() {
-    const vlSpec = await fetch( "vlSpec.json");
+    const vlSpec = await fetch( "vegaSpecs.json");
     return vlSpec;
 }
 
@@ -105,25 +105,11 @@ async function buildVega(chrom, fr, to) {
     const spec = await fetchVegaSpecs();
     const vlSpec = await spec.json();
     vlSpec.width = $(window).width() - 150;
-    vlSpec.encoding.x.scale.domain = [fr,to];
+    console.log(vlSpec)
+    //TODO: change starting domain
+    //vlSpec.encoding.x.scale.domain = [fr,to];
     let v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", cont);
-
- /*   v.tooltip(function(handler, event, item, value) {
-            for (key in value) {
-                if (value[key] == "undefined") {
-                    //delete value[key];
-                }
-            }
-
-
-
-            //const hndlr = new Handler({});
-            //hndlr.call(handler, event, item, value);
-
-            //console.log(value);
-        });*/
-
 
 
    v.addEventListener('mouseup', async function (event, item) {
@@ -134,7 +120,7 @@ async function buildVega(chrom, fr, to) {
         let upd2 = [];
         let upd = [];
 
-
+       console.log(vlSpec)
         if (lastUpperBound < upperBound) {
             const n = await fetchChrom(chrom, lastUpperBound, upperBound);
             const upper_upd_ref = await n;

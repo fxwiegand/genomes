@@ -3,6 +3,7 @@ import sys
 
 print(sys.argv)
 
+#TODO: change to vega
 with open('client/vlSpec.json', 'r') as vlspec:
     vldata = json.load(vlspec)
 
