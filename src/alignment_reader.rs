@@ -1,8 +1,7 @@
 extern crate rust_htslib;
 extern crate bit_vec;
 
-use rust_htslib::{bam};
-use rust_htslib::prelude::*;
+use rust_htslib::{bam, bam::Read};
 use std::fmt;
 use std::path::Path;
 use std::collections::BTreeMap;
