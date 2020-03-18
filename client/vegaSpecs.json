@@ -20,56 +20,6 @@
     },
     {
       "name": "fasta"
-    },
-    {
-      "name": "data_0",
-      "source": "fasta",
-      "transform": [
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"1\"]",
-          "as": "flags.1"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"2\"]",
-          "as": "flags.2"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"4\"]",
-          "as": "flags.4"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"8\"]",
-          "as": "flags.8"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"16\"]",
-          "as": "flags.16"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"32\"]",
-          "as": "flags.32"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"64\"]",
-          "as": "flags.64"
-        },
-        {
-          "type": "formula",
-          "expr": "datum[\"flags\"] && datum[\"flags\"][\"128\"]",
-          "as": "flags.128"
-        },
-        {
-          "type": "filter",
-          "expr": "isValid(datum[\"start_position\"]) && isFinite(+datum[\"start_position\"])"
-        }
-      ]
     }
   ],
   "signals": [
@@ -261,7 +211,7 @@
       ],
       "interactive": true,
       "from": {
-        "data": "data_0"
+        "data": "fasta"
       },
       "encode": {
         "update": {
@@ -273,7 +223,7 @@
             "value": 0.8
           },
           "tooltip": {
-            "signal": "{\"marker_type\": ''+datum[\"marker_type\"], \"bases\": ''+datum[\"bases\"], \"reference\": ''+datum[\"reference\"], \"alternatives\": ''+datum[\"alternatives\"], \"name\": ''+datum[\"name\"], \"flags[1]\": ''+datum[\"flags.1\"], \"flags[2]\": ''+datum[\"flags.2\"], \"flags[4]\": ''+datum[\"flags.4\"], \"flags[8]\": ''+datum[\"flags.8\"], \"flags[16]\": ''+datum[\"flags.16\"], \"flags[32]\": ''+datum[\"flags.32\"], \"flags[64]\": ''+datum[\"flags.64\"], \"flags[128]\": ''+datum[\"flags.128\"]}"
+            "signal": "{\"marker_type\": datum[\"marker_type\"], \"bases\": datum[\"bases\"], \"reference\": datum[\"reference\"], \"alternatives\": datum[\"alternatives\"], \"name\": datum[\"name\"], \"flags\": datum[\"flags\"], \"flags[2]\": datum[\"flags2\"], \"flags[4]\": datum[\"flags.4\"], \"flags[8]\": datum[\"flags.8\"], \"flags[16]\": datum[\"flags.16\"], \"flags[32]\": datum[\"flags.32\"], \"flags[64]\": datum[\"flags.64\"], \"flags[128]\": datum[\"flags.128\"]}"
           },
           "x": {
             "scale": "x",
@@ -300,7 +250,7 @@
       "name": "x",
       "type": "linear",
       "domain": {
-        "data": "data_0",
+        "data": "fasta",
         "fields": [
           "start_position",
           "end_position"
@@ -322,7 +272,7 @@
       "name": "y",
       "type": "band",
       "domain": {
-        "data": "data_0",
+        "data": "fasta",
         "field": "row",
         "sort": true
       },
@@ -360,6 +310,10 @@
         "#CC1414",
         "#BBBBBB"
       ]
+    },
+    {
+      "name": "flags",
+      "field":"flags"
     }
   ],
   "axes": [
