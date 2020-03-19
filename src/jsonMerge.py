@@ -3,24 +3,24 @@ import sys
 
 print(sys.argv)
 
-#TODO: change to vega
-with open('client/vlSpec.json', 'r') as vlspec:
-    vldata = json.load(vlspec)
+with open('client/vegaSpecs.json', 'r') as vspec:
+    vdata = json.load(vspec)
 
 with open('data.json', 'r') as datafile:
     data = json.load(datafile)
 
 values = {}
 values['values'] = data
+values['name'] = 'fasta'
 
-vldata['width'] = 700
+vdata['width'] = 700
 
 domain = {}
-domain['domain'] = [sys.argv[1], sys.argv[2]]
-vldata['encoding']['x']['scale'] = domain
+domain = [sys.argv[1], sys.argv[2]]
+vdata['scales'][0]['domain'] = domain
 
-vldata['data'] = values
-with open('static_vega_lite.json', 'w') as newvlspec:
-    json.dump(vldata, newvlspec, indent=4)
+vdata['data'][1] = values
+with open('static_vega_lite.json', 'w') as newvspec:
+    json.dump(vdata, newvspec, indent=4)
 
-print('created static_vega_lite.json')
+print('created static_vega.json')
