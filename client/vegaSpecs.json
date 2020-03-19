@@ -249,24 +249,15 @@
     {
       "name": "x",
       "type": "linear",
-      "domain": {
-        "data": "fasta",
-        "fields": [
-          "start_position",
-          "end_position"
-        ]
-      },
-      "domainRaw": {
-        "signal": "grid[\"start_position\"]"
-      },
       "range": [
         0,
         {
           "signal": "width"
         }
       ],
+      "domain": [],
       "nice": true,
-      "zero": true
+      "zero": false
     },
     {
       "name": "y",
@@ -312,8 +303,7 @@
       ]
     },
     {
-      "name": "flags",
-      "field":"flags"
+      "name": "flags"
     }
   ],
   "axes": [
@@ -325,7 +315,7 @@
       "tickCount": {
         "signal": "ceil(width/40)"
       },
-      "domain": false,
+      "domain": true,
       "labels": false,
       "maxExtent": 0,
       "minExtent": 0,

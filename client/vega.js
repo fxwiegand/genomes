@@ -105,9 +105,7 @@ async function buildVega(chrom, fr, to) {
     const spec = await fetchVegaSpecs();
     const vlSpec = await spec.json();
     vlSpec.width = $(window).width() - 150;
-    console.log(vlSpec)
-    //TODO: change starting domain
-    //vlSpec.encoding.x.scale.domain = [fr,to];
+    vlSpec.scales[0].domain = [fr,to];
     let v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", cont);
 
@@ -116,11 +114,11 @@ async function buildVega(chrom, fr, to) {
         const lowerBound = Math.round(v.getState().signals.grid.start_position[0]);
         const upperBound = Math.round(v.getState().signals.grid.start_position[1]);
 
-        let upd1 = [];
-        let upd2 = [];
-        let upd = [];
+        var upd1 = [];
+        var upd2 = [];
+        var upd = [];
 
-       console.log(vlSpec)
+
         if (lastUpperBound < upperBound) {
             const n = await fetchChrom(chrom, lastUpperBound, upperBound);
             const upper_upd_ref = await n;
