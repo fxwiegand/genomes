@@ -223,7 +223,7 @@
             "value": 0.8
           },
           "tooltip": {
-            "signal": "{\"marker_type\": datum[\"marker_type\"], \"bases\": datum[\"bases\"], \"reference\": datum[\"reference\"], \"alternatives\": datum[\"alternatives\"], \"name\": datum[\"name\"], \"flags\": datum[\"flags\"], \"flags[2]\": datum[\"flags2\"], \"flags[4]\": datum[\"flags.4\"], \"flags[8]\": datum[\"flags.8\"], \"flags[16]\": datum[\"flags.16\"], \"flags[32]\": datum[\"flags.32\"], \"flags[64]\": datum[\"flags.64\"], \"flags[128]\": datum[\"flags.128\"]}"
+            "signal": "{\"Typ\": datum[\"marker_type\"], \"bases\": datum[\"bases\"], \"reference\": datum[\"reference\"], \"alternatives\": datum[\"alternatives\"], \"name\": datum[\"name\"], \"flags\": datum[\"flags\"], \"flags[2]\": datum[\"flags2\"], \"flags[4]\": datum[\"flags.4\"], \"flags[8]\": datum[\"flags.8\"], \"flags[16]\": datum[\"flags.16\"], \"flags[32]\": datum[\"flags.32\"], \"flags[64]\": datum[\"flags.64\"], \"flags[128]\": datum[\"flags.128\"]}"
           },
           "x": {
             "scale": "x",
@@ -256,6 +256,9 @@
         }
       ],
       "domain": [],
+      "domainRaw": {
+        "signal": "grid[\"start_position\"]"
+      },
       "nice": true,
       "zero": false
     },

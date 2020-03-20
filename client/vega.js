@@ -110,7 +110,7 @@ async function buildVega(chrom, fr, to) {
     v = v.view.insert("fasta", cont);
 
 
-   v.addEventListener('mouseup', async function (event, item) {
+    v.addEventListener('mouseup', async function (event, item) {
         const lowerBound = Math.round(v.getState().signals.grid.start_position[0]);
         const upperBound = Math.round(v.getState().signals.grid.start_position[1]);
 
