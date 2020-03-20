@@ -100,6 +100,15 @@ async function buildVega(chrom, fr, to) {
     const cont = $.merge(with_variants, albody);
 
 
+    cont.forEach(function (a) {
+        if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
+            a.base = a.marker_type;
+        } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion") {
+            a.typ = a.marker_type;
+        }
+    });
+
+
 
 
     const spec = await fetchVegaSpecs();
@@ -234,7 +243,15 @@ async function buildVega(chrom, fr, to) {
             upd2 = $.merge(with_variants2, lower_upd_ref);
         }
 
-       upd = $.merge(upd1, upd2);
+        upd = $.merge(upd1, upd2);
+
+        upd.forEach(function (a) {
+            if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
+                a.base = a.marker_type;
+            } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion") {
+                a.typ = a.marker_type;
+            }
+        });
 
         v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
             return (((d.end_position - 0.5 < lowerBound) || (d.start_position + 0.5 > upperBound))) ;
