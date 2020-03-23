@@ -13,6 +13,17 @@ values = {}
 values['values'] = data
 values['name'] = 'fasta'
 
+for key in values['values']:
+    if key['marker_type'] == "A" or key['marker_type'] == "G" or key['marker_type'] == "T" or key['marker_type'] == "C":
+        key['base'] = key['marker_type']
+    elif key['marker_type'] == "Deletion" or key['marker_type'] == "Insertion" or key['marker_type'] == "Match":
+        key['typ'] = key['marker_type']
+
+    if key['marker_type'] == "Insertion":
+        key['inserts'] = key['bases']
+
+#TODO: fix order that matches go last due to displaying insertions etc. over matches on overlapping reads
+
 vdata['width'] = 700
 
 domain = {}
