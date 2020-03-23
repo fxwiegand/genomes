@@ -24,10 +24,10 @@ async function fetchVegaSpecs() {
     return vlSpec;
 }
 
-let lastLowerBound;
-let lastUpperBound;
-let reads;
-let rows;
+var lastLowerBound;
+var lastUpperBound;
+var reads;
+var rows;
 
 
 // Embed the visualization in the container with id `vis`
@@ -37,8 +37,8 @@ async function buildVega(chrom, fr, to) {
 
     reads = [];
     rows = [];
-    for (let i = 1; i < 30; i++) {
-        let r = {min_start: -1, max_end: 0};
+    for (var i = 1; i < 30; i++) {
+        var r = {min_start: -1, max_end: 0};
         rows.push(r);
     }
 
@@ -66,7 +66,7 @@ async function buildVega(chrom, fr, to) {
             }
         });
         if (!already_in) {
-            for (let i = 1; i < 30; i++) {
+            for (var i = 1; i < 30; i++) {
                 if (rows[i].min_start == -1) { //read zeile ist leer
                     a.row = i;
                     rows[i].min_start = a.read_start;
@@ -106,6 +106,9 @@ async function buildVega(chrom, fr, to) {
         } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion") {
             a.typ = a.marker_type;
         }
+        if (a.marker_type === "Insertion") {
+            a.inserts = a.bases;
+        }
     });
 
 
@@ -115,7 +118,7 @@ async function buildVega(chrom, fr, to) {
     const vlSpec = await spec.json();
     vlSpec.width = $(window).width() - 150;
     vlSpec.scales[0].domain = [fr,to];
-    let v = await vegaEmbed('#vis', vlSpec);
+    var v = await vegaEmbed('#vis', vlSpec);
     v = v.view.insert("fasta", cont);
 
 
@@ -149,7 +152,7 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
                 if (!already_in) {
-                    for (let i = 1; i < 30; i++) {
+                    for (var i = 1; i < 30; i++) {
                         if (rows[i].min_start == -1) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
@@ -180,7 +183,7 @@ async function buildVega(chrom, fr, to) {
 
             });
 
-            let with_variants = $.merge(upper_upd_al, upper_upd_var);
+            var with_variants = $.merge(upper_upd_al, upper_upd_var);
             upd1 = $.merge(with_variants, upper_upd_ref);
 
 
@@ -208,7 +211,7 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
                 if (!already_in) {
-                    for (let i = 1; i < 30; i++) {
+                    for (var i = 1; i < 30; i++) {
                         if (rows[i].min_start == -1) { //read zeile ist leer
                             a.row = i;
                             rows[i].min_start = a.read_start;
@@ -239,7 +242,7 @@ async function buildVega(chrom, fr, to) {
 
             });
 
-            let with_variants2 = $.merge(lower_upd_al, lower_upd_var);
+            var with_variants2 = $.merge(lower_upd_al, lower_upd_var);
             upd2 = $.merge(with_variants2, lower_upd_ref);
         }
 
@@ -250,6 +253,9 @@ async function buildVega(chrom, fr, to) {
                 a.base = a.marker_type;
             } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion") {
                 a.typ = a.marker_type;
+            }
+            if (a.marker_type === "Insertion") {
+                a.inserts = a.bases;
             }
         });
 
