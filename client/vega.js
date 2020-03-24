@@ -100,10 +100,11 @@ async function buildVega(chrom, fr, to) {
     const cont = $.merge(with_variants, albody);
 
 
+
     cont.forEach(function (a) {
         if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
             a.base = a.marker_type;
-        } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion") {
+        } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing") {
             a.typ = a.marker_type;
         }
         if (a.marker_type === "Insertion") {
@@ -251,7 +252,7 @@ async function buildVega(chrom, fr, to) {
         upd.forEach(function (a) {
             if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
                 a.base = a.marker_type;
-            } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion") {
+            } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing") {
                 a.typ = a.marker_type;
             }
             if (a.marker_type === "Insertion") {

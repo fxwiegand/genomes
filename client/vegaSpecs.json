@@ -240,7 +240,8 @@
             "band": 0.5
           },
           "strokeWidth": {
-            "value": 5
+            "scale": "stroke",
+            "field": "marker_type"
           }
         }
       }
@@ -281,6 +282,34 @@
       "paddingOuter": 0
     },
     {
+      "name": "stroke",
+      "type": "ordinal",
+      "domain": [
+        "A",
+        "C",
+        "G",
+        "T",
+        "N",
+        "Variant",
+        "Insertion",
+        "Deletion",
+        "Match",
+        "Pairing"
+      ],
+      "range": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        1
+      ]
+    },
+    {
       "name": "color",
       "type": "ordinal",
       "domain": [
@@ -292,7 +321,8 @@
         "Variant",
         "Insertion",
         "Deletion",
-        "Match"
+        "Match",
+        "Pairing"
       ],
       "range": [
         "#CADB69",
@@ -303,6 +333,7 @@
         "#000000",
         "#047C0A",
         "#CC1414",
+        "#BBBBBB",
         "#BBBBBB"
       ]
     },

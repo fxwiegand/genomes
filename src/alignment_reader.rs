@@ -18,6 +18,7 @@ pub enum Marker {
     Deletion,
     Insertion,
     Match,
+    Pairing
 }
 
 #[derive(Clone)]
@@ -209,6 +210,22 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
         let char_vec: Vec<char> = base_string.chars().collect();
 
         let mut soft_clip_begin = true;
+
+        let p = s.clone();
+
+        if p.paired && (p.pos + p.length as i32) < p.mate_pos && (p.mate_pos - (p.pos + p.length as i32)) < 250 {
+            let pairing = AlignmentMatch {
+                marker_type: Marker::Pairing,
+                start_position: (p.pos + p.length as i32) as f32 - 0.5,
+                end_position: p.mate_pos as f32 + 0.5,
+                flags: p.flags.clone(),
+                name: p.name.clone(),
+                read_start: p.pos.clone() as u32,
+                read_end: (p.mate_pos.clone() + 100) as u32,
+            };
+
+            matches.push(pairing);
+        }
 
         for c in s.cigar.iter() {
             let mut match_count = 0;
