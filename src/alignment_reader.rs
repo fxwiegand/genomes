@@ -31,6 +31,8 @@ pub struct Alignment {
     cigar: CigarStringView,
     paired: bool,
     mate_pos: i32,
+    tid: i32,
+    mate_tid: i32
 }
 
 #[derive(Serialize, Clone)]
@@ -156,6 +158,9 @@ fn make_alignment(record: bam::Record) -> Alignment {
 
     let mate_pos = record.mpos();
 
+    let tid = record.tid();
+    let mtid = record.mtid();
+
     //Cigar String
     let cigstring = record.cigar();
 
@@ -192,6 +197,8 @@ fn make_alignment(record: bam::Record) -> Alignment {
         name: name,
         paired: has_pair,
         mate_pos: mate_pos,
+        tid: tid,
+        mate_tid: mtid,
     };
 
     read
@@ -213,11 +220,11 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
         let p = s.clone();
 
-        if p.paired && (p.pos + p.length as i32) < p.mate_pos && (p.mate_pos - (p.pos + p.length as i32)) < 250 {
+        if p.paired && (p.pos + p.length as i32) < p.mate_pos && p.tid == p.mate_tid {
             let pairing = AlignmentMatch {
                 marker_type: Marker::Pairing,
                 start_position: (p.pos + p.length as i32) as f32 - 0.5,
-                end_position: p.mate_pos as f32 + 0.5,
+                end_position: p.mate_pos as f32 - 0.5,
                 flags: p.flags.clone(),
                 name: p.name.clone(),
                 read_start: p.pos.clone() as u32,
