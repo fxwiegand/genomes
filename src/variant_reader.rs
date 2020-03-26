@@ -11,7 +11,6 @@ pub struct Variant {
     alternatives: Vec<String>,
     start_position: f32,
     end_position: f32,
-    row: i8,
 }
 
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Variant> {
@@ -33,8 +32,11 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<V
         let ref_vec = alleles[0].clone();
         let mut rfrce = String::from("");
 
+        let mut len: u8 = 0;
+
         for c in ref_vec {
             rfrce.push(*c as char);
+            len += 1;
         }
 
         let mut altve: Vec<String> = Vec::new();
@@ -57,8 +59,7 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<V
             reference: rfrce,
             alternatives: altve,
             start_position: pos as f32 - 0.5,
-            end_position: pos as f32 + 0.5,
-            row: -1,
+            end_position: pos as f32 - 0.5 + len as f32,
         };
 
         variants.push(var);

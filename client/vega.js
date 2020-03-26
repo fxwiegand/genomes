@@ -24,10 +24,11 @@ async function fetchVegaSpecs() {
     return vlSpec;
 }
 
-var lastLowerBound;
-var lastUpperBound;
-var reads;
-var rows;
+let lastLowerBound;
+let lastUpperBound;
+let reads;
+let rows;
+let var_rows;
 
 
 // Embed the visualization in the container with id `vis`
@@ -37,11 +38,23 @@ async function buildVega(chrom, fr, to) {
 
     reads = [];
     rows = [];
-    for (var i = 1; i < 30; i++) {
-        var r = {min_start: -1, max_end: 0};
+
+    var_rows = [];
+
+
+
+
+    for (let i = 1; i < 30; i++) {
+        let r = {min_start: -1, max_end: 0};
+
         rows.push(r);
     }
 
+    for (let j = 1; j < 11; j++) {
+        let v = {min_start: -1.0, max_end: 0.0};
+
+        var_rows.push(v);
+    }
 
 
 
@@ -66,7 +79,7 @@ async function buildVega(chrom, fr, to) {
             }
         });
         if (!already_in) {
-            for (var i = 1; i < 30; i++) {
+            for (i = 1; i < 30; i++) {
                 if (rows[i].min_start == -1) { //read zeile ist leer
                     a.row = i;
                     rows[i].min_start = a.read_start;
@@ -93,6 +106,32 @@ async function buildVega(chrom, fr, to) {
 
 
     });
+
+    vabody.sort(function(a, b) {
+        return a.start_position < b.start_position;
+    });
+
+    //TODO: Add name or primary key (see implementation for reads)
+    vabody.forEach(function (a) {
+        for (var i = 1; i < 10; i++) {
+            if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                a.row = -i;
+                var_rows[i].min_start = a.start_position;
+                var_rows[i].max_end = a.end_position;
+                break;
+            } else if (var_rows[i].max_end <= a.start_position) {
+                a.row = -i;
+                var_rows[i].max_end = a.end_position;
+                break;
+            } else if (var_rows[i].min_start >= a.end_position) {
+                a.row = -i;
+                var_rows[i].min_start = a.start_position;
+                break;
+            }
+
+        }
+    });
+
 
 
 
@@ -141,6 +180,27 @@ async function buildVega(chrom, fr, to) {
 
             const m = await fetchAlignments(chrom, lastUpperBound, upperBound);
             var upper_upd_al = await m;
+
+
+            upper_upd_var.forEach(function (a) {
+                for (var i = 1; i < 10; i++) {
+                    if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                        a.row = -i;
+                        var_rows[i].min_start = a.start_position;
+                        var_rows[i].max_end = a.end_position;
+                        break;
+                    } else if (var_rows[i].max_end <= a.start_position) {
+                        a.row = -i;
+                        var_rows[i].max_end = a.end_position;
+                        break;
+                    } else if (var_rows[i].min_start >= a.end_position) {
+                        a.row = -i;
+                        var_rows[i].min_start = a.start_position;
+                        break;
+                    }
+
+                }
+            });
 
             upper_upd_al.forEach(function (a) {
                 var already_in = false;
@@ -200,6 +260,26 @@ async function buildVega(chrom, fr, to) {
 
             const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
             var lower_upd_al = await p;
+
+            lower_upd_var.forEach(function (a) {
+                for (var i = 1; i < 10; i++) {
+                    if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                        a.row = -i;
+                        var_rows[i].min_start = a.start_position;
+                        var_rows[i].max_end = a.end_position;
+                        break;
+                    } else if (var_rows[i].max_end <= a.start_position) {
+                        a.row = -i;
+                        var_rows[i].max_end = a.end_position;
+                        break;
+                    } else if (var_rows[i].min_start >= a.end_position) {
+                        a.row = -i;
+                        var_rows[i].min_start = a.start_position;
+                        break;
+                    }
+
+                }
+            });
 
             lower_upd_al.forEach(function (a) {
                 var already_in = false;
