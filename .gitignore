@@ -3,4 +3,5 @@ target/
 data/
 node_modules/
 data.json
-static_vega_lite.json
+static_vega.json
+genomes.iml
