@@ -778,6 +778,37 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
     let mut reads_wr: Vec<StaticAlignmentNucleobase> = Vec::new();
     let mut matches_wr: Vec<StaticAlignmentMatch> = Vec::new();
 
+    for r in matches {
+        let mut row: u8 = 0;
+
+        if read_names.contains_key(&r.name) {
+            row = *read_names.get(&r.name).unwrap();
+        } else {
+            for i in 1..30 {
+                if r.read_start > row_ends[i] {
+                    row = i as u8;
+                    row_ends[i] = r.read_end;
+                    read_names.insert(r.name.clone(), i as u8);
+                    break;
+                }
+            }
+        }
+
+        let f = decode_static_flags(r.flags);
+
+        let base = StaticAlignmentMatch {
+            marker_type: r.marker_type,
+            start_position: r.start_position,
+            end_position: r.end_position,
+            flags: f,
+            name: r.name,
+            row: row,
+        };
+
+        matches_wr.push(base);
+
+    }
+
     for r in reads {
         let mut row: u8 = 0;
 
@@ -807,37 +838,6 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
         };
 
         reads_wr.push(base);
-
-    }
-
-    for r in matches {
-        let mut row: u8 = 0;
-
-        if read_names.contains_key(&r.name) {
-            row = *read_names.get(&r.name).unwrap();
-        } else {
-            for i in 1..30 {
-                if r.read_start > row_ends[i] {
-                    row = i as u8;
-                    row_ends[i] = r.read_end;
-                    read_names.insert(r.name.clone(), i as u8);
-                    break;
-                }
-            }
-        }
-
-        let f = decode_static_flags(r.flags);
-
-        let base = StaticAlignmentMatch {
-            marker_type: r.marker_type,
-            start_position: r.start_position,
-            end_position: r.end_position,
-            flags: f,
-            name: r.name,
-            row: row,
-        };
-
-        matches_wr.push(base);
 
     }
 
