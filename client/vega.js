@@ -16,6 +16,37 @@ async function fetchAlignments(chrom, fr, to) {
     const r0 = result[0];
     const r1 = result[1];
     const r = $.merge(r1, r0);
+    r.forEach(function(a) {
+        let flags = [];
+        a.flags.forEach(function(b) {
+            if (b === 1) {
+                flags[b] = "template having multiple segments in sequencing";
+            } else if (b === 2) {
+                flags[b] = "each segment properly aligned according to the aligner";
+            } else if (b === 4) {
+                flags[b] = "segment unmapped";
+            } else if (b === 8) {
+                a.flags[b] = "next segment in the template unmapped";
+            } else if (b === 16) {
+                flags[b] = "SEQ being reverse complemented";
+            } else if (b === 32) {
+                flags[b] = "SEQ of the next segment in the template being reverse complemented";
+            } else if (b === 64) {
+                flags[b] = "the first segment in the template";
+            } else if (b === 128) {
+                flags[b] = "the last segment in the template";
+            } else if (b === 256) {
+                flags[b] = "secondary alignment";
+            } else if (b === 512) {
+                flags[b] = "not passing filters, such as platform/vendor quality controls";
+            } else if (b === 1024) {
+                flags[b] = "PCR or optical duplicate";
+            } else if (b === 2048) {
+                flags[b] = "vega lite lines";
+            }
+        });
+        a.flags = flags;
+    });
     return r;
 }
 

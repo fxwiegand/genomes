@@ -26,7 +26,7 @@ pub struct Alignment {
     sequence: String,
     pos: i32,
     length: u16,
-    flags: BTreeMap<u16, &'static str>,
+    flags: Vec<u16>,
     name: String,
     cigar: CigarStringView,
     paired: bool,
@@ -41,7 +41,7 @@ pub struct AlignmentNucleobase {
     bases: String,
     start_position: f32,
     end_position: f32,
-    flags: BTreeMap<u16, &'static str>,
+    flags: Vec<u16>,
     name: String,
     read_start: u32,
     read_end: u32,
@@ -52,7 +52,7 @@ pub struct AlignmentMatch {
     marker_type: Marker,
     start_position: f32,
     end_position: f32,
-    flags: BTreeMap<u16, &'static str>,
+    flags: Vec<u16>,
     name: String,
     read_start: u32,
     read_end: u32,
@@ -68,6 +68,7 @@ pub struct StaticAlignmentMatch {
     row: u8
 }
 
+
 #[derive(Serialize, Clone)]
 pub struct StaticAlignmentNucleobase {
     marker_type: Marker,
@@ -82,17 +83,12 @@ pub struct StaticAlignmentNucleobase {
 
 impl fmt::Display for Alignment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut flag_string = String::from("");
-        for (_key, flag) in &self.flags {
-            flag_string.push_str(flag);
-        }
-        write!(f, "({}, {}, {}, {}, {})", self.sequence, self.pos, self.cigar, flag_string,
+        write!(f, "({}, {}, {}, {})", self.sequence, self.pos, self.cigar,
                self.name)
     }
 }
 
-
-pub fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
+pub fn decode_static_flags(flag_vec :Vec<u16>) -> BTreeMap<u16, &'static str> {
     let mut string_map = BTreeMap::new();
 
     const FLAG_1: &'static str = "template having multiple segments in sequencing";
@@ -123,12 +119,41 @@ pub fn decode_flags(code :u16) -> BTreeMap<u16, &'static str> {
     flags_map.insert(0x800, FLAG_12);
 
     for (flag, text) in flags_map {
-        if (flag & code) == flag {
-            string_map.insert(flag, text);
+        for f in flag_vec.clone() {
+            if (flag & f) == flag {
+                string_map.insert(flag, text);
+            }
         }
     }
 
     string_map
+}
+
+pub fn decode_flags(code :u16) -> Vec<u16> {
+
+    let mut flags_map = Vec::new();
+    flags_map.push(0x1);
+    flags_map.push(0x2);
+    flags_map.push(0x4);
+    flags_map.push(0x8);
+    flags_map.push(0x10);
+    flags_map.push(0x20);
+    flags_map.push(0x40);
+    flags_map.push(0x80);
+    flags_map.push(0x100);
+    flags_map.push(0x200);
+    flags_map.push(0x400);
+    flags_map.push(0x800);
+
+    let mut read_map = Vec::new();
+
+    for flag in flags_map {
+        if (flag & code) == flag {
+            read_map.push(flag);
+        }
+    }
+
+    read_map
 }
 
 pub fn read_indexed_bam(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Alignment> {
@@ -768,12 +793,15 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
                 }
             }
         }
+
+        let f = decode_static_flags(r.flags);
+
         let base = StaticAlignmentNucleobase {
             marker_type: r.marker_type,
             bases: r.bases,
             start_position: r.start_position,
             end_position: r.end_position,
-            flags: r.flags,
+            flags: f,
             name: r.name,
             row: row,
         };
@@ -797,11 +825,14 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
                 }
             }
         }
+
+        let f = decode_static_flags(r.flags);
+
         let base = StaticAlignmentMatch {
             marker_type: r.marker_type,
             start_position: r.start_position,
             end_position: r.end_position,
-            flags: r.flags,
+            flags: f,
             name: r.name,
             row: row,
         };
