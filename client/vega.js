@@ -213,7 +213,7 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
                 if (!already_in) {
-                    for (var i = 1; i < 30; i++) {
+                    for (var i = 1; i < 29; i++) {
                         if (rows[i].min_start == -1) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
@@ -247,7 +247,13 @@ async function buildVega(chrom, fr, to) {
             var with_variants = $.merge(upper_upd_al, upper_upd_var);
             upd1 = $.merge(with_variants, upper_upd_ref);
 
-
+            for (let j = 1; j < 10; j++) {
+                if (var_rows[j].min_start < lowerBound) {
+                    var_rows[j].min_start = lowerBound;
+                } else if (var_rows[j].max_end > upperBound) {
+                    var_rows[j].max_end = upperBound;
+                }
+            }
 
         }
 
@@ -260,6 +266,12 @@ async function buildVega(chrom, fr, to) {
 
             const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
             var lower_upd_al = await p;
+
+            lower_upd_var.sort(function(a, b) {
+                return a.start_position < b.start_position;
+            });
+
+
 
             lower_upd_var.forEach(function (a) {
                 for (var i = 1; i < 10; i++) {
@@ -292,7 +304,7 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
                 if (!already_in) {
-                    for (var i = 1; i < 30; i++) {
+                    for (var i = 1; i < 29; i++) {
                         if (rows[i].min_start == -1) { //read zeile ist leer
                             a.row = i;
                             rows[i].min_start = a.read_start;
@@ -325,6 +337,25 @@ async function buildVega(chrom, fr, to) {
 
             var with_variants2 = $.merge(lower_upd_al, lower_upd_var);
             upd2 = $.merge(with_variants2, lower_upd_ref);
+
+
+
+        }
+
+        if (lastUpperBound > upperBound) {
+            for (let j = 1; j < 10; j++) {
+                if (var_rows[j].max_end > upperBound) {
+                    var_rows[j].max_end = upperBound;
+                }
+            }
+        }
+
+        if (lastLowerBound < lowerBound) {
+            for (let j = 1; j < 10; j++) {
+                if (var_rows[j].min_start < lowerBound) {
+                    var_rows[j].min_start = lowerBound;
+                }
+            }
         }
 
         upd = $.merge(upd1, upd2);
