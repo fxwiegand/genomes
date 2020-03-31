@@ -8,7 +8,6 @@ extern crate rocket_contrib;
 extern crate bit_vec;
 extern crate bio;
 extern crate rust_htslib;
-extern crate jsonm;
 extern crate rustc_serialize;
 
 mod alignment_reader;
