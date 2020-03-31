@@ -75,7 +75,7 @@ async function buildVega(chrom, fr, to) {
 
 
 
-    for (let i = 1; i < 30; i++) {
+    for (let i = 1; i < 40; i++) {
         let r = {min_start: -1, max_end: 0};
 
         rows.push(r);
@@ -110,7 +110,7 @@ async function buildVega(chrom, fr, to) {
             }
         });
         if (!already_in) {
-            for (i = 1; i < 30; i++) {
+            for (i = 1; i < 39; i++) {
                 if (rows[i].min_start == -1) { //read zeile ist leer
                     a.row = i;
                     rows[i].min_start = a.read_start;
@@ -244,7 +244,7 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
                 if (!already_in) {
-                    for (var i = 1; i < 29; i++) {
+                    for (var i = 1; i < 39; i++) {
                         if (rows[i].min_start == -1) {
                             a.row = i;
                             rows[i].min_start = a.read_start;
@@ -335,14 +335,13 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
                 if (!already_in) {
-                    for (var i = 1; i < 29; i++) {
+                    for (var i = 1; i < 39; i++) {
                         if (rows[i].min_start == -1) { //read zeile ist leer
                             a.row = i;
                             rows[i].min_start = a.read_start;
                             rows[i].max_end = a.read_end;
                             var read = {name:a.name, read_end:a.read_end, row: a.row};
                             reads.push(read);
-
                             break;
                         } else if (rows[i].max_end < a.read_start) {
                             a.row = i;
