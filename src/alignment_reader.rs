@@ -39,8 +39,8 @@ pub struct Alignment {
 pub struct AlignmentNucleobase {
     marker_type: Marker,
     bases: String,
-    start_position: f32,
-    end_position: f32,
+    start_position: f64,
+    end_position: f64,
     flags: Vec<u16>,
     name: String,
     read_start: u32,
@@ -50,8 +50,8 @@ pub struct AlignmentNucleobase {
 #[derive(Serialize, Clone, Debug)]
 pub struct AlignmentMatch {
     marker_type: Marker,
-    start_position: f32,
-    end_position: f32,
+    start_position: f64,
+    end_position: f64,
     flags: Vec<u16>,
     name: String,
     read_start: u32,
@@ -61,8 +61,8 @@ pub struct AlignmentMatch {
 #[derive(Serialize, Clone, Debug)]
 pub struct StaticAlignmentMatch {
     marker_type: Marker,
-    start_position: f32,
-    end_position: f32,
+    start_position: f64,
+    end_position: f64,
     flags: BTreeMap<u16, &'static str>,
     name: String,
     row: u8
@@ -73,8 +73,8 @@ pub struct StaticAlignmentMatch {
 pub struct StaticAlignmentNucleobase {
     marker_type: Marker,
     bases: String,
-    start_position: f32,
-    end_position: f32,
+    start_position: f64,
+    end_position: f64,
     flags: BTreeMap<u16, &'static str>,
     name: String,
     row:u8,
@@ -248,8 +248,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
         if p.paired && (p.pos + p.length as i32) < p.mate_pos && p.tid == p.mate_tid {
             let pairing = AlignmentMatch {
                 marker_type: Marker::Pairing,
-                start_position: (p.pos + p.length as i32) as f32 - 0.5,
-                end_position: p.mate_pos as f32 - 0.5,
+                start_position: (p.pos + p.length as i32) as f64 - 0.5,
+                end_position: p.mate_pos as f64 - 0.5,
                 flags: p.flags.clone(),
                 name: p.name.clone(),
                 read_start: p.pos.clone() as u32,
@@ -320,8 +320,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                     // First mismatch detection must lead to new creation of all previous matches
                                     let mtch = AlignmentMatch {
                                         marker_type: Marker::Match,
-                                        start_position: match_start as f32 - 0.5,
-                                        end_position: (match_start + match_count - 1) as f32 + 0.5,
+                                        start_position: match_start as f64 - 0.5,
+                                        end_position: (match_start + match_count - 1) as f64 + 0.5,
                                         flags: f.clone(),
                                         name: n.clone(),
                                         read_start: rs.clone() as u32,
@@ -340,8 +340,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                 let base = AlignmentNucleobase {
                                 marker_type: m,
                                 bases: b.to_string(),
-                                start_position: p.clone() as f32 - 0.5,
-                                end_position: p as f32 + 0.5,
+                                start_position: p.clone() as f64 - 0.5,
+                                end_position: p as f64 + 0.5,
                                 flags: f,
                                 name: n,
                                 read_start: rs as u32,
@@ -383,8 +383,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                         let mtch = AlignmentMatch {
                             marker_type: Marker::Match,
-                            start_position: match_start as f32 - 0.5,
-                            end_position: (match_start + match_count - 1) as f32 + 0.5,
+                            start_position: match_start as f64 - 0.5,
+                            end_position: (match_start + match_count - 1) as f64 + 0.5,
                             flags: f.clone(),
                             name: n.clone(),
                             read_start: rs.clone() as u32,
@@ -399,7 +399,7 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                 }
                 rust_htslib::bam::record::Cigar::Ins(c) => {
                     let snip = s.clone();
-                    let p: f32 = snip.pos as f32 + read_offset as f32 - 0.5;
+                    let p: f64 = snip.pos as f64 + read_offset as f64 - 0.5;
                     let m: Marker = Marker::Insertion;
                     let rs = snip.pos;
                     let re = snip.pos as i32 + snip.length as i32;
@@ -418,15 +418,15 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                     let base = AlignmentNucleobase {
                         marker_type: m,
                         bases: b,
-                        start_position: p.clone() as f32 - 0.5,
-                        end_position: p as f32 + 0.5,
+                        start_position: p.clone() as f64 - 0.5,
+                        end_position: p as f64 + 0.5,
                         flags: snip.flags,
                         name: snip.name,
                         read_start: rs as u32,
                         read_end: re as u32,
                     };
 
-                    if from as f32 <= (base.start_position + 0.5) && (base.start_position + 0.5) <= to as f32 {
+                    if from as f64 <= (base.start_position + 0.5) && (base.start_position + 0.5) <= to as f64 {
                         bases.push(base);
                     }
 
@@ -447,8 +447,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                         let base = AlignmentNucleobase {
                             marker_type: m,
                             bases: b,
-                            start_position: p.clone() as f32 - 0.5,
-                            end_position: p as f32 + 0.5,
+                            start_position: p.clone() as f64 - 0.5,
+                            end_position: p as f64 + 0.5,
                             flags: f,
                             name: n,
                             read_start: rs as u32,
@@ -457,7 +457,7 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                         read_offset += 1;
 
-                        if from as f32 <= (base.start_position + 0.5) && (base.start_position + 0.5) <= to as f32 {
+                        if from as f64 <= (base.start_position + 0.5) && (base.start_position + 0.5) <= to as f64 {
                             bases.push(base);
                         }
                     }
@@ -528,8 +528,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                         // First mismatch detection must lead to new creation of all previous matches
                                         let mtch = AlignmentMatch {
                                             marker_type: Marker::Match,
-                                            start_position: match_start as f32 - 0.5,
-                                            end_position: (match_start + match_count - 1) as f32 + 0.5,
+                                            start_position: match_start as f64 - 0.5,
+                                            end_position: (match_start + match_count - 1) as f64 + 0.5,
                                             flags: f.clone(),
                                             name: n.clone(),
                                             read_start: rs.clone() as u32,
@@ -547,8 +547,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                     let base = AlignmentNucleobase {
                                         marker_type: m,
                                         bases: b.to_string(),
-                                        start_position: p.clone() as f32 - 0.5,
-                                        end_position: p as f32 + 0.5,
+                                        start_position: p.clone() as f64 - 0.5,
+                                        end_position: p as f64 + 0.5,
                                         flags: f,
                                         name: n,
                                         read_start: rs as u32,
@@ -589,8 +589,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                             let mtch = AlignmentMatch {
                                 marker_type: Marker::Match,
-                                start_position: match_start as f32 - 0.5,
-                                end_position: (match_start + match_count - 1) as f32 + 0.5,
+                                start_position: match_start as f64 - 0.5,
+                                end_position: (match_start + match_count - 1) as f64 + 0.5,
                                 flags: f.clone(),
                                 name: n.clone(),
                                 read_start: rs.clone() as u32,
@@ -654,8 +654,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                         // First mismatch detection must lead to new creation of all previous matches
                                         let mtch = AlignmentMatch {
                                             marker_type: Marker::Match,
-                                            start_position: match_start as f32 - 0.5,
-                                            end_position: (match_start + match_count - 1) as f32 + 0.5,
+                                            start_position: match_start as f64 - 0.5,
+                                            end_position: (match_start + match_count - 1) as f64 + 0.5,
                                             flags: f.clone(),
                                             name: n.clone(),
                                             read_start: rs.clone() as u32,
@@ -673,8 +673,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
                                     let base = AlignmentNucleobase {
                                         marker_type: m,
                                         bases: b.to_string(),
-                                        start_position: p.clone() as f32 - 0.5,
-                                        end_position: p as f32 + 0.5,
+                                        start_position: p.clone() as f64 - 0.5,
+                                        end_position: p as f64 + 0.5,
                                         flags: f,
                                         name: n,
                                         read_start: rs as u32,
@@ -715,8 +715,8 @@ fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, 
 
                             let mtch = AlignmentMatch {
                                 marker_type: Marker::Match,
-                                start_position: match_start as f32 - 0.5,
-                                end_position: (match_start + match_count - 1) as f32 + 0.5,
+                                start_position: match_start as f64 - 0.5,
+                                end_position: (match_start + match_count - 1) as f64 + 0.5,
                                 flags: f.clone(),
                                 name: n.clone(),
                                 read_start: rs.clone() as u32,
