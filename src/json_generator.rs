@@ -4,7 +4,7 @@ use std::path::Path;
 use rustc_serialize::json::Json;
 use fasta_reader::read_fasta;
 use variant_reader::read_indexed_vcf;
-use alignment_reader::get_static_reads;
+use static_reader::get_static_reads;
 
 
 pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: String, from: u32, to: u32) -> std::io::Result<()> {

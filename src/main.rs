@@ -14,6 +14,7 @@ mod alignment_reader;
 mod fasta_reader;
 mod variant_reader;
 mod json_generator;
+mod static_reader;
 
 #[cfg(test)] mod tests;
 
