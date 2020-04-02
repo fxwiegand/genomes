@@ -6,11 +6,11 @@ use rust_htslib::bcf::Read;
 
 #[derive(Serialize, Clone)]
 pub struct Variant {
-    marker_type: String,
-    reference: String,
-    alternatives: Vec<String>,
-    start_position: f64,
-    end_position: f64,
+    pub(crate) marker_type: String,
+    pub(crate) reference: String,
+    pub(crate) alternatives: Vec<String>,
+    pub(crate) start_position: f64,
+    pub(crate) end_position: f64,
 }
 
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Variant> {

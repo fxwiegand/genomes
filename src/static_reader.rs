@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::path::Path;
 use alignment_reader::{AlignmentNucleobase, AlignmentMatch,read_indexed_bam, make_nucleobases};
 use alignment_reader::Marker;
+use variant_reader::{Variant, read_indexed_vcf};
 
 
 #[derive(Serialize, Clone, Debug)]
@@ -24,6 +25,16 @@ pub struct StaticAlignmentNucleobase {
     flags: BTreeMap<u16, &'static str>,
     name: String,
     row:u8,
+}
+
+#[derive(Serialize, Clone)]
+pub struct StaticVariant {
+    marker_type: String,
+    reference: String,
+    alternatives: Vec<String>,
+    start_position: f64,
+    end_position: f64,
+    row: i8,
 }
 
 
@@ -148,4 +159,42 @@ pub fn get_static_reads(path: &Path, fasta_path: &Path, chrom: String, from: u32
     let static_bases = calc_rows(msm, m);
 
     static_bases
+}
+
+fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
+    let mut row_ends : Vec<f64> = vec![0 as f64; 10];
+
+    let mut vars: Vec<StaticVariant> = Vec::new();
+
+    for r in variants {
+        for i in 1..10 {
+            if r.start_position > row_ends[i] as f64 {
+                let row = i as i8;
+                row_ends[i] = r.end_position;
+
+                let v = StaticVariant{
+                    marker_type: r.marker_type,
+                    reference: r.reference,
+                    alternatives: r.alternatives,
+                    start_position: r.start_position,
+                    end_position: r.end_position,
+                    row: -row,
+                };
+
+                vars.push(v);
+
+                break;
+            }
+        }
+    }
+
+
+    vars
+}
+
+pub fn get_static_variants(path: &Path, chrom: String, from: u32, to: u32) -> Vec<StaticVariant> {
+    let variants = read_indexed_vcf(path, chrom, from, to);
+    let static_variants = calc_variant_rows(variants);
+
+    static_variants
 }

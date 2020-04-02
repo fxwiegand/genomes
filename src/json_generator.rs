@@ -3,15 +3,14 @@ use std::io::prelude::*;
 use std::path::Path;
 use rustc_serialize::json::Json;
 use fasta_reader::read_fasta;
-use variant_reader::read_indexed_vcf;
-use static_reader::get_static_reads;
+use static_reader::{get_static_reads,get_static_variants};
 
 
 pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: String, from: u32, to: u32) -> std::io::Result<()> {
     // Daten hier sammeln
     let fasta = json!(read_fasta(fasta_path.clone(), chrom.clone(), from as u64, to as u64));
     let alignments = json!(get_static_reads(bam_path, fasta_path, chrom.clone(), from, to));
-    let variant = json!(read_indexed_vcf(vcf_path, chrom.clone(), from, to));
+    let variant = json!(get_static_variants(vcf_path, chrom.clone(), from, to));
 
     let fasta_string = fasta.to_string();
     let f = fasta_string.trim_end_matches(']');
