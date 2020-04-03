@@ -13,16 +13,29 @@ values = {}
 values['values'] = data
 values['name'] = 'fasta'
 
+def compare(item1, item2):
+    if item1 == "Match":
+        return -1
+    elif item2 == "Match":
+        return 1
+    elif item1 in ["A", "G", "T", "C"]:
+        return -1
+    elif item2 in ["A", "G", "T", "C"]:
+        return 1
+    else:
+        return 0
+
+
+values['values'] = sorted(values['values'], cmp= lambda i1, i2: compare(i1['marker_type'], i2['marker_type']))
+
 for key in values['values']:
-    if key['marker_type'] == "A" or key['marker_type'] == "G" or key['marker_type'] == "T" or key['marker_type'] == "C":
+    if key['marker_type'] in ["A", "G", "T", "C"]:
         key['base'] = key['marker_type']
-    elif key['marker_type'] == "Deletion" or key['marker_type'] == "Insertion" or key['marker_type'] == "Match" or key['marker_type'] == "Pairing":
+    elif key['marker_type'] in ["Deletion", "Insertion", "Match", "Pairing"]:
         key['typ'] = key['marker_type']
 
     if key['marker_type'] == "Insertion":
         key['inserts'] = key['bases']
-
-#TODO: fix order that matches go last due to displaying insertions etc. over matches on overlapping reads
 
 vdata['width'] = 700
 
