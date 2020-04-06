@@ -102,33 +102,33 @@ async function buildVega(chrom, fr, to) {
 
 
     albody.forEach(function (a) {
-        var already_in = false;
+        let already_in = false;
         //if not in read rows
         reads.forEach(function (r) {
-            if (a.name == r.name) {
+            if (a.name === r.name) {
                 a.row = r.row;
                 already_in = true;
             }
         });
         if (!already_in) {
             for (i = 1; i < 39; i++) {
-                if (rows[i].min_start == -1) { //read zeile ist leer
+                if (rows[i].min_start === -1) { //read zeile ist leer
                     a.row = i;
                     rows[i].min_start = a.read_start;
                     rows[i].max_end = a.read_end;
-                    var read = {name:a.name, read_end:a.read_end, row: a.row};
-                    reads.push(read);
+                    let read1 = {name:a.name, read_end:a.read_end, row: a.row};
+                    reads.push(read1);
                     break;
                 } else if (rows[i].max_end < a.read_start) {
                     a.row = i;
                     rows[i].max_end = a.read_end;
-                    var read = {name:a.name, read_end:a.read_end, row: a.row};
-                    reads.push(read);
+                    let read2 = {name:a.name, read_end:a.read_end, row: a.row};
+                    reads.push(read2);
                     break;
                 } else if (rows[i].min_start > a.read_end) {
                     a.row = i;
                     rows[i].min_start = a.read_start;
-                    var read = {name:a.name, read_end:a.read_end, row: a.row};
+                    let read = {name:a.name, read_end:a.read_end, row: a.row};
                     reads.push(read);
                     break;
                 }
@@ -145,7 +145,7 @@ async function buildVega(chrom, fr, to) {
 
     //TODO: Add name or primary key (see implementation for reads)
     vabody.forEach(function (a) {
-        for (var i = 1; i < 10; i++) {
+        for (i = 1; i < 10; i++) {
             if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
                 a.row = -i;
                 var_rows[i].min_start = a.start_position;
@@ -165,11 +165,8 @@ async function buildVega(chrom, fr, to) {
     });
 
 
-
-
     const with_variants = $.merge(body, vabody);
     const cont = $.merge(with_variants, albody);
-
 
 
     cont.forEach(function (a) {
@@ -241,26 +238,26 @@ async function buildVega(chrom, fr, to) {
                     var pos_found = false;
                     //if not in read rows
                     reads.forEach(function (r) {
-                        if (a.name == r.name) {
+                        if (a.name === r.name) {
                             a.row = r.row;
                             already_in = true;
                         }
                     });
                     if (!already_in) {
                         for (var i = 1; i < 39; i++) {
-                            if (rows[i].min_start == -1) {
+                            if (rows[i].min_start === -1) {
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
                                 rows[i].max_end = a.read_end;
-                                var read = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read);
+                                var read1 = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read1);
 
                                 break;
                             } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
                                 a.row = i;
                                 rows[i].max_end = a.read_end;
-                                var read = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read);
+                                var read2 = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read2);
 
                                 break;
                             } else if (rows[i].min_start > a.read_end) {
@@ -331,33 +328,31 @@ async function buildVega(chrom, fr, to) {
                     var pos_found = false;
                     //if not in read rows
                     reads.forEach(function (r) {
-                        if (a.name == r.name) {
+                        if (a.name === r.name) {
                             a.row = r.row;
                             already_in = true;
                         }
                     });
                     if (!already_in) {
                         for (var i = 1; i < 39; i++) {
-                            if (rows[i].min_start == -1) { //read zeile ist leer
+                            if (rows[i].min_start === -1) { //read zeile ist leer
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
                                 rows[i].max_end = a.read_end;
-                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                let read = {name: a.name, read_end: a.read_end, row: a.row};
                                 reads.push(read);
                                 break;
                             } else if (rows[i].max_end < a.read_start) {
                                 a.row = i;
                                 rows[i].max_end = a.read_end;
-                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                let read = {name: a.name, read_end: a.read_end, row: a.row};
                                 reads.push(read);
-
                                 break;
                             } else if (rows[i].min_start > a.read_end) {
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
-                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                let read = {name: a.name, read_end: a.read_end, row: a.row};
                                 reads.push(read);
-
                                 break;
                             }
 
@@ -367,7 +362,7 @@ async function buildVega(chrom, fr, to) {
 
                 });
 
-                var with_variants2 = $.merge(lower_upd_al, lower_upd_var);
+                let with_variants2 = $.merge(lower_upd_al, lower_upd_var);
                 upd2 = $.merge(with_variants2, lower_upd_ref);
 
 
@@ -405,12 +400,6 @@ async function buildVega(chrom, fr, to) {
             v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
                 return (((d.end_position - 0.5 < lowerBound) || (d.start_position + 0.5 > upperBound)));
             }));
-
-
-            // reads = reads.filter(function (f) {
-            //     return (f.read_end < lowerBound) || (f.read_start > upperBound)
-            // });
-            // read entfernen wenn ende < lower bound oder start > upper bound
 
             lastLowerBound = lowerBound;
             lastUpperBound = upperBound;
