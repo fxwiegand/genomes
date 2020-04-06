@@ -61,6 +61,7 @@ let reads;
 let rows;
 let var_rows;
 
+let scrolling_locked = false;
 
 // Embed the visualization in the container with id `vis`
 async function buildVega(chrom, fr, to) {
@@ -194,229 +195,228 @@ async function buildVega(chrom, fr, to) {
 
 
     v.addEventListener('mouseup', async function (event, item) {
-        const lowerBound = Math.round(v.getState().signals.grid.start_position[0]);
-        const upperBound = Math.round(v.getState().signals.grid.start_position[1]);
+        if (!scrolling_locked) {
+            scrolling_locked = true;
+            const lowerBound = Math.round(v.getState().signals.grid.start_position[0]);
+            const upperBound = Math.round(v.getState().signals.grid.start_position[1]);
 
-        var upd1 = [];
-        var upd2 = [];
-        var upd = [];
-
-
-        if (lastUpperBound < upperBound) {
-            const n = await fetchChrom(chrom, lastUpperBound, upperBound);
-            const upper_upd_ref = await n;
-
-            const l = await fetchVariants(chrom, lastUpperBound, upperBound);
-            const upper_upd_var = await l;
-
-            const m = await fetchAlignments(chrom, lastUpperBound, upperBound);
-            var upper_upd_al = await m;
+            var upd1 = [];
+            var upd2 = [];
+            var upd = [];
 
 
-            upper_upd_var.forEach(function (a) {
-                for (var i = 1; i < 10; i++) {
-                    if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
-                        a.row = -i;
-                        var_rows[i].min_start = a.start_position;
-                        var_rows[i].max_end = a.end_position;
-                        break;
-                    } else if (var_rows[i].max_end <= a.start_position) {
-                        a.row = -i;
-                        var_rows[i].max_end = a.end_position;
-                        break;
-                    } else if (var_rows[i].min_start >= a.end_position) {
-                        a.row = -i;
-                        var_rows[i].min_start = a.start_position;
-                        break;
-                    }
+            if (lastUpperBound < upperBound) {
+                const n = await fetchChrom(chrom, lastUpperBound, upperBound);
+                const upper_upd_ref = await n;
 
-                }
-            });
+                const l = await fetchVariants(chrom, lastUpperBound, upperBound);
+                const upper_upd_var = await l;
 
-            upper_upd_al.forEach(function (a) {
-                var already_in = false;
-                var pos_found = false;
-                //if not in read rows
-                reads.forEach(function (r) {
-                    if (a.name == r.name) {
-                        a.row = r.row;
-                        already_in = true;
-                    }
-                });
-                if (!already_in) {
-                    for (var i = 1; i < 39; i++) {
-                        if (rows[i].min_start == -1) {
-                            a.row = i;
-                            rows[i].min_start = a.read_start;
-                            rows[i].max_end = a.read_end;
-                            var read = {name:a.name, read_end:a.read_end, row: a.row};
-                            reads.push(read);
+                const m = await fetchAlignments(chrom, lastUpperBound, upperBound);
+                var upper_upd_al = await m;
 
+
+                upper_upd_var.forEach(function (a) {
+                    for (var i = 1; i < 10; i++) {
+                        if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                            a.row = -i;
+                            var_rows[i].min_start = a.start_position;
+                            var_rows[i].max_end = a.end_position;
                             break;
-                        } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
-                            a.row = i;
-                            rows[i].max_end = a.read_end;
-                            var read = {name:a.name, read_end:a.read_end, row: a.row};
-                            reads.push(read);
-
+                        } else if (var_rows[i].max_end <= a.start_position) {
+                            a.row = -i;
+                            var_rows[i].max_end = a.end_position;
                             break;
-                        } else if (rows[i].min_start > a.read_end) {
-                            a.row = i;
-                            rows[i].min_start = a.read_start;
-                            var read = {name:a.name, read_end:a.read_end, row: a.row};
-                            reads.push(read);
-
+                        } else if (var_rows[i].min_start >= a.end_position) {
+                            a.row = -i;
+                            var_rows[i].min_start = a.start_position;
                             break;
                         }
 
                     }
+                });
+
+                upper_upd_al.forEach(function (a) {
+                    var already_in = false;
+                    var pos_found = false;
+                    //if not in read rows
+                    reads.forEach(function (r) {
+                        if (a.name == r.name) {
+                            a.row = r.row;
+                            already_in = true;
+                        }
+                    });
+                    if (!already_in) {
+                        for (var i = 1; i < 39; i++) {
+                            if (rows[i].min_start == -1) {
+                                a.row = i;
+                                rows[i].min_start = a.read_start;
+                                rows[i].max_end = a.read_end;
+                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read);
+
+                                break;
+                            } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
+                                a.row = i;
+                                rows[i].max_end = a.read_end;
+                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read);
+
+                                break;
+                            } else if (rows[i].min_start > a.read_end) {
+                                a.row = i;
+                                rows[i].min_start = a.read_start;
+                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read);
+
+                                break;
+                            }
+
+                        }
+                    }
+
+
+                });
+
+                var with_variants = $.merge(upper_upd_al, upper_upd_var);
+                upd1 = $.merge(with_variants, upper_upd_ref);
+
+                for (let j = 1; j < 10; j++) {
+                    if (var_rows[j].min_start < lowerBound) {
+                        var_rows[j].min_start = lowerBound;
+                    } else if (var_rows[j].max_end > upperBound) {
+                        var_rows[j].max_end = upperBound;
+                    }
                 }
 
-
-            });
-
-            var with_variants = $.merge(upper_upd_al, upper_upd_var);
-            upd1 = $.merge(with_variants, upper_upd_ref);
-
-            for (let j = 1; j < 10; j++) {
-                if (var_rows[j].min_start < lowerBound) {
-                    var_rows[j].min_start = lowerBound;
-                } else if (var_rows[j].max_end > upperBound) {
-                    var_rows[j].max_end = upperBound;
-                }
             }
 
-        }
+            if (lastLowerBound > lowerBound) {
+                const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
+                const lower_upd_ref = await o;
 
-        if (lastLowerBound > lowerBound){
-            const o = await fetchChrom(chrom, lowerBound, lastLowerBound);
-            const lower_upd_ref = await o;
+                const q = await fetchVariants(chrom, lowerBound, lastLowerBound);
+                const lower_upd_var = await q;
 
-            const q = await fetchVariants(chrom, lowerBound, lastLowerBound);
-            const lower_upd_var = await q;
+                const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
+                var lower_upd_al = await p;
 
-            const p = await fetchAlignments(chrom, lowerBound, lastLowerBound);
-            var lower_upd_al = await p;
-
-            lower_upd_var.sort(function(a, b) {
-                return a.start_position < b.start_position;
-            });
-
-
-
-            lower_upd_var.forEach(function (a) {
-                for (var i = 1; i < 10; i++) {
-                    if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
-                        a.row = -i;
-                        var_rows[i].min_start = a.start_position;
-                        var_rows[i].max_end = a.end_position;
-                        break;
-                    } else if (var_rows[i].max_end <= a.start_position) {
-                        a.row = -i;
-                        var_rows[i].max_end = a.end_position;
-                        break;
-                    } else if (var_rows[i].min_start >= a.end_position) {
-                        a.row = -i;
-                        var_rows[i].min_start = a.start_position;
-                        break;
-                    }
-
-                }
-            });
-
-            lower_upd_al.forEach(function (a) {
-                var already_in = false;
-                var pos_found = false;
-                //if not in read rows
-                reads.forEach(function (r) {
-                    if (a.name == r.name) {
-                        a.row = r.row;
-                        already_in = true;
-                    }
+                lower_upd_var.sort(function (a, b) {
+                    return a.start_position < b.start_position;
                 });
-                if (!already_in) {
-                    for (var i = 1; i < 39; i++) {
-                        if (rows[i].min_start == -1) { //read zeile ist leer
-                            a.row = i;
-                            rows[i].min_start = a.read_start;
-                            rows[i].max_end = a.read_end;
-                            var read = {name:a.name, read_end:a.read_end, row: a.row};
-                            reads.push(read);
-                            break;
-                        } else if (rows[i].max_end < a.read_start) {
-                            a.row = i;
-                            rows[i].max_end = a.read_end;
-                            var read = {name:a.name, read_end:a.read_end, row: a.row};
-                            reads.push(read);
 
-                            break;
-                        } else if (rows[i].min_start > a.read_end) {
-                            a.row = i;
-                            rows[i].min_start = a.read_start;
-                            var read = {name:a.name, read_end:a.read_end, row: a.row};
-                            reads.push(read);
 
+                lower_upd_var.forEach(function (a) {
+                    for (var i = 1; i < 10; i++) {
+                        if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                            a.row = -i;
+                            var_rows[i].min_start = a.start_position;
+                            var_rows[i].max_end = a.end_position;
+                            break;
+                        } else if (var_rows[i].max_end <= a.start_position) {
+                            a.row = -i;
+                            var_rows[i].max_end = a.end_position;
+                            break;
+                        } else if (var_rows[i].min_start >= a.end_position) {
+                            a.row = -i;
+                            var_rows[i].min_start = a.start_position;
                             break;
                         }
 
                     }
+                });
+
+                lower_upd_al.forEach(function (a) {
+                    var already_in = false;
+                    var pos_found = false;
+                    //if not in read rows
+                    reads.forEach(function (r) {
+                        if (a.name == r.name) {
+                            a.row = r.row;
+                            already_in = true;
+                        }
+                    });
+                    if (!already_in) {
+                        for (var i = 1; i < 39; i++) {
+                            if (rows[i].min_start == -1) { //read zeile ist leer
+                                a.row = i;
+                                rows[i].min_start = a.read_start;
+                                rows[i].max_end = a.read_end;
+                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read);
+                                break;
+                            } else if (rows[i].max_end < a.read_start) {
+                                a.row = i;
+                                rows[i].max_end = a.read_end;
+                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read);
+
+                                break;
+                            } else if (rows[i].min_start > a.read_end) {
+                                a.row = i;
+                                rows[i].min_start = a.read_start;
+                                var read = {name: a.name, read_end: a.read_end, row: a.row};
+                                reads.push(read);
+
+                                break;
+                            }
+
+                        }
+                    }
+
+
+                });
+
+                var with_variants2 = $.merge(lower_upd_al, lower_upd_var);
+                upd2 = $.merge(with_variants2, lower_upd_ref);
+
+
+            }
+
+            if (lastUpperBound > upperBound) {
+                for (let j = 1; j < 10; j++) {
+                    if (var_rows[j].max_end > upperBound) {
+                        var_rows[j].max_end = upperBound;
+                    }
                 }
+            }
 
+            if (lastLowerBound < lowerBound) {
+                for (let j = 1; j < 10; j++) {
+                    if (var_rows[j].min_start < lowerBound) {
+                        var_rows[j].min_start = lowerBound;
+                    }
+                }
+            }
 
+            upd = $.merge(upd1, upd2);
+
+            upd.forEach(function (a) {
+                if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
+                    a.base = a.marker_type;
+                } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing") {
+                    a.typ = a.marker_type;
+                }
+                if (a.marker_type === "Insertion") {
+                    a.inserts = a.bases;
+                }
             });
 
-            var with_variants2 = $.merge(lower_upd_al, lower_upd_var);
-            upd2 = $.merge(with_variants2, lower_upd_ref);
+            v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
+                return (((d.end_position - 0.5 < lowerBound) || (d.start_position + 0.5 > upperBound)));
+            }));
 
 
+            // reads = reads.filter(function (f) {
+            //     return (f.read_end < lowerBound) || (f.read_start > upperBound)
+            // });
+            // read entfernen wenn ende < lower bound oder start > upper bound
 
+            lastLowerBound = lowerBound;
+            lastUpperBound = upperBound;
+            scrolling_locked = false;
         }
-
-        if (lastUpperBound > upperBound) {
-            for (let j = 1; j < 10; j++) {
-                if (var_rows[j].max_end > upperBound) {
-                    var_rows[j].max_end = upperBound;
-                }
-            }
-        }
-
-        if (lastLowerBound < lowerBound) {
-            for (let j = 1; j < 10; j++) {
-                if (var_rows[j].min_start < lowerBound) {
-                    var_rows[j].min_start = lowerBound;
-                }
-            }
-        }
-
-        upd = $.merge(upd1, upd2);
-
-        upd.forEach(function (a) {
-            if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
-                a.base = a.marker_type;
-            } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing") {
-                a.typ = a.marker_type;
-            }
-            if (a.marker_type === "Insertion") {
-                a.inserts = a.bases;
-            }
-        });
-
-        v.change('fasta', vega.changeset().insert(upd).remove(function (d) {
-            return (((d.end_position - 0.5 < lowerBound) || (d.start_position + 0.5 > upperBound))) ;
-        }));
-
-
-
-        // reads = reads.filter(function (f) {
-        //     return (f.read_end < lowerBound) || (f.read_start > upperBound)
-        // });
-        // read entfernen wenn ende < lower bound oder start > upper bound
-
-       lastLowerBound = lowerBound;
-       lastUpperBound = upperBound;
     });
-
-
 }
 
 
