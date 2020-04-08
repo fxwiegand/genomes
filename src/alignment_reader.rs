@@ -238,7 +238,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let rs: i32;
                             let re: i32;
 
-                            if snip.paired {
+                            if snip.paired && snip.tid == snip.mate_tid {
                                 if snip.pos < snip.mate_pos {
                                     re = snip.mate_pos + 100;
                                     rs = snip.pos;
@@ -303,7 +303,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                         let rs: i32;
                         let re: i32;
 
-                        if snip.paired {
+                        if snip.paired && snip.tid == snip.mate_tid {
                             if snip.pos < snip.mate_pos {
                                 re = snip.mate_pos + 100;
                                 rs = snip.pos;
@@ -446,7 +446,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                     let rs: i32;
                                     let re: i32;
 
-                                    if snip.paired {
+                                    if snip.paired && snip.tid == snip.mate_tid {
                                         if snip.pos < snip.mate_pos {
                                             re = snip.mate_pos + 100;
                                             rs = snip.pos;
@@ -509,7 +509,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let rs: i32;
                             let re: i32;
 
-                            if snip.paired {
+                            if snip.paired && snip.tid == snip.mate_tid {
                                 if snip.pos < snip.mate_pos {
                                     re = snip.mate_pos + 100;
                                     rs = snip.pos;
@@ -572,7 +572,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                     let rs: i32;
                                     let re: i32;
 
-                                    if snip.paired {
+                                    if snip.paired && snip.tid == snip.mate_tid {
                                         if snip.pos < snip.mate_pos {
                                             re = snip.mate_pos + 100;
                                             rs = snip.pos;
@@ -636,7 +636,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let re: i32;
 
                             if snip.paired {
-                                if snip.pos < snip.mate_pos {
+                                if snip.pos < snip.mate_pos && snip.tid == snip.mate_tid {
                                     re = snip.mate_pos + 100;
                                     rs = snip.pos;
                                 } else {
