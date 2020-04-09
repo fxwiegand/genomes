@@ -5,3 +5,4 @@ node_modules/
 data.json
 static_vega.json
 genomes.iml
+Cargo.lock
