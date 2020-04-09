@@ -3,12 +3,14 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate serde;
 #[macro_use] extern crate serde_json;
+#[macro_use] extern crate log;
 
 extern crate rocket_contrib;
 extern crate bit_vec;
 extern crate bio;
 extern crate rust_htslib;
 extern crate rustc_serialize;
+extern crate regex;
 
 mod alignment_reader;
 mod fasta_reader;

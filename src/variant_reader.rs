@@ -3,6 +3,7 @@ extern crate bit_vec;
 
 use std::path::Path;
 use rust_htslib::bcf::Read;
+use regex::Regex;
 
 #[derive(Serialize, Clone)]
 pub struct Variant {
@@ -49,20 +50,30 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<V
                 str.push(*c as char);
             }
 
-            altve.push(str);
+            let cnv = Regex::new(r"^<CN\d>$").unwrap();
+
+            if cnv.is_match(str.as_ref()) {
+                warn!("Use of unsupported Copy-Number-Variation {}", str)
+            } else {
+                altve.push(str);
+            }
         }
 
-        let var_string = String::from("Variant");
+        if altve.len() > 0 {
+            let var_string = String::from("Variant");
 
-        let var = Variant {
-            marker_type: var_string,
-            reference: rfrce,
-            alternatives: altve,
-            start_position: pos as f64 - 0.5,
-            end_position: pos as f64 - 0.5 + len as f64,
-        };
+            let var = Variant {
+                marker_type: var_string,
+                reference: rfrce,
+                alternatives: altve,
+                start_position: pos as f64 - 0.5,
+                end_position: pos as f64 - 0.5 + len as f64,
+            };
 
-        variants.push(var);
+            variants.push(var);
+        }
+
+
     }
 
     variants
