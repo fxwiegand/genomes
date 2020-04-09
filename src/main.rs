@@ -42,13 +42,13 @@ fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -
 
 #[get("/alignment/<chromosome>/<from>/<to>")]
 fn alignment(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<(Vec<AlignmentNucleobase>,Vec<AlignmentMatch>)> {
-    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from as u32, to as u32);
+    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from, to);
     Json(response)
 }
 
 #[get("/variant/<chromosome>/<from>/<to>")]
 fn variant(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
-    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from as u32, to as u32);
+    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from, to);
     Json(response)
 }
 
@@ -57,7 +57,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if (&args[1].clone()) == "static_json" {
-        create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u32::from_str(&args[6].clone()).unwrap(), u32::from_str(&args[7].clone()).unwrap()).expect("not enough argument, try: cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf chromosom from to");
+        create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u64::from_str(&args[6].clone()).unwrap(), u64::from_str(&args[7].clone()).unwrap()).expect("not enough argument, try: cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf chromosom from to");
         //let args= String::from("");
         let a :String = args[6].clone();
         let b :String = args[7].clone();

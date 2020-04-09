@@ -153,7 +153,7 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
     (reads_wr, matches_wr)
 }
 
-pub fn get_static_reads(path: &Path, fasta_path: &Path, chrom: String, from: u32, to: u32) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
+pub fn get_static_reads(path: &Path, fasta_path: &Path, chrom: String, from: u64, to: u64) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
     let alignments = read_indexed_bam(path,chrom.clone(), from, to);
     let (msm, m) = make_nucleobases(fasta_path, chrom, alignments, from, to);
     let static_bases = calc_rows(msm, m);
@@ -192,7 +192,7 @@ fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
     vars
 }
 
-pub fn get_static_variants(path: &Path, chrom: String, from: u32, to: u32) -> Vec<StaticVariant> {
+pub fn get_static_variants(path: &Path, chrom: String, from: u64, to: u64) -> Vec<StaticVariant> {
     let variants = read_indexed_vcf(path, chrom, from, to);
     let static_variants = calc_variant_rows(variants);
 

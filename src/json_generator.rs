@@ -6,9 +6,9 @@ use fasta_reader::read_fasta;
 use static_reader::{get_static_reads,get_static_variants};
 
 
-pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: String, from: u32, to: u32) -> std::io::Result<()> {
+pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: String, from: u64, to: u64) -> std::io::Result<()> {
     // Daten hier sammeln
-    let fasta = json!(read_fasta(fasta_path.clone(), chrom.clone(), from as u64, to as u64));
+    let fasta = json!(read_fasta(fasta_path.clone(), chrom.clone(), from, to));
     let alignments = json!(get_static_reads(bam_path, fasta_path, chrom.clone(), from, to));
     let variant = json!(get_static_variants(vcf_path, chrom.clone(), from, to));
 

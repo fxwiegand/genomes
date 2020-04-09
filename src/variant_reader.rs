@@ -14,7 +14,7 @@ pub struct Variant {
     pub(crate) end_position: f64,
 }
 
-pub fn read_indexed_vcf(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Variant> {
+pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Variant> {
     let mut vcf = rust_htslib::bcf::IndexedReader::from_path(&path).unwrap();
 
     let rid = vcf.header().name2rid(chrom.as_bytes()).unwrap();

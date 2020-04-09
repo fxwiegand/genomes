@@ -22,13 +22,13 @@ pub enum Marker {
 #[derive(Clone)]
 pub struct Alignment {
     sequence: String,
-    pos: i32,
+    pos: i64,
     length: u16,
     flags: Vec<u16>,
     name: String,
     cigar: CigarStringView,
     paired: bool,
-    mate_pos: i32,
+    mate_pos: i64,
     tid: i32,
     mate_tid: i32
 }
@@ -91,7 +91,7 @@ pub fn decode_flags(code :u16) -> Vec<u16> {
     read_map
 }
 
-pub fn read_indexed_bam(path: &Path, chrom: String, from: u32, to: u32) -> Vec<Alignment> {
+pub fn read_indexed_bam(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Alignment> {
     let mut bam = bam::IndexedReader::from_path(&path).unwrap();
     let tid = bam.header().tid(chrom.as_bytes()).unwrap();
 
@@ -164,15 +164,15 @@ fn make_alignment(record: bam::Record) -> Alignment {
     read
 }
 
-pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, from: u32, to: u32) -> (Vec<AlignmentNucleobase>, Vec<AlignmentMatch>) {
+pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignment>, from: u64, to: u64) -> (Vec<AlignmentNucleobase>, Vec<AlignmentMatch>) {
     let mut bases: Vec<AlignmentNucleobase> = Vec::new();
     let mut matches: Vec<AlignmentMatch> = Vec::new();
 
-    let ref_bases = read_fasta(fasta_path, chrom, from as u64, to as u64);
+    let ref_bases = read_fasta(fasta_path, chrom, from, to);
 
     for s in snippets {
-        let mut cigar_offset: i32 = 0;
-        let mut read_offset: i32 = 0;
+        let mut cigar_offset: i64 = 0;
+        let mut read_offset: i64 = 0;
         let base_string = s.sequence.clone();
         let char_vec: Vec<char> = base_string.chars().collect();
 
@@ -180,10 +180,10 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
 
         let p = s.clone();
 
-        if p.paired && (p.pos + p.length as i32) < p.mate_pos && p.tid == p.mate_tid {
+        if p.paired && (p.pos + p.length as i64) < p.mate_pos && p.tid == p.mate_tid {
             let pairing = AlignmentMatch {
                 marker_type: Marker::Pairing,
-                start_position: (p.pos + p.length as i32) as f64 - 0.5,
+                start_position: (p.pos + p.length as i64) as f64 - 0.5,
                 end_position: p.mate_pos as f64 - 0.5,
                 flags: p.flags.clone(),
                 name: p.name.clone(),
@@ -206,8 +206,8 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                         let b = char_vec[cigar_offset as usize];
 
 
-                        if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
-                            let ref_index = snip.pos + read_offset - from as i32;
+                        if snip.pos + read_offset >= from as i64 && snip.pos + read_offset < to as i64 {
+                            let ref_index = snip.pos + read_offset - from as i64;
                             let ref_base = &ref_bases[ref_index as usize];
 
 
@@ -215,7 +215,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             if ref_base.get_marker_type() == b {
                                 // Create long rule while bases match
                                 if match_count == 0 {
-                                    match_start = snip.pos as i32 + read_offset;
+                                    match_start = snip.pos as i64 + read_offset;
                                 }
                                 match_count += 1;
                                 match_ending = true;
@@ -231,12 +231,12 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                     _ => m = Marker::Deletion,
                                 }
 
-                            let p = snip.pos as i32 + read_offset;
+                            let p = snip.pos as i64 + read_offset;
                             let f = snip.flags;
                             let n = snip.name;
 
-                            let rs: i32;
-                            let re: i32;
+                            let rs: i64;
+                            let re: i64;
 
                             if snip.paired && snip.tid == snip.mate_tid {
                                 if snip.pos < snip.mate_pos {
@@ -244,11 +244,11 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                     rs = snip.pos;
                                 } else {
                                     rs = snip.mate_pos;
-                                    re = snip.pos as i32 + snip.length as i32;
+                                    re = snip.pos + snip.length as i64;
                                 }
                             } else {
                                 rs = snip.pos;
-                                re = snip.pos as i32 + snip.length as i32;
+                                re = snip.pos + snip.length as i64;
                             }
 
                                 if match_count > 0 {
@@ -300,8 +300,8 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                         let f = snip.flags;
                         let n = snip.name;
 
-                        let rs: i32;
-                        let re: i32;
+                        let rs: i64;
+                        let re: i64;
 
                         if snip.paired && snip.tid == snip.mate_tid {
                             if snip.pos < snip.mate_pos {
@@ -309,11 +309,11 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                 rs = snip.pos;
                             } else {
                                 rs = snip.mate_pos;
-                                re = snip.pos as i32 + snip.length as i32;
+                                re = snip.pos + snip.length as i64;
                             }
                         } else {
                             rs = snip.pos;
-                            re = snip.pos as i32 + snip.length as i32;
+                            re = snip.pos + snip.length as i64;
                         }
 
                         let mtch = AlignmentMatch {
@@ -372,7 +372,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                     for _i in 0..rust_htslib::bam::record::Cigar::Del(*c).len() {
                         let snip = s.clone();
                         let m = Marker::Deletion;
-                        let p = snip.pos as i32 + read_offset;
+                        let p = snip.pos as i64 + read_offset;
                         let f = snip.flags;
                         let n = snip.name;
                         let rs = snip.pos;
@@ -415,8 +415,8 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let snip = s.clone();
                             let b = char_vec[cigar_offset as usize];
 
-                            if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
-                                let ref_index = snip.pos + read_offset - from as i32;
+                            if snip.pos + read_offset >= from as i64 && snip.pos + read_offset < to as i64 {
+                                let ref_index = snip.pos + read_offset - from as i64;
                                 let ref_base = &ref_bases[ref_index as usize];
 
 
@@ -424,7 +424,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                 if ref_base.get_marker_type() == b {
                                     // Create long rule while bases match
                                     if match_count == 0 {
-                                        match_start = snip.pos as i32 + read_offset;
+                                        match_start = snip.pos as i64 + read_offset;
                                     }
                                     match_count += 1;
                                     match_ending = true;
@@ -439,12 +439,12 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                         _ => m = Marker::Deletion,
                                     }
 
-                                    let p = snip.pos as i32 + read_offset;
+                                    let p = snip.pos as i64 + read_offset;
                                     let f = snip.flags;
                                     let n = snip.name;
 
-                                    let rs: i32;
-                                    let re: i32;
+                                    let rs: i64;
+                                    let re: i64;
 
                                     if snip.paired && snip.tid == snip.mate_tid {
                                         if snip.pos < snip.mate_pos {
@@ -452,11 +452,11 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                             rs = snip.pos;
                                         } else {
                                             rs = snip.mate_pos;
-                                            re = snip.pos as i32 + snip.length as i32;
+                                            re = snip.pos + snip.length as i64;
                                         }
                                     } else {
                                         rs = snip.pos;
-                                        re = snip.pos as i32 + snip.length as i32;
+                                        re = snip.pos + snip.length as i64;
                                     }
 
                                     if match_count > 0 {
@@ -506,8 +506,8 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let f = snip.flags;
                             let n = snip.name;
 
-                            let rs: i32;
-                            let re: i32;
+                            let rs: i64;
+                            let re: i64;
 
                             if snip.paired && snip.tid == snip.mate_tid {
                                 if snip.pos < snip.mate_pos {
@@ -515,11 +515,11 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                     rs = snip.pos;
                                 } else {
                                     rs = snip.mate_pos;
-                                    re = snip.pos as i32 + snip.length as i32;
+                                    re = snip.pos + snip.length as i64;
                                 }
                             } else {
                                 rs = snip.pos;
-                                re = snip.pos as i32 + snip.length as i32;
+                                re = snip.pos + snip.length as i64;
                             }
 
                             let mtch = AlignmentMatch {
@@ -540,8 +540,8 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let snip = s.clone();
                             let b = char_vec[cigar_offset as usize];
 
-                            if snip.pos + read_offset >= from as i32 && snip.pos + read_offset < to as i32 {
-                                let ref_index = snip.pos + read_offset - from as i32;
+                            if snip.pos + read_offset >= from as i64 && snip.pos + read_offset < to as i64 {
+                                let ref_index = snip.pos + read_offset - from as i64;
                                 let ref_base = &ref_bases[ref_index as usize];
 
 
@@ -549,7 +549,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                 if ref_base.get_marker_type() == b {
                                     // Create long rule while bases match
                                     if match_count == 0 {
-                                        match_start = snip.pos as i32 + read_offset;
+                                        match_start = snip.pos as i64 + read_offset;
                                     }
                                     match_count += 1;
                                     match_ending = true;
@@ -565,12 +565,12 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                         _ => m = Marker::Deletion,
                                     }
 
-                                    let p = snip.pos as i32 + read_offset;
+                                    let p = snip.pos as i64 + read_offset;
                                     let f = snip.flags;
                                     let n = snip.name;
 
-                                    let rs: i32;
-                                    let re: i32;
+                                    let rs: i64;
+                                    let re: i64;
 
                                     if snip.paired && snip.tid == snip.mate_tid {
                                         if snip.pos < snip.mate_pos {
@@ -578,11 +578,11 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                                             rs = snip.pos;
                                         } else {
                                             rs = snip.mate_pos;
-                                            re = snip.pos as i32 + snip.length as i32;
+                                            re = snip.pos + snip.length as i64;
                                         }
                                     } else {
                                         rs = snip.pos;
-                                        re = snip.pos as i32 + snip.length as i32;
+                                        re = snip.pos + snip.length as i64;
                                     }
 
                                     if match_count > 0 {
@@ -632,20 +632,20 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                             let f = snip.flags;
                             let n = snip.name;
 
-                            let rs: i32;
-                            let re: i32;
+                            let rs: i64;
+                            let re: i64;
 
-                            if snip.paired {
-                                if snip.pos < snip.mate_pos && snip.tid == snip.mate_tid {
+                            if snip.paired && snip.tid == snip.mate_tid {
+                                if snip.pos < snip.mate_pos {
                                     re = snip.mate_pos + 100;
                                     rs = snip.pos;
                                 } else {
                                     rs = snip.mate_pos;
-                                    re = snip.pos as i32 + snip.length as i32;
+                                    re = snip.pos + snip.length as i64;
                                 }
                             } else {
                                 rs = snip.pos;
-                                re = snip.pos as i32 + snip.length as i32;
+                                re = snip.pos + snip.length as i64;
                             }
 
                             let mtch = AlignmentMatch {
@@ -706,7 +706,7 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
 
 
 
-pub fn get_reads(path: &Path, fasta_path: &Path, chrom: String, from: u32, to: u32) -> (Vec<AlignmentNucleobase>, Vec<AlignmentMatch>) {
+pub fn get_reads(path: &Path, fasta_path: &Path, chrom: String, from: u64, to: u64) -> (Vec<AlignmentNucleobase>, Vec<AlignmentMatch>) {
     let alignments = read_indexed_bam(path,chrom.clone(), from, to);
     let bases = make_nucleobases(fasta_path, chrom, alignments, from, to);
 
