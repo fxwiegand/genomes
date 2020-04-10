@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  ci:
+  Build:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +25,19 @@ jobs:
         with:
           command: build
       
+  Tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
