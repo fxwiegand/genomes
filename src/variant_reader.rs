@@ -5,13 +5,23 @@ use std::path::Path;
 use rust_htslib::bcf::Read;
 use regex::Regex;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct Variant {
     pub(crate) marker_type: String,
     pub(crate) reference: String,
     pub(crate) alternatives: Option<Vec<String>>,
     pub(crate) start_position: f64,
     pub(crate) end_position: f64,
+}
+
+impl PartialEq for Variant {
+    fn eq(&self, other: &Self) -> bool {
+        self.marker_type == other.marker_type &&
+        self.reference == other.reference &&
+        self.alternatives == other.alternatives &&
+        self.start_position == other.start_position &&
+        self.end_position == other.end_position
+    }
 }
 
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Variant> {
@@ -29,7 +39,9 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
         let pos = rec.pos();
         let end_pos = match rec.info(b"END").integer() {
             Ok(Some(end_pos)) => {
-                let end_pos = end_pos[0] as f64 + 0.5;
+                // Subtraction of 0.5 because of the 0-based positioning in the whole plot
+                //TODO: Ask @johanneskoester if the END Info Tag is 0-based or not
+                let end_pos = end_pos[0] as f64 - 0.5; // -1 due to 0-basing, + 0.5 du to end pos
                 Some(end_pos)
             }
             _ => None,

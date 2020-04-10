@@ -18,7 +18,8 @@ mod variant_reader;
 mod json_generator;
 mod static_reader;
 
-#[cfg(test)] mod tests;
+#[cfg(test)]
+mod tests;
 
 use std::path::Path;
 use std::env;
