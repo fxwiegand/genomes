@@ -9,7 +9,7 @@ use regex::Regex;
 pub struct Variant {
     pub(crate) marker_type: String,
     pub(crate) reference: String,
-    pub(crate) alternatives: Vec<String>,
+    pub(crate) alternatives: Option<Vec<String>>,
     pub(crate) start_position: f64,
     pub(crate) end_position: f64,
 }
@@ -24,9 +24,16 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
     let mut variants: Vec<Variant> = Vec::new();
 
     for r in vcf.records() {
-        let rec = r.unwrap();
+        let mut rec = r.unwrap();
 
         let pos = rec.pos();
+        let end_pos = match rec.info(b"END").integer() {
+            Ok(Some(end_pos)) => {
+                let end_pos = end_pos[0] as f64 + 0.5;
+                Some(end_pos)
+            }
+            _ => None,
+        };
         let alleles = rec.alleles();
 
 
@@ -40,39 +47,53 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
             len += 1;
         }
 
-        let mut altve: Vec<String> = Vec::new();
-
-        for i in 1..alleles.len() {
-            let alt = alleles[i];
-            let mut str = String::from("");
-
-            for c in alt {
-                str.push(*c as char);
-            }
-
-            let cnv = Regex::new(r"^<CN\d>$").unwrap();
-
-            if cnv.is_match(str.as_ref()) {
-                warn!("Use of unsupported Copy-Number-Variation {}", str)
-            } else {
-                altve.push(str);
-            }
-        }
-
-        if altve.len() > 0 {
+        if alleles[1] == b"<DEL>" {
             let var_string = String::from("Variant");
 
             let var = Variant {
                 marker_type: var_string,
-                reference: rfrce,
-                alternatives: altve,
+                reference: rfrce.clone(),
+                alternatives: None,
                 start_position: pos as f64 - 0.5,
-                end_position: pos as f64 - 0.5 + len as f64,
+                end_position: end_pos.unwrap(),
             };
 
             variants.push(var);
-        }
+        } else {
+            let mut altve: Vec<String> = Vec::new();
 
+            for i in 1..alleles.len() {
+                let alt = alleles[i];
+
+                let mut str = String::from("");
+
+                for c in alt {
+                    str.push(*c as char);
+                }
+
+                let cnv = Regex::new(r"^<CN\d>$").unwrap();
+
+                if cnv.is_match(str.as_ref()) {
+                    warn!("Use of unsupported Copy-Number-Variation {}", str)
+                } else {
+                    altve.push(str);
+                }
+            }
+
+            if altve.len() > 0 {
+                let var_string = String::from("Variant");
+
+                let var = Variant {
+                    marker_type: var_string,
+                    reference: rfrce,
+                    alternatives: Some(altve),
+                    start_position: pos as f64 - 0.5,
+                    end_position: pos as f64 - 0.5 + len as f64,
+                };
+
+                variants.push(var);
+            }
+        }
 
     }
 

@@ -175,7 +175,7 @@ fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
                 let v = StaticVariant{
                     marker_type: r.marker_type,
                     reference: r.reference,
-                    alternatives: r.alternatives,
+                    alternatives: r.alternatives.unwrap(),
                     start_position: r.start_position,
                     end_position: r.end_position,
                     row: -row,
