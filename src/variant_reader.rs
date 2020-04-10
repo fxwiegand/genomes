@@ -71,6 +71,23 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
             };
 
             variants.push(var);
+        } else if alleles[1] == b"<INV>" {
+            let var_string = String::from("Variant");
+
+            let rev: String = rfrce.chars().rev().collect();
+            let mut rev_vec : Vec<String> = Vec::new();
+            rev_vec.push(rev);
+
+
+            let var = Variant {
+                marker_type: var_string,
+                reference: rfrce.clone(),
+                alternatives: Some(rev_vec),
+                start_position: pos as f64 - 0.5,
+                end_position: end_pos.unwrap(),
+            };
+
+            variants.push(var);
         } else {
             let mut altve: Vec<String> = Vec::new();
 
