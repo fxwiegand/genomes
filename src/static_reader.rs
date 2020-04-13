@@ -31,7 +31,7 @@ pub struct StaticAlignmentNucleobase {
 pub struct StaticVariant {
     marker_type: String,
     reference: String,
-    alternatives: Vec<String>,
+    alternatives: Option<String>,
     start_position: f64,
     end_position: f64,
     row: i8,
@@ -175,7 +175,7 @@ fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
                 let v = StaticVariant{
                     marker_type: r.marker_type,
                     reference: r.reference,
-                    alternatives: r.alternatives.unwrap(),
+                    alternatives: r.alternatives,
                     start_position: r.start_position,
                     end_position: r.end_position,
                     row: -row,

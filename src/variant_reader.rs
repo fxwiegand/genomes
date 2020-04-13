@@ -9,7 +9,7 @@ use regex::Regex;
 pub struct Variant {
     pub(crate) marker_type: String,
     pub(crate) reference: String,
-    pub(crate) alternatives: Option<Vec<String>>,
+    pub(crate) alternatives: Option<String>,
     pub(crate) start_position: f64,
     pub(crate) end_position: f64,
 }
@@ -59,58 +59,45 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
             len += 1;
         }
 
-        if alleles[1] == b"<DEL>" {
+        for i in 1..alleles.len() {
+            let alt = alleles[i];
             let var_string = String::from("Variant");
 
-            let var = Variant {
-                marker_type: var_string,
-                reference: rfrce.clone(),
-                alternatives: None,
-                start_position: pos as f64 - 0.5,
-                end_position: end_pos.unwrap(),
-            };
+            if alt == b"<DEL>" {
+                let var = Variant {
+                    marker_type: var_string,
+                    reference: rfrce.clone(),
+                    alternatives: None,
+                    start_position: pos as f64 - 0.5,
+                    end_position: end_pos.unwrap(),
+                };
 
-            variants.push(var);
-        } else if alleles[1] == b"<INV>" {
-            let var_string = String::from("Variant");
+                variants.push(var);
+            } else if alt == b"<INV>" {
+                let rev: String = rfrce.chars().rev().collect();
 
-            let rev: String = rfrce.chars().rev().collect();
-            let mut rev_vec : Vec<String> = Vec::new();
-            rev_vec.push(rev);
+                let var = Variant {
+                    marker_type: var_string,
+                    reference: rfrce.clone(),
+                    alternatives: Some(rev),
+                    start_position: pos as f64 - 0.5,
+                    end_position: end_pos.unwrap(),
+                };
 
+                variants.push(var);
+            } else if alt == b"<DUP>" {
+                let dup: String = [rfrce.clone(),rfrce.clone()].concat();
 
-            let var = Variant {
-                marker_type: var_string,
-                reference: rfrce.clone(),
-                alternatives: Some(rev_vec),
-                start_position: pos as f64 - 0.5,
-                end_position: end_pos.unwrap(),
-            };
+                let var = Variant {
+                    marker_type: var_string,
+                    reference: rfrce.clone(),
+                    alternatives: Some(dup),
+                    start_position: pos as f64 - 0.5,
+                    end_position: end_pos.unwrap(),
+                };
 
-            variants.push(var);
-        } else if alleles[1] == b"<DUP>" {
-            let var_string = String::from("Variant");
-
-            let dup: String = [rfrce.clone(),rfrce.clone()].concat();
-            let mut dup_vec : Vec<String> = Vec::new();
-            dup_vec.push(dup);
-
-
-            let var = Variant {
-                marker_type: var_string,
-                reference: rfrce.clone(),
-                alternatives: Some(dup_vec),
-                start_position: pos as f64 - 0.5,
-                end_position: end_pos.unwrap(),
-            };
-
-            variants.push(var);
-        } else {
-            let mut altve: Vec<String> = Vec::new();
-
-            for i in 1..alleles.len() {
-                let alt = alleles[i];
-
+                variants.push(var);
+            } else {
                 let mut str = String::from("");
 
                 for c in alt {
@@ -120,27 +107,20 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
                 let cnv = Regex::new(r"^<CN\d>$").unwrap();
 
                 if cnv.is_match(str.as_ref()) {
-                    warn!("Use of unsupported Copy-Number-Variation {}", str)
+                    warn!("Use of unsupported Copy-Number-Variation {}", str) // Warning for Copy-Number-Variation
                 } else {
-                    altve.push(str);
+                    let var = Variant {
+                        marker_type: var_string,
+                        reference: rfrce.clone(),
+                        alternatives: Some(str),
+                        start_position: pos as f64 - 0.5,
+                        end_position: pos as f64 - 0.5 + len as f64,
+                    };
+
+                    variants.push(var);
                 }
             }
-
-            if altve.len() > 0 {
-                let var_string = String::from("Variant");
-
-                let var = Variant {
-                    marker_type: var_string,
-                    reference: rfrce,
-                    alternatives: Some(altve),
-                    start_position: pos as f64 - 0.5,
-                    end_position: pos as f64 - 0.5 + len as f64,
-                };
-
-                variants.push(var);
-            }
         }
-
     }
 
     variants
