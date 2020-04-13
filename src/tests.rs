@@ -1,6 +1,25 @@
 use super::*;
 use std::path::Path;
 
+
+#[test]
+fn insertion_test() {
+    let mut variants = read_indexed_vcf(Path::new("tests/resources/insertion.vcf.gz"), String::from("11"), 887340, 887350);
+    let var = variants.pop().unwrap();
+
+    let allel = String::from("TAAAAC");
+
+    let test_variant = Variant {
+        marker_type: String::from("Variant"),
+        reference: String::from("T"),
+        alternatives: Some(allel),
+        start_position: 887342.5 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
+        end_position: 887343.5 as f64, // -1 due to 0-basing, + 0.5 du to end pos
+    };
+    assert_eq!(var, test_variant);
+}
+
+
 #[test]
 fn duplicate_test() {
     let mut variants = read_indexed_vcf(Path::new("tests/resources/duplicate.vcf.gz"), String::from("11"), 150000, 151000);
