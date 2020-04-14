@@ -12,6 +12,7 @@ pub struct Variant {
     pub(crate) alternatives: Option<String>,
     pub(crate) start_position: f64,
     pub(crate) end_position: f64,
+    pub(crate) var_type: VariantType,
 }
 
 impl PartialEq for Variant {
@@ -20,8 +21,18 @@ impl PartialEq for Variant {
         self.reference == other.reference &&
         self.alternatives == other.alternatives &&
         self.start_position == other.start_position &&
-        self.end_position == other.end_position
+        self.end_position == other.end_position &&
+        self.var_type == other.var_type
     }
+}
+
+#[derive(Serialize, Clone, Debug, PartialEq)]
+pub enum VariantType {
+    Deletion,
+    Insertion,
+    Duplicate,
+    Inversion,
+    Variant,
 }
 
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Variant> {
@@ -70,6 +81,7 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
                     alternatives: None,
                     start_position: pos as f64 - 0.5,
                     end_position: end_pos.unwrap(),
+                    var_type: VariantType::Deletion,
                 };
 
                 variants.push(var);
@@ -82,6 +94,7 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
                     alternatives: Some(rev),
                     start_position: pos as f64 - 0.5,
                     end_position: end_pos.unwrap(),
+                    var_type: VariantType::Inversion,
                 };
 
                 variants.push(var);
@@ -94,27 +107,39 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
                     alternatives: Some(dup),
                     start_position: pos as f64 - 0.5,
                     end_position: end_pos.unwrap(),
+                    var_type: VariantType::Duplicate,
                 };
 
                 variants.push(var);
             } else {
-                let mut str = String::from("");
+                let mut allel = String::from("");
 
                 for c in alt {
-                    str.push(*c as char);
+                    allel.push(*c as char);
+                }
+
+                let variant_type;
+
+                if allel.len() == rfrce.len() {
+                    variant_type = VariantType::Variant;
+                } else if allel.len() > rfrce.len() {
+                    variant_type = VariantType::Insertion;
+                } else {
+                    variant_type = VariantType::Deletion;
                 }
 
                 let cnv = Regex::new(r"^<CN\d>$").unwrap();
 
-                if cnv.is_match(str.as_ref()) {
-                    warn!("Use of unsupported Copy-Number-Variation {}", str) // Warning for Copy-Number-Variation
+                if cnv.is_match(allel.as_ref()) {
+                    warn!("Use of unsupported Copy-Number-Variation {}", allel) // Warning for Copy-Number-Variation
                 } else {
                     let var = Variant {
                         marker_type: var_string,
                         reference: rfrce.clone(),
-                        alternatives: Some(str),
+                        alternatives: Some(allel),
                         start_position: pos as f64 - 0.5,
                         end_position: pos as f64 - 0.5 + len as f64,
+                        var_type: variant_type,
                     };
 
                     variants.push(var);

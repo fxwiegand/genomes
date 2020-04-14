@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::path::Path;
 use alignment_reader::{AlignmentNucleobase, AlignmentMatch,read_indexed_bam, make_nucleobases};
 use alignment_reader::Marker;
-use variant_reader::{Variant, read_indexed_vcf};
+use variant_reader::{Variant, read_indexed_vcf, VariantType};
 
 
 #[derive(Serialize, Clone, Debug)]
@@ -35,6 +35,7 @@ pub struct StaticVariant {
     start_position: f64,
     end_position: f64,
     row: i8,
+    var_type: VariantType,
 }
 
 
@@ -179,6 +180,7 @@ fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
                     start_position: r.start_position,
                     end_position: r.end_position,
                     row: -row,
+                    var_type: r.var_type,
                 };
 
                 vars.push(v);

@@ -1,5 +1,6 @@
 use super::*;
 use std::path::Path;
+use variant_reader::VariantType;
 
 
 #[test]
@@ -15,6 +16,7 @@ fn insertion_test() {
         alternatives: Some(allel),
         start_position: 887342.5 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
         end_position: 887343.5 as f64, // -1 due to 0-basing, + 0.5 du to end pos
+        var_type: VariantType::Insertion,
     };
     assert_eq!(var, test_variant);
 }
@@ -33,6 +35,7 @@ fn duplicate_test() {
         alternatives: Some(allel),
         start_position: 150188.5 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
         end_position: 150191.5 as f64, // -1 due to 0-basing, + 0.5 du to end pos
+        var_type: VariantType::Duplicate,
     };
     assert_eq!(var, test_variant);
 }
@@ -51,6 +54,7 @@ fn inversion_test() {
         alternatives: Some(allel),
         start_position: 150186.5 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
         end_position: 150191.5 as f64, // -1 due to 0-basing, + 0.5 du to end pos
+        var_type: VariantType:: Inversion,
     };
     assert_eq!(var, test_variant);
 }
@@ -67,6 +71,7 @@ fn deletion_test() {
         alternatives: None,
         start_position: 150186.5 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
         end_position: 150773.5 as f64, // -1 due to 0-basing, + 0.5 du to end pos
+        var_type: VariantType::Deletion,
     };
     assert_eq!(var, test_variant);
 }
