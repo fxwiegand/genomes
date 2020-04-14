@@ -19,13 +19,13 @@ samtools index path/to/myfasta.fa
 Start with
 
 ```
-cargo run data/mybam.bam data/myfasta.fa data/myvcf.vcf
+cargo run data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz
 ```
 
 For a static view with the [Vega Online Editor](https://vega.github.io/editor/) start with
 
 ```
-cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf chromosom from to
+cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz chromosom from to
 ```
 
 ## Built With
@@ -34,7 +34,6 @@ cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf chromosom fr
 * [Vega/Vega-Lite](https://vega.github.io) - A visualization grammar
 * [Rust-Htslib](https://github.com/rust-bio/rust-htslib) - HTSlib bindings and a high level Rust API for reading and writing BAM files
 * [Rust-Bio](https://github.com/rust-bio/rust-bio) - algorithms and data structures that are useful for bioinformatics
-* [rust-jsonm](https://github.com/andrewnester/rust-jsonm) and [jsonm](https://github.com/lennartcl/jsonm) - json compressor for packing messages with memoization 
 
 ## Contributing
 
