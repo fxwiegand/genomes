@@ -59,6 +59,7 @@ let lastLowerBound;
 let lastUpperBound;
 let reads;
 let rows;
+let vars = new HashMap();
 let var_rows;
 
 let scrolling_locked = false;
@@ -143,24 +144,30 @@ async function buildVega(chrom, fr, to) {
         return a.start_position < b.start_position;
     });
 
-    //TODO: Add name or primary key (see implementation for reads)
     vabody.forEach(function (a) {
-        for (i = 1; i < 10; i++) {
-            if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
-                a.row = -i;
-                var_rows[i].min_start = a.start_position;
-                var_rows[i].max_end = a.end_position;
-                break;
-            } else if (var_rows[i].max_end <= a.start_position) {
-                a.row = -i;
-                var_rows[i].max_end = a.end_position;
-                break;
-            } else if (var_rows[i].min_start >= a.end_position) {
-                a.row = -i;
-                var_rows[i].min_start = a.start_position;
-                break;
-            }
+        if(vars.has(a.toString())) {
+            a.row = vars.get(a.toString()).row;
+        } else {
+            for (i = 1; i < 10; i++) {
+                if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                    a.row = -i;
+                    var_rows[i].min_start = a.start_position;
+                    var_rows[i].max_end = a.end_position;
+                    vars.set(a.toString(),a);
+                    break;
+                } else if (var_rows[i].max_end <= a.start_position) {
+                    a.row = -i;
+                    var_rows[i].max_end = a.end_position;
+                    vars.set(a.toString(),a);
+                    break;
+                } else if (var_rows[i].min_start >= a.end_position) {
+                    a.row = -i;
+                    var_rows[i].min_start = a.start_position;
+                    vars.set(a.toString(),a);
+                    break;
+                }
 
+            }
         }
     });
 
@@ -214,22 +221,29 @@ async function buildVega(chrom, fr, to) {
 
 
                 upper_upd_var.forEach(function (a) {
-                    for (var i = 1; i < 10; i++) {
-                        if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
-                            a.row = -i;
-                            var_rows[i].min_start = a.start_position;
-                            var_rows[i].max_end = a.end_position;
-                            break;
-                        } else if (var_rows[i].max_end <= a.start_position) {
-                            a.row = -i;
-                            var_rows[i].max_end = a.end_position;
-                            break;
-                        } else if (var_rows[i].min_start >= a.end_position) {
-                            a.row = -i;
-                            var_rows[i].min_start = a.start_position;
-                            break;
-                        }
+                    if(vars.has(a.toString())) {
+                        a.row = vars.get(a.toString()).row;
+                    } else {
+                        for (i = 1; i < 10; i++) {
+                            if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                                a.row = -i;
+                                var_rows[i].min_start = a.start_position;
+                                var_rows[i].max_end = a.end_position;
+                                vars.set(a.toString(),a);
+                                break;
+                            } else if (var_rows[i].max_end <= a.start_position) {
+                                a.row = -i;
+                                var_rows[i].max_end = a.end_position;
+                                vars.set(a.toString(),a);
+                                break;
+                            } else if (var_rows[i].min_start >= a.end_position) {
+                                a.row = -i;
+                                var_rows[i].min_start = a.start_position;
+                                vars.set(a.toString(),a);
+                                break;
+                            }
 
+                        }
                     }
                 });
 
@@ -304,22 +318,29 @@ async function buildVega(chrom, fr, to) {
 
 
                 lower_upd_var.forEach(function (a) {
-                    for (var i = 1; i < 10; i++) {
-                        if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
-                            a.row = -i;
-                            var_rows[i].min_start = a.start_position;
-                            var_rows[i].max_end = a.end_position;
-                            break;
-                        } else if (var_rows[i].max_end <= a.start_position) {
-                            a.row = -i;
-                            var_rows[i].max_end = a.end_position;
-                            break;
-                        } else if (var_rows[i].min_start >= a.end_position) {
-                            a.row = -i;
-                            var_rows[i].min_start = a.start_position;
-                            break;
-                        }
+                    if(vars.has(a.toString())) {
+                        a.row = vars.get(a.toString()).row;
+                    } else {
+                        for (i = 1; i < 10; i++) {
+                            if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
+                                a.row = -i;
+                                var_rows[i].min_start = a.start_position;
+                                var_rows[i].max_end = a.end_position;
+                                vars.set(a.toString(),a);
+                                break;
+                            } else if (var_rows[i].max_end <= a.start_position) {
+                                a.row = -i;
+                                var_rows[i].max_end = a.end_position;
+                                vars.set(a.toString(),a);
+                                break;
+                            } else if (var_rows[i].min_start >= a.end_position) {
+                                a.row = -i;
+                                var_rows[i].min_start = a.start_position;
+                                vars.set(a.toString(),a);
+                                break;
+                            }
 
+                        }
                     }
                 });
 
