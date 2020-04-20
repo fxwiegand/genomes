@@ -57,7 +57,7 @@ async function fetchVegaSpecs() {
 
 let lastLowerBound;
 let lastUpperBound;
-let reads;
+let reads = new HashMap();
 let rows;
 let vars = new HashMap();
 let var_rows;
@@ -69,7 +69,6 @@ async function buildVega(chrom, fr, to) {
     lastLowerBound = fr;
     lastUpperBound = to;
 
-    reads = [];
     rows = [];
 
     var_rows = [];
@@ -103,40 +102,29 @@ async function buildVega(chrom, fr, to) {
 
 
     albody.forEach(function (a) {
-        let already_in = false;
-        //if not in read rows
-        reads.forEach(function (r) {
-            if (a.name === r.name) {
-                a.row = r.row;
-                already_in = true;
-            }
-        });
-        if (!already_in) {
+        if(reads.has(a.name)) {
+            a.row = reads.get(a.name).row;
+        } else {
             for (i = 1; i < 39; i++) {
                 if (rows[i].min_start === -1) { //read zeile ist leer
                     a.row = i;
                     rows[i].min_start = a.read_start;
                     rows[i].max_end = a.read_end;
-                    let read1 = {name:a.name, read_end:a.read_end, row: a.row};
-                    reads.push(read1);
+                    reads.set(a.name,a);
                     break;
                 } else if (rows[i].max_end < a.read_start) {
                     a.row = i;
                     rows[i].max_end = a.read_end;
-                    let read2 = {name:a.name, read_end:a.read_end, row: a.row};
-                    reads.push(read2);
+                    reads.set(a.name,a);
                     break;
                 } else if (rows[i].min_start > a.read_end) {
                     a.row = i;
                     rows[i].min_start = a.read_start;
-                    let read = {name:a.name, read_end:a.read_end, row: a.row};
-                    reads.push(read);
+                    reads.set(a.name,a);
                     break;
                 }
-
             }
         }
-
 
     });
 
@@ -242,51 +230,34 @@ async function buildVega(chrom, fr, to) {
                                 vars.set(a.toString(),a);
                                 break;
                             }
-
                         }
                     }
                 });
 
                 upper_upd_al.forEach(function (a) {
-                    var already_in = false;
-                    var pos_found = false;
-                    //if not in read rows
-                    reads.forEach(function (r) {
-                        if (a.name === r.name) {
-                            a.row = r.row;
-                            already_in = true;
-                        }
-                    });
-                    if (!already_in) {
-                        for (var i = 1; i < 39; i++) {
-                            if (rows[i].min_start === -1) {
+                    if(reads.has(a.name)) {
+                        a.row = reads.get(a.name).row;
+                    } else {
+                        for (i = 1; i < 39; i++) {
+                            if (rows[i].min_start === -1) { //read zeile ist leer
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
                                 rows[i].max_end = a.read_end;
-                                var read1 = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read1);
-
+                                reads.set(a.name,a);
                                 break;
-                            } else if (rows[i].max_end < a.read_start) { //read zeile ist leer
+                            } else if (rows[i].max_end < a.read_start) {
                                 a.row = i;
                                 rows[i].max_end = a.read_end;
-                                var read2 = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read2);
-
+                                reads.set(a.name,a);
                                 break;
                             } else if (rows[i].min_start > a.read_end) {
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
-                                var read = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read);
-
+                                reads.set(a.name,a);
                                 break;
                             }
-
                         }
                     }
-
-
                 });
 
                 var with_variants = $.merge(upper_upd_al, upper_upd_var);
@@ -339,48 +310,34 @@ async function buildVega(chrom, fr, to) {
                                 vars.set(a.toString(),a);
                                 break;
                             }
-
                         }
                     }
                 });
 
                 lower_upd_al.forEach(function (a) {
-                    var already_in = false;
-                    var pos_found = false;
-                    //if not in read rows
-                    reads.forEach(function (r) {
-                        if (a.name === r.name) {
-                            a.row = r.row;
-                            already_in = true;
-                        }
-                    });
-                    if (!already_in) {
-                        for (var i = 1; i < 39; i++) {
+                    if(reads.has(a.name)) {
+                        a.row = reads.get(a.name).row;
+                    } else {
+                        for (i = 1; i < 39; i++) {
                             if (rows[i].min_start === -1) { //read zeile ist leer
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
                                 rows[i].max_end = a.read_end;
-                                let read = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read);
+                                reads.set(a.name,a);
                                 break;
                             } else if (rows[i].max_end < a.read_start) {
                                 a.row = i;
                                 rows[i].max_end = a.read_end;
-                                let read = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read);
+                                reads.set(a.name,a);
                                 break;
                             } else if (rows[i].min_start > a.read_end) {
                                 a.row = i;
                                 rows[i].min_start = a.read_start;
-                                let read = {name: a.name, read_end: a.read_end, row: a.row};
-                                reads.push(read);
+                                reads.set(a.name,a);
                                 break;
                             }
-
                         }
                     }
-
-
                 });
 
                 let with_variants2 = $.merge(lower_upd_al, lower_upd_var);
