@@ -133,31 +133,31 @@ async function buildVega(chrom, fr, to) {
     });
 
     vabody.forEach(function (a) {
-        if(vars.has(a.toString())) {
-            a.row = vars.get(a.toString()).row;
+        if (vars.has(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives)) {
+            a.row = vars.get(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives).row;
         } else {
             for (i = 1; i < 10; i++) {
                 if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
                     a.row = -i;
                     var_rows[i].min_start = a.start_position;
                     var_rows[i].max_end = a.end_position;
-                    vars.set(a.toString(),a);
+                    vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                     break;
                 } else if (var_rows[i].max_end <= a.start_position) {
                     a.row = -i;
                     var_rows[i].max_end = a.end_position;
-                    vars.set(a.toString(),a);
+                    vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                     break;
                 } else if (var_rows[i].min_start >= a.end_position) {
                     a.row = -i;
                     var_rows[i].min_start = a.start_position;
-                    vars.set(a.toString(),a);
+                    vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                     break;
                 }
-
             }
         }
     });
+
 
 
     const with_variants = $.merge(body, vabody);
@@ -209,25 +209,25 @@ async function buildVega(chrom, fr, to) {
 
 
                 upper_upd_var.forEach(function (a) {
-                    if(vars.has(a.toString())) {
-                        a.row = vars.get(a.toString()).row;
+                    if (vars.has(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives)) {
+                        a.row = vars.get(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives).row;
                     } else {
                         for (i = 1; i < 10; i++) {
                             if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
                                 a.row = -i;
                                 var_rows[i].min_start = a.start_position;
                                 var_rows[i].max_end = a.end_position;
-                                vars.set(a.toString(),a);
+                                vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                                 break;
                             } else if (var_rows[i].max_end <= a.start_position) {
                                 a.row = -i;
                                 var_rows[i].max_end = a.end_position;
-                                vars.set(a.toString(),a);
+                                vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                                 break;
                             } else if (var_rows[i].min_start >= a.end_position) {
                                 a.row = -i;
                                 var_rows[i].min_start = a.start_position;
-                                vars.set(a.toString(),a);
+                                vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                                 break;
                             }
                         }
@@ -289,25 +289,25 @@ async function buildVega(chrom, fr, to) {
 
 
                 lower_upd_var.forEach(function (a) {
-                    if(vars.has(a.toString())) {
-                        a.row = vars.get(a.toString()).row;
+                    if (vars.has(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives)) {
+                        a.row = vars.get(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives).row;
                     } else {
                         for (i = 1; i < 10; i++) {
                             if (var_rows[i].min_start === -1.0) { //varianten zeile ist leer
                                 a.row = -i;
                                 var_rows[i].min_start = a.start_position;
                                 var_rows[i].max_end = a.end_position;
-                                vars.set(a.toString(),a);
+                                vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                                 break;
                             } else if (var_rows[i].max_end <= a.start_position) {
                                 a.row = -i;
                                 var_rows[i].max_end = a.end_position;
-                                vars.set(a.toString(),a);
+                                vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                                 break;
                             } else if (var_rows[i].min_start >= a.end_position) {
                                 a.row = -i;
                                 var_rows[i].min_start = a.start_position;
-                                vars.set(a.toString(),a);
+                                vars.set(a.var_type + a.start_position + a.end_position + a.reference + a.alternatives,a);
                                 break;
                             }
                         }
