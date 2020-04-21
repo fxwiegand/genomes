@@ -30,12 +30,12 @@ pub fn read_fasta(path: &Path, chrom: String, start: u64, stop: u64) -> Vec<Nucl
 
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct Nucleobase {
-    start_position: f64,
-    end_position: f64,
-    marker_type: char,
-    row: u8,
+    pub(crate) start_position: f64,
+    pub(crate) end_position: f64,
+    pub(crate) marker_type: char,
+    pub(crate) row: u8,
 }
 
 impl Nucleobase {

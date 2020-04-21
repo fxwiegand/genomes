@@ -5,7 +5,7 @@ use std::path::Path;
 use rust_htslib::bcf::Read;
 use regex::Regex;
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct Variant {
     pub(crate) marker_type: String,
     pub(crate) reference: String,
@@ -13,17 +13,6 @@ pub struct Variant {
     pub(crate) start_position: f64,
     pub(crate) end_position: f64,
     pub(crate) var_type: VariantType,
-}
-
-impl PartialEq for Variant {
-    fn eq(&self, other: &Self) -> bool {
-        self.marker_type == other.marker_type &&
-        self.reference == other.reference &&
-        self.alternatives == other.alternatives &&
-        self.start_position == other.start_position &&
-        self.end_position == other.end_position &&
-        self.var_type == other.var_type
-    }
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
