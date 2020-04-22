@@ -6,7 +6,7 @@ use std::path::Path;
 use rust_htslib::bam::record::CigarStringView;
 use fasta_reader::{read_fasta};
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, PartialEq)]
 pub enum Marker {
     A,
     T,
@@ -19,7 +19,7 @@ pub enum Marker {
     Pairing
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct Alignment {
     sequence: String,
     pos: i64,
@@ -33,7 +33,7 @@ pub struct Alignment {
     mate_tid: i32
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct AlignmentNucleobase {
     pub marker_type: Marker,
     pub bases: String,
@@ -346,9 +346,10 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                         let char = char_vec[cigar_offset as usize + i as usize];
                         b.push(char);
 
+                        cigar_offset += 1;
                     }
 
-                    cigar_offset += 1;
+
 
                     let base = AlignmentNucleobase {
                         marker_type: m,
