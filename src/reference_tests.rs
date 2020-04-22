@@ -3,7 +3,7 @@ use std::path::Path;
 
 #[test]
 fn reference_test() {
-    let ref_bases = read_fasta(Path::new("tests/resources/ref.fa"), String::from("1"), 1, 10);
+    let ref_bases = read_fasta(Path::new("tests/resources/ref.fa"), String::from("chr1"), 1, 10);
 
     let mut compare_ref = Vec::new();
 
@@ -24,7 +24,7 @@ fn reference_test() {
 
 #[test]
 fn empty_reference_test() {
-    let ref_bases = read_fasta(Path::new("tests/resources/ref.fa"), String::from("1"), 11, 11);
+    let ref_bases = read_fasta(Path::new("tests/resources/ref.fa"), String::from("chr1"), 11, 11);
 
     let compare_ref:Vec<Nucleobase> = Vec::new();
 

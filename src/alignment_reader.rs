@@ -45,7 +45,7 @@ pub struct AlignmentNucleobase {
     pub read_end: u32,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct AlignmentMatch {
     pub marker_type: Marker,
     pub start_position: f64,

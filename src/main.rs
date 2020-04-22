@@ -20,6 +20,7 @@ mod static_reader;
 
 #[cfg(test)] mod variant_tests;
 #[cfg(test)] mod reference_tests;
+#[cfg(test)] mod alignment_tests;
 
 use std::path::Path;
 use std::env;
