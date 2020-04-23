@@ -37,13 +37,34 @@ fn match_test() {
 }
 
 #[test]
+fn mismatch_test() {
+    let (mut bam, _matches) = get_reads(Path::new("tests/resources/test.bam"), Path::new("tests/resources/ref.fa"), String::from("chr1"), 0, 110);
+    bam.retain(|m| m.marker_type == Marker::T);
+
+    let mut compare_bam = Vec::new();
+
+    let m = AlignmentNucleobase {
+        marker_type: Marker::T,
+        bases: "T".to_string(),
+        start_position: 99.5,
+        end_position: 100.5,
+        flags: vec![1, 2, 32, 64],
+        name: "sim_Som1-5-2_chr1_1_1acd6f".to_string(),
+        read_start: 4,
+        read_end: 789364
+    };
+
+    compare_bam.push(m);
+
+    assert_eq!(compare_bam, bam);
+}
+
+#[test]
 fn insertion_test() {
     let (mut bam, _matches) = get_reads(Path::new("tests/resources/test.bam"), Path::new("tests/resources/ref.fa"), String::from("chr1"), 0, 100);
     bam.retain(|m| m.marker_type == Marker::Insertion);
 
     let mut compare_bam = Vec::new();
-
-
 
     let m = AlignmentNucleobase {
         marker_type: Marker::Insertion,
