@@ -388,9 +388,22 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
                         let p = snip.pos as i64 + read_offset;
                         let f = snip.flags;
                         let n = snip.name;
-                        let rs = snip.pos;
-                        let re = snip.pos as i32 + snip.length as i32;
+                        let rs;
+                        let re;
                         let b = String::from("");
+
+                        if snip.paired && snip.tid == snip.mate_tid {
+                            if snip.pos < snip.mate_pos {
+                                re = snip.mate_pos + 100;
+                                rs = snip.pos;
+                            } else {
+                                rs = snip.mate_pos;
+                                re = snip.pos + snip.length as i64;
+                            }
+                        } else {
+                            rs = snip.pos;
+                            re = snip.pos + snip.length as i64;
+                        }
 
                         let base = AlignmentNucleobase {
                             marker_type: m,

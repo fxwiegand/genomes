@@ -81,3 +81,26 @@ fn insertion_test() {
 
     assert_eq!(compare_bam, bam);
 }
+
+#[test]
+fn deletion_test() {
+    let (mut bam, _matches) = get_reads(Path::new("tests/resources/del.bam"), Path::new("tests/resources/ref.fa"), String::from("chr1"), 0, 100);
+    bam.retain(|m| m.marker_type == Marker::Deletion);
+
+    let mut compare_bam = Vec::new();
+
+    let m = AlignmentNucleobase {
+        marker_type: Marker::Deletion,
+        bases: "".to_string(),
+        start_position: 18.5,
+        end_position: 19.5,
+        flags: vec![2, 32, 64],
+        name: "sim_Som1-5-2_chr1_1_1acd6f".to_string(),
+        read_start: 4,
+        read_end: 103,
+    };
+
+    compare_bam.push(m);
+
+    assert_eq!(compare_bam, bam);
+}
