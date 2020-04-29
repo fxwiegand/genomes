@@ -16,16 +16,16 @@ samtools index path/to/myfasta.fa
 
 ### Running
 
-Start with
+Start with:
 
 ```
 cargo run data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz
 ```
 
-For a static view with the [Vega Online Editor](https://vega.github.io/editor/) start with
+For a static view that you can paste into the [Vega Online Editor](https://vega.github.io/editor/) or render with the [Vega Command Line Utilities](https://vega.github.io/vega/usage/#cli) start with:
 
 ```
-cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz chromosom from to
+cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz chromosom from to > visualization.json
 ```
 
 ## Built With
@@ -34,10 +34,6 @@ cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz chromosom
 * [Vega/Vega-Lite](https://vega.github.io) - A visualization grammar
 * [Rust-Htslib](https://github.com/rust-bio/rust-htslib) - HTSlib bindings and a high level Rust API for reading and writing BAM files
 * [Rust-Bio](https://github.com/rust-bio/rust-bio) - algorithms and data structures that are useful for bioinformatics
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Authors
 

@@ -27,7 +27,5 @@ domain = [sys.argv[1], sys.argv[2]]
 vdata['scales'][0]['domain'] = domain
 
 vdata['data'][1] = values
-with open('static_vega.json', 'w') as newvspec:
-    json.dump(vdata, newvspec, indent=4)
 
-print('created static_vega.json')
+json.dump(vdata, sys.stdout, indent=4)
