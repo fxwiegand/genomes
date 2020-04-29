@@ -239,6 +239,10 @@
             "field": "row",
             "band": 0.5
           },
+          "zindex": {
+            "scale": "z",
+            "field": "marker_type"
+          },
           "strokeWidth": {
             "scale": "stroke",
             "field": "marker_type"
@@ -280,6 +284,34 @@
       ],
       "paddingInner": 0,
       "paddingOuter": 0
+    },
+    {
+      "name": "z",
+      "type": "ordinal",
+      "range": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        4,
+        2,
+        1,
+        1
+      ],
+      "domain": [
+        "A",
+        "C",
+        "G",
+        "T",
+        "N",
+        "Variant",
+        "Insertion",
+        "Deletion",
+        "Match",
+        "Pairing"
+      ]
     },
     {
       "name": "stroke",
