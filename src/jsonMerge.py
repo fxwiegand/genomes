@@ -1,8 +1,6 @@
 import json
 import sys
 
-print(sys.argv)
-
 with open('client/vegaSpecs.json', 'r') as vspec:
     vdata = json.load(vspec)
 
@@ -12,21 +10,6 @@ with open('data.json', 'r') as datafile:
 values = {}
 values['values'] = data
 values['name'] = 'fasta'
-
-def compare(item1, item2):
-    if item1 == "Match":
-        return -1
-    elif item2 == "Match":
-        return 1
-    elif item1 in ["A", "G", "T", "C"]:
-        return -1
-    elif item2 in ["A", "G", "T", "C"]:
-        return 1
-    else:
-        return 0
-
-
-values['values'] = sorted(values['values'], cmp= lambda i1, i2: compare(i1['marker_type'], i2['marker_type']))
 
 for key in values['values']:
     if key['marker_type'] in ["A", "G", "T", "C"]:
