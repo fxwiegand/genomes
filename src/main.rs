@@ -11,6 +11,7 @@ extern crate bio;
 extern crate rust_htslib;
 extern crate rustc_serialize;
 extern crate regex;
+extern crate clap;
 
 mod alignment_reader;
 mod fasta_reader;
@@ -23,13 +24,14 @@ mod static_reader;
 #[cfg(test)] mod alignment_tests;
 
 use std::path::Path;
-use std::env;
 use std::process::Command;
 use std::str::FromStr;
+use std::io::{self, Write};
 use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::compression::Compression;
 use rocket::State;
+use clap::{Arg, App, SubCommand, ArgMatches};
 use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::{read_fasta, Nucleobase};
 use variant_reader::{read_indexed_vcf, Variant};
@@ -37,53 +39,115 @@ use json_generator::create_data;
 
 
 #[get("/reference/<chromosome>/<from>/<to>")]
-fn reference(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Nucleobase>> {
-    let response = read_fasta(Path::new(&args[2].clone()), chromosome, from, to);
+fn reference(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) -> Json<Vec<Nucleobase>> {
+    let response = read_fasta(Path::new(params.value_of("fasta file").unwrap()), chromosome, from, to);
     Json(response)
 }
 
 #[get("/alignment/<chromosome>/<from>/<to>")]
-fn alignment(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<(Vec<AlignmentNucleobase>,Vec<AlignmentMatch>)> {
-    let response = get_reads(Path::new(&args[1].clone()), Path::new(&args[2].clone()) , chromosome, from, to);
+fn alignment(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) -> Json<(Vec<AlignmentNucleobase>,Vec<AlignmentMatch>)> {
+    let response = get_reads(Path::new(params.value_of("bam file").unwrap()), Path::new(params.value_of("fasta file").unwrap()) , chromosome, from, to);
     Json(response)
 }
 
 #[get("/variant/<chromosome>/<from>/<to>")]
-fn variant(args: State<Vec<String>>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
-    let response = read_indexed_vcf(Path::new(&args[3].clone()), chromosome, from, to);
+fn variant(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
+    let response = read_indexed_vcf(Path::new(params.value_of("vcf file").unwrap()), chromosome, from, to);
     Json(response)
 }
 
-
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let matches = App::new("gensbock")
+        .version("1.0")
+        .author("Felix W. <fxwiegand@wgdnet.de>")
+        .about("genome viewing in rust")
+        .subcommand(SubCommand::with_name("server")
+            .about("starts server")
+            .version("1.0")
+            .author("Felix W. <fxwiegand@wgdnet.de>")
+            .arg(Arg::with_name("bam file")
+                .required(true)
+                .help("your input bam file")
+                .index(1))
+            .arg(Arg::with_name("fasta file")
+                .required(true)
+                .help("your input fasta file")
+                .index(2))
+            .arg(Arg::with_name("vcf file")
+                .required(true)
+                .help("your input vcf file")
+                .index(3)))
+        .subcommand(SubCommand::with_name("static")
+            .about("outputs vega specs")
+            .version("1.0")
+            .author("Felix W. <fxwiegand@wgdnet.de>")
+            .arg(Arg::with_name("bam file")
+                .required(true)
+                .help("your input bam file")
+                .index(1))
+            .arg(Arg::with_name("fasta file")
+                .required(true)
+                .help("your input fasta file")
+                .index(2))
+            .arg(Arg::with_name("vcf file")
+                .required(true)
+                .help("your input vcf file")
+                .index(3))
+            .arg(Arg::with_name("chromosome")
+                .required(true)
+                .help("the chromosome you want to visualize")
+                .index(4))
+            .arg(Arg::with_name("from")
+                .required(true)
+                .help("the start of the region you want to visualize")
+                .index(5))
+            .arg(Arg::with_name("to")
+                .required(true)
+                .help("the end of the region you want to visualize")
+                .index(6)))
+        .get_matches();
 
-    if (&args[1].clone()) == "static_json" {
-        create_data(Path::new(&args[3].clone()), Path::new(&args[4].clone()), Path::new(&args[2].clone()), String::from(args[5].clone()), u64::from_str(&args[6].clone()).unwrap(), u64::from_str(&args[7].clone()).unwrap()).expect("not enough argument, try: cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf chromosom from to");
-        //let args= String::from("");
-        let a :String = args[6].clone();
-        let b :String = args[7].clone();
-        let py = String::from("src/jsonMerge.py");
+    match matches.subcommand_name() {
+        Some("server") => {
+            let params = matches.subcommand_matches("server").unwrap().clone();
 
-        let output = {
-            Command::new("python")
-                .arg(py)
-                .arg(a)
-                .arg(b)
-                .output()
-                .expect("failed to execute process")
-        };
+            rocket::ignite()
+                .manage(params)
+                .mount("/",  StaticFiles::from("client"))
+                .mount("/api/v1", routes![reference, alignment, variant])
+                .attach(Compression::fairing())
+                .launch();
+        },
+        Some("static") => {
+            let static_matches = matches.subcommand_matches("static").unwrap();
 
-        let msg = output.stdout;
+            let fasta_path = Path::new(static_matches.value_of("fasta file").unwrap());
+            let bam_path = Path::new(static_matches.value_of("bam file").unwrap());
+            let vcf_path = Path::new(static_matches.value_of("vcf file").unwrap());
+            let chromosome = String::from(static_matches.value_of("chromosome").unwrap());
+            let from = u64::from_str(static_matches.value_of("from").unwrap()).unwrap();
+            let to = u64::from_str(static_matches.value_of("to").unwrap()).unwrap();
 
-        println!("{}", String::from_utf8(msg).unwrap())
-    } else {
-        rocket::ignite()
-            .manage(args)
-            .mount("/",  StaticFiles::from("client"))
-            .mount("/api/v1", routes![reference, alignment, variant])
-            .attach(Compression::fairing())
-            .launch();
+
+            let _data = create_data(&fasta_path,&vcf_path,&bam_path,chromosome,from,to);
+            let a :String = from.to_string();
+            let b :String = to.to_string();
+            let py = String::from("src/jsonMerge.py");
+
+            let output = {
+                Command::new("python")
+                    .arg(py)
+                    .arg(a)
+                    .arg(b)
+                    .output()
+                    .expect("failed to execute process")
+            };
+
+            let msg = output.stdout;
+            io::stdout().write(msg.as_ref()).unwrap();
+        },
+        None        => println!("Try using a subcommand. Type help for more."),
+        _           => unreachable!(), // Assuming you've listed all direct children above, this is unreachable
     }
 }
 

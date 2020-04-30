@@ -19,13 +19,13 @@ samtools index path/to/myfasta.fa
 Start with:
 
 ```
-cargo run data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz
+cargo run server data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz
 ```
 
 For a static view that you can paste into the [Vega Online Editor](https://vega.github.io/editor/) or render with the [Vega Command Line Utilities](https://vega.github.io/vega/usage/#cli) start with:
 
 ```
-cargo run static_json data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz chromosom from to > visualization.json
+cargo run static data/mybam.bam data/myfasta.fa data/myvcf.vcf.gz chromosom from to > visualization.json
 ```
 
 ## Built With
