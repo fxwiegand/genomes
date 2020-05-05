@@ -105,6 +105,11 @@ fn main() {
                 .required(true)
                 .help("the end of the region you want to visualize")
                 .index(6)))
+        .subcommand(SubCommand::with_name("report")
+        .arg(Arg::with_name("vcf file")
+            .required(true)
+            .help("your input vcf file")
+            .index(1)))
         .get_matches();
 
     match matches.subcommand_name() {
@@ -145,6 +150,11 @@ fn main() {
 
             let msg = output.stdout;
             io::stdout().write(msg.as_ref()).unwrap();
+        },
+        Some("report") => {
+            let static_matches = matches.subcommand_matches("reportx").unwrap();
+
+            let vcf_path = Path::new(static_matches.value_of("vcf file").unwrap());
         },
         None        => println!("Try using a subcommand. Type help for more."),
         _           => unreachable!(), // Assuming you've listed all direct children above, this is unreachable
