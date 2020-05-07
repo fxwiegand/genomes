@@ -314,6 +314,10 @@ async function buildVega(chrom, fr, to) {
                     }
                 });
 
+                lower_upd_al.sort(function (a, b) {
+                    return a.read_start < b.read_start;
+                });
+
                 lower_upd_al.forEach(function (a) {
                     if(reads.has(a.name)) {
                         a.row = reads.get(a.name).row;
