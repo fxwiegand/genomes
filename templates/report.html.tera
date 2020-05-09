@@ -11,32 +11,59 @@
     <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-8">
 
-        <!-- TODO: use pagination -->
+                <table id="table" class="table table-hover table-light table-bordered" data-toggle="table" data-height="510" data-search="true" data-pagination="true">
+                    <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col" data-sortable="true">ID</th>
+                        <th scope="col" data-sortable="true">Position</th>
+                        <th scope="col">Referenz</th>
+                        <th scope="col">Alternative</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for variant in variants %}
+                    <tr
+                            class="variant-row"
+                            id="{{ variant.id }}"
+                            data-name="{{ variant.name }}"
+                            data-id="{{ variant.id }}"
+                            data-position="{{ variant.position }}"
+                            data-reference="{{ variant.reference }}"
+                            data-alternatives="{{ variant.alternatives | safe }}"
+                    >
+                        <th scope="row">{{ variant.name }}</th>
+                        <td>{{ variant.id }}</td>
+                        <td>{{ variant.position }}</td>
+                        <td>{{ variant.reference }}</td>
+                        <td>{{ variant.alternatives}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <table id="sidebar" class="table table-hover table-light table-bordered" style="margin-top: 58px;">
+                </table>
+            </div>
 
-        <table id="table" class="table table-hover table-light table-bordered" data-toggle="table" data-height="510" data-search="true" data-pagination="true">
-            <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col" data-sortable="true">ID</th>
-                <th scope="col" data-sortable="true">Position</th>
-                <th scope="col">Referenz</th>
-                <th scope="col">Alternative</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for variant in variants %}
-            <tr>
-                <th scope="row">{{ variant.name }}</th>
-                <td>{{ variant.id }}</td>
-                <td>{{ variant.position }}</td>
-                <td>{{ variant.reference }}</td>
-                <td>{{ variant.alternatives }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+            <script>
+                $(document).ready(function () {
+                    $("html").on('click', '.variant-row', function () {
+                        $("#sidebar").empty();
+                        $.each($(this).data(), function(i, v) {
+                            if (i !== 'index') {
+                                $('#sidebar').append('<tr><th class="thead-dark">' + i + '</th><td>' + v + '</td></tr>');
+                            }
+                        });
+                    })
+                })
+            </script>
+        </div>
     </div>
 </body>
 </html>

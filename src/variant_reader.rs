@@ -189,7 +189,9 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
                 let mut allel = String::from("");
 
                 for c in alt {
-                    allel.push(*c as char);
+                    if *c as char != '<' && *c as char != '>' {
+                        allel.push(*c as char);
+                    }
                 }
 
                 let r = Report {
