@@ -24,6 +24,15 @@ pub enum VariantType {
     Variant,
 }
 
+#[derive(Serialize, Clone, Debug, PartialEq)]
+pub struct Report {
+    pub(crate) id: String,
+    pub(crate) name: String,
+    pub(crate) position: i64,
+    pub(crate) reference: String,
+    pub(crate) alternatives: String,
+}
+
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Variant> {
     let mut vcf = rust_htslib::bcf::IndexedReader::from_path(&path).unwrap();
 
@@ -138,4 +147,66 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
     }
 
     variants
+}
+
+pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
+    let mut vcf = rust_htslib::bcf::Reader::from_path(&path).unwrap();
+    let header = vcf.header().clone();
+
+    let mut reports = Vec::new();
+
+    for v in vcf.records() {
+        let variant = v.unwrap();
+
+        let n = header.rid2name(variant.rid().unwrap()).unwrap();
+        let i = variant.id();
+
+        let mut name = String::from("");
+        for c in n {
+            name.push(*c as char);
+        }
+
+        let mut id = String::from("");
+        for c in i {
+            id.push(c as char);
+        }
+
+        let alleles = variant.alleles();
+
+
+        if alleles.len() > 0 {
+            let ref_vec = alleles[0].clone();
+            let mut rfrce = String::from("");
+
+
+            for c in ref_vec {
+                rfrce.push(*c as char);
+            }
+
+            for i in 1..alleles.len() {
+                let alt = alleles[i];
+
+                let mut allel = String::from("");
+
+                for c in alt {
+                    allel.push(*c as char);
+                }
+
+                let r = Report {
+                    id: id.clone(),
+                    name: name.clone(),
+                    position: variant.pos(),
+                    reference: rfrce.clone(),
+                    alternatives: allel
+                };
+
+                //TODO: support DEL, INV, DUP etc.
+
+                reports.push(r);
+            }
+        }
+
+    }
+
+    reports
 }

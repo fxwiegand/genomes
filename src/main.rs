@@ -12,6 +12,7 @@ extern crate rust_htslib;
 extern crate rustc_serialize;
 extern crate regex;
 extern crate clap;
+extern crate tera;
 
 mod alignment_reader;
 mod fasta_reader;
@@ -34,8 +35,11 @@ use rocket::State;
 use clap::{Arg, App, SubCommand, ArgMatches};
 use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::{read_fasta, Nucleobase};
-use variant_reader::{read_indexed_vcf, Variant};
+use variant_reader::{read_indexed_vcf, read_vcf,Variant};
 use json_generator::create_data;
+use rocket_contrib::templates::Template;
+use tera::Context;
+use std::collections::HashMap;
 
 
 #[get("/reference/<chromosome>/<from>/<to>")]
@@ -54,6 +58,14 @@ fn alignment(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) 
 fn variant(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) -> Json<Vec<Variant>> {
     let response = read_indexed_vcf(Path::new(params.value_of("vcf file").unwrap()), chromosome, from, to);
     Json(response)
+}
+
+#[get("/")]
+fn index(params: State<ArgMatches>) -> Template {
+    let mut context = HashMap::new();
+    context.insert("variants", read_vcf(Path::new(params.value_of("vcf file").unwrap())));
+
+    Template::render("report", &context)
 }
 
 fn main() {
@@ -152,9 +164,13 @@ fn main() {
             io::stdout().write(msg.as_ref()).unwrap();
         },
         Some("report") => {
-            let static_matches = matches.subcommand_matches("reportx").unwrap();
+            let params = matches.subcommand_matches("report").unwrap().clone();
 
-            let vcf_path = Path::new(static_matches.value_of("vcf file").unwrap());
+            rocket::ignite()
+                .manage(params)
+                .mount("/", routes![index])
+                .attach(Template::fairing())
+                .launch();
         },
         None        => println!("Try using a subcommand. Type help for more."),
         _           => unreachable!(), // Assuming you've listed all direct children above, this is unreachable

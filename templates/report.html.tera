@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html lang="en">
 <head>
     <title>Report</title>
 
@@ -11,38 +11,29 @@
 </head>
 <body>
     <div class="container mt-5">
+
+        <!-- TODO: use pagination -->
+
         <table class="table table-hover table-dark">
             <thead>
             <tr>
-                <th scope="col">Chrom</th>
+                <th scope="col">Name</th>
                 <th scope="col">ID</th>
                 <th scope="col">Position</th>
-                <th scope="col">Gene</th>
-                <th scope="col">DNA Alternation</th>
+                <th scope="col">Referenz</th>
+                <th scope="col">Alternative</th>
             </tr>
             </thead>
             <tbody>
+            {% for variant in variants %}
             <tr>
-                <th scope="row">1</th>
-                <td>rs7387378</td>
-                <td>PCSK9</td>
-                <td>433</td>
-                <td>ATCCC</td>
+                <th scope="row">{{ variant.name }}</th>
+                <td>{{ variant.id }}</td>
+                <td>{{ variant.position }}</td>
+                <td>{{ variant.reference }}</td>
+                <td>{{ variant.alternatives }}</td>
             </tr>
-            <tr>
-                <th scope="row">1</th>
-                <td>rs389389</td>
-                <td>FCC7</td>
-                <td>76378</td>
-                <td>TTAGCT</td>
-            </tr>
-            <tr>
-                <th scope="row">1</th>
-                <td>rs98388</td>
-                <td>FMO3</td>
-                <td>456564</td>
-                <td>CCT</td>
-            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
