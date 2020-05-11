@@ -27,7 +27,7 @@ mod static_reader;
 use std::path::Path;
 use std::process::Command;
 use std::str::FromStr;
-use std::io::{self, Write};
+use std::io::{self, Write, stdout};
 use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::compression::Compression;
@@ -38,7 +38,7 @@ use fasta_reader::{read_fasta, Nucleobase};
 use variant_reader::{read_indexed_vcf, read_vcf,Variant};
 use json_generator::create_data;
 use rocket_contrib::templates::Template;
-use tera::Context;
+use tera::{Tera, Context};
 use std::collections::HashMap;
 
 
@@ -121,7 +121,11 @@ fn main() {
         .arg(Arg::with_name("vcf file")
             .required(true)
             .help("your input vcf file")
-            .index(1)))
+            .index(1))
+        .arg(Arg::with_name("render")
+            .short("r")
+            .required(false)
+            .help("write html to stdout")))
         .get_matches();
 
     match matches.subcommand_name() {
@@ -166,11 +170,22 @@ fn main() {
         Some("report") => {
             let params = matches.subcommand_matches("report").unwrap().clone();
 
-            rocket::ignite()
-                .manage(params)
-                .mount("/", routes![index])
-                .attach(Template::fairing())
-                .launch();
+            if params.is_present("render") {
+                let mut templates = Tera::default();
+                templates.add_raw_template("report.html.tera", include_str!("../templates/report.html.tera")).unwrap();
+                let mut context = Context::new();
+                context.insert("variants", &read_vcf(Path::new(params.value_of("vcf file").unwrap())));
+
+                let html = templates.render("report.html.tera", &context).unwrap();
+
+                stdout().write(html.as_bytes()).unwrap();
+            } else {
+                rocket::ignite()
+                    .manage(params)
+                    .mount("/", routes![index])
+                    .attach(Template::fairing())
+                    .launch();
+            }
         },
         None        => println!("Try using a subcommand. Type help for more."),
         _           => unreachable!(), // Assuming you've listed all direct children above, this is unreachable
