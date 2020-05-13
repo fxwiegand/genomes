@@ -35,6 +35,12 @@
                             data-position="{{ variant.position }}"
                             data-reference="{{ variant.reference }}"
                             data-alternatives="{{ variant.alternatives | safe }}"
+                            {% for attr in variant.ann %}
+                                {% set rowloop = loop.index %}
+                                {% for a in attr %}
+                                    data-{{ "ann" ~ "[" ~ rowloop ~ "][" ~ loop.index ~ "]" }}="{{ a }}"
+                                {% endfor %}
+                            {% endfor %}
                     >
                         <th scope="row">{{ variant.name }}</th>
                         <td>{{ variant.id }}</td>

@@ -31,6 +31,7 @@ pub struct Report {
     pub(crate) position: i64,
     pub(crate) reference: String,
     pub(crate) alternatives: String,
+    pub(crate) ann: Vec<Vec<String>>,
 }
 
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Variant> {
@@ -156,7 +157,7 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
     let mut reports = Vec::new();
 
     for v in vcf.records() {
-        let variant = v.unwrap();
+        let mut variant = v.unwrap();
 
         let n = header.rid2name(variant.rid().unwrap()).unwrap();
         let i = variant.id();
@@ -170,6 +171,23 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
         for c in i {
             id.push(c as char);
         }
+
+        let ann = variant.info(b"ANN").string();
+        let mut ann_strings = Vec::new();
+
+        if let Some(ann) = ann.unwrap() {
+            for entry in ann {
+                let fields: Vec<_> = entry.split(|c| *c == b'|').collect();
+                let mut s = Vec::new();
+                for f in fields {
+                    let mut attr = String::from("");
+                    attr.push_str(std::str::from_utf8(f).unwrap());
+                    s.push(attr);
+                }
+                ann_strings.push(s);
+            }
+        }
+
 
         let alleles = variant.alleles();
 
@@ -199,7 +217,8 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
                     name: name.clone(),
                     position: variant.pos(),
                     reference: rfrce.clone(),
-                    alternatives: allel
+                    alternatives: allel,
+                    ann: ann_strings.clone(),
                 };
 
                 //TODO: support DEL, INV, DUP etc.
