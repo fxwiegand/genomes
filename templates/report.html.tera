@@ -18,11 +18,11 @@
                 <table id="table" class="table table-hover table-light table-bordered" data-toggle="table" data-height="510" data-search="true" data-pagination="true">
                     <thead>
                     <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col" data-sortable="true">ID</th>
-                        <th scope="col" data-sortable="true">Position</th>
-                        <th scope="col">Referenz</th>
-                        <th scope="col">Alternative</th>
+                        <th scope="col">name</th>
+                        <th scope="col" data-sortable="true">id</th>
+                        <th scope="col" data-sortable="true">position</th>
+                        <th scope="col">reference</th>
+                        <th scope="col">alternative</th>
                     </tr>
                     </thead>
                     <tbody>
