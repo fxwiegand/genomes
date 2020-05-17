@@ -341,9 +341,9 @@ pub fn make_nucleobases(fasta_path: &Path, chrom: String, snippets: Vec<Alignmen
 
 
                     let mut b = String::from("");
-                    for i in 0..rust_htslib::bam::record::Cigar::Ins(*c).len() {
+                    for _i in 0..rust_htslib::bam::record::Cigar::Ins(*c).len() {
 
-                        let char = char_vec[cigar_offset as usize + i as usize + 1];
+                        let char = char_vec[cigar_offset as usize];
                         b.push(char);
 
                         cigar_offset += 1;

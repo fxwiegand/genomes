@@ -25,7 +25,6 @@ mod static_reader;
 #[cfg(test)] mod alignment_tests;
 
 use std::path::Path;
-use std::process::Command;
 use std::str::FromStr;
 use std::io::{self, Write, stdout};
 use rocket_contrib::json::{Json};
@@ -36,7 +35,7 @@ use clap::{Arg, App, SubCommand, ArgMatches};
 use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::{read_fasta, Nucleobase};
 use variant_reader::{read_indexed_vcf, read_vcf,Variant};
-use json_generator::create_data;
+use json_generator::{create_data, manipulate_json};
 use rocket_contrib::templates::Template;
 use tera::{Tera, Context};
 use std::collections::HashMap;
@@ -150,22 +149,10 @@ fn main() {
             let to = u64::from_str(static_matches.value_of("to").unwrap()).unwrap();
 
 
-            let _data = create_data(&fasta_path,&vcf_path,&bam_path,chromosome,from,to);
-            let a :String = from.to_string();
-            let b :String = to.to_string();
-            let py = String::from("src/jsonMerge.py");
+            let data = create_data(&fasta_path,&vcf_path,&bam_path,chromosome,from,to);
+            let out = manipulate_json(data, from, to);
 
-            let output = {
-                Command::new("python")
-                    .arg(py)
-                    .arg(a)
-                    .arg(b)
-                    .output()
-                    .expect("failed to execute process")
-            };
-
-            let msg = output.stdout;
-            io::stdout().write(msg.as_ref()).unwrap();
+            io::stdout().write(out.to_string().as_bytes()).unwrap();
         },
         Some("report") => {
             let params = matches.subcommand_matches("report").unwrap().clone();

@@ -14,8 +14,8 @@ fn insertion_test() {
         marker_type: String::from("Variant"),
         reference: String::from("T"),
         alternatives: Some(allel),
-        start_position: 887342.5 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
-        end_position: 887343.5 as f64, // -1 due to 0-basing, + 0.5 du to end pos
+        start_position: 887343 as f64, // - 1 due to 0-basing, - 0.5 due to start pos
+        end_position: 887344 as f64, // -1 due to 0-basing, + 0.5 du to end pos
         var_type: VariantType::Insertion,
     };
     assert_eq!(var, test_variant);

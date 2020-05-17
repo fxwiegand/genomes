@@ -117,31 +117,45 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
                     allel.push(*c as char);
                 }
 
-                let variant_type;
-
-                if allel.len() == rfrce.len() {
-                    variant_type = VariantType::Variant;
-                } else if allel.len() > rfrce.len() {
-                    variant_type = VariantType::Insertion;
-                } else {
-                    variant_type = VariantType::Deletion;
-                }
-
                 let cnv = Regex::new(r"^<CN\d>$").unwrap();
 
                 if cnv.is_match(allel.as_ref()) {
                     warn!("Use of unsupported Copy-Number-Variation {}", allel) // Warning for Copy-Number-Variation
                 } else {
-                    let var = Variant {
-                        marker_type: var_string,
-                        reference: rfrce.clone(),
-                        alternatives: Some(allel),
-                        start_position: pos as f64 - 0.5,
-                        end_position: pos as f64 - 0.5 + len as f64,
-                        var_type: variant_type,
-                    };
+                    if allel.len() == rfrce.len() {
+                        let var = Variant {
+                            marker_type: var_string,
+                            reference: rfrce.clone(),
+                            alternatives: Some(allel),
+                            start_position: pos as f64 - 0.5,
+                            end_position: pos as f64 - 0.5 + len as f64,
+                            var_type: VariantType::Variant,
+                        };
 
-                    variants.push(var);
+                        variants.push(var);
+                    } else if allel.len() > rfrce.len() {
+                        let var = Variant {
+                            marker_type: var_string,
+                            reference: rfrce.clone(),
+                            alternatives: Some(allel),
+                            start_position: pos as f64, // start end end + 0.5 due to alignment with insertions from bam
+                            end_position: pos as f64 + len as f64,
+                            var_type: VariantType::Insertion,
+                        };
+
+                        variants.push(var);
+                    } else {
+                        let var = Variant {
+                            marker_type: var_string,
+                            reference: rfrce.clone(),
+                            alternatives: Some(allel),
+                            start_position: pos as f64 + 0.5, // start position + 1 due to alignment with deletions from bam (example: ref: ACTT alt: A  -> deletion is just CTT)
+                            end_position: pos as f64 - 0.5 + len as f64,
+                            var_type: VariantType::Deletion,
+                        };
+
+                        variants.push(var);
+                    }
                 }
             }
         }
