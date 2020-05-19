@@ -9,16 +9,24 @@ use std::fs;
 pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: String, from: u64, to: u64) -> Json {
     // Daten hier sammeln
     let fasta = json!(read_fasta(fasta_path.clone(), chrom.clone(), from, to));
-    let alignments = json!(get_static_reads(bam_path, fasta_path, chrom.clone(), from, to));
+    let (bases, matches) = get_static_reads(bam_path, fasta_path, chrom.clone(), from, to);
+
+    let alignments1 = json!(bases);
+    let alignments2 = json!(matches);
     let variant = json!(get_static_variants(vcf_path, chrom.clone(), from, to));
+
 
     let fasta_string = fasta.to_string();
     let f = fasta_string.trim_end_matches(']');
 
-    let alignment_string = alignments.to_string();
-    let mut a = alignment_string.replace('[', "");
-    a = a.replace(']',"");
+    let alignment_string1 = alignments1.to_string();
+    let alignment_string2 = alignments2.to_string();
 
+    let mut a1 = alignment_string1.replace('[', "");
+    a1 = a1.replace(']',"");
+
+    let mut a2 = alignment_string2.replace('[', "");
+    a2 = a2.replace(']',"");
 
     let variant_string = variant.to_string();
     let v = variant_string.trim_start_matches('[');
@@ -29,11 +37,11 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
     let r:String;
 
     if v_empty.is_empty() {
-        r = [f,T,&a,v].concat();
-    } else if a.is_empty() {
-        r = [f,T,v].concat();
+        r = [f,T,&a1,T,&a2,v].concat();
+    } else if a1.is_empty() {
+        r = [f,T,&a1,&a2,T,v].concat();
     } else {
-        r = [f,T,&a,T,v].concat();
+        r = [f,T,&a1,T,&a2,T,v].concat();
     }
 
     let values = Json::from_str(&r).unwrap();
