@@ -19,6 +19,7 @@ mod fasta_reader;
 mod variant_reader;
 mod json_generator;
 mod static_reader;
+mod report;
 
 #[cfg(test)] mod variant_tests;
 #[cfg(test)] mod reference_tests;
@@ -34,7 +35,8 @@ use rocket::State;
 use clap::{Arg, App, SubCommand, ArgMatches};
 use alignment_reader::{get_reads, AlignmentNucleobase, AlignmentMatch};
 use fasta_reader::{read_fasta, Nucleobase};
-use variant_reader::{read_indexed_vcf, read_vcf,Variant};
+use variant_reader::{read_indexed_vcf, Variant};
+use report::{make_report};
 use json_generator::{create_data, manipulate_json};
 use rocket_contrib::templates::Template;
 use tera::{Tera, Context};
@@ -63,7 +65,8 @@ fn variant(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) ->
 #[get("/")]
 fn index(params: State<ArgMatches>) -> Template {
     let mut context = HashMap::new();
-    context.insert("variants", read_vcf(Path::new(params.value_of("vcf file").unwrap())).unwrap());
+    context.insert("variants", make_report(Path::new(params.value_of("vcf file").unwrap()), Path::new(params.value_of("fasta file").unwrap()), Path::new(params.value_of("bam file").unwrap()), params.value_of("chromosome").unwrap().parse().unwrap()).unwrap());
+
 
     Template::render("report", &context)
 }
@@ -118,10 +121,22 @@ fn main() -> Result<(), Box<dyn Error>>{
                 .help("the end of the region you want to visualize")
                 .index(6)))
         .subcommand(SubCommand::with_name("report")
-        .arg(Arg::with_name("vcf file")
-            .required(true)
-            .help("your input vcf file")
-            .index(1))
+            .arg(Arg::with_name("bam file")
+                .required(true)
+                .help("your input bam file")
+                .index(1))
+            .arg(Arg::with_name("fasta file")
+                .required(true)
+                .help("your input fasta file")
+                .index(2))
+            .arg(Arg::with_name("vcf file")
+                .required(true)
+                .help("your input vcf file")
+                .index(3))
+            .arg(Arg::with_name("chromosome")
+                .required(true)
+                .help("the chromosome you want to visualize")
+                .index(4))
         .arg(Arg::with_name("render")
             .short("r")
             .required(false)
@@ -164,7 +179,7 @@ fn main() -> Result<(), Box<dyn Error>>{
                 let mut templates = Tera::default();
                 templates.add_raw_template("report.html.tera", include_str!("../templates/report.html.tera")).unwrap();
                 let mut context = Context::new();
-                context.insert("variants", &read_vcf(Path::new(params.value_of("vcf file").unwrap()))?);
+                context.insert("variants", &make_report(Path::new(params.value_of("vcf file").unwrap()), Path::new(params.value_of("fasta file").unwrap()), Path::new(params.value_of("bam file").unwrap()), params.value_of("chromosome").unwrap().parse().unwrap())?);
 
                 let html = templates.render("report.html.tera", &context).unwrap();
 

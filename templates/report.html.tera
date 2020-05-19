@@ -7,6 +7,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
     <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
 </head>
@@ -35,6 +37,7 @@
                             data-position="{{ variant.position }}"
                             data-reference="{{ variant.reference }}"
                             data-alternatives="{{ variant.alternatives | safe }}"
+                            data-vis="{{ variant.vis }}"
                             {% for attr in variant.ann %}
                                 {% set rowloop = loop.index %}
                                 {% for a in attr %}
@@ -63,6 +66,8 @@
 
                 $(document).ready(function () {
                     $("html").on('click', '.variant-row', function () {
+                        let specs = $(this).data('vis');
+                        let v = vegaEmbed('#vis', specs);
                         $("#sidebar").empty();
                         $.each($(this).data(), function(i, v) {
                             if (i !== 'index' && column_values.includes(i)) {
@@ -72,6 +77,12 @@
                     })
                 })
             </script>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div id="vis" class="d-flex justify-content-center"></div>
+            </div>
+
         </div>
     </div>
 </body>

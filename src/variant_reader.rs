@@ -2,7 +2,6 @@ extern crate rust_htslib;
 extern crate bit_vec;
 
 use std::path::Path;
-use std::error::Error;
 use rust_htslib::bcf::Read;
 use regex::Regex;
 
@@ -163,86 +162,4 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
     }
 
     variants
-}
-
-pub(crate) fn read_vcf(path: &Path) -> Result<Vec<Report>, Box<dyn Error>> {
-    let mut vcf = rust_htslib::bcf::Reader::from_path(&path).unwrap();
-    let header = vcf.header().clone();
-
-    let mut reports = Vec::new();
-
-    for v in vcf.records() {
-        let mut variant = v.unwrap();
-
-        let n = header.rid2name(variant.rid().unwrap()).unwrap();
-        let i = variant.id();
-
-        let mut name = String::from("");
-        for c in n {
-            name.push(*c as char);
-        }
-
-        let mut id = String::from("");
-        for c in i {
-            id.push(c as char);
-        }
-
-        let mut ann_strings = Vec::new();
-        let ann = variant.info(b"ANN").string()?;
-
-        if let Some(ann) = ann {
-            for entry in ann {
-                let fields: Vec<_> = entry.split(|c| *c == b'|').collect();
-                let mut s = Vec::new();
-                for f in fields {
-                    let mut attr = String::from("");
-                    attr.push_str(std::str::from_utf8(f).unwrap());
-                    s.push(attr);
-                }
-                ann_strings.push(s);
-            }
-        }
-
-
-        let alleles = variant.alleles();
-
-
-        if alleles.len() > 0 {
-            let ref_vec = alleles[0].clone();
-            let mut rfrce = String::from("");
-
-
-            for c in ref_vec {
-                rfrce.push(*c as char);
-            }
-
-            for i in 1..alleles.len() {
-                let alt = alleles[i];
-
-                let mut allel = String::from("");
-
-                for c in alt {
-                    if *c as char != '<' && *c as char != '>' {
-                        allel.push(*c as char);
-                    }
-                }
-
-                let r = Report {
-                    id: id.clone(),
-                    name: name.clone(),
-                    position: variant.pos(),
-                    reference: rfrce.clone(),
-                    alternatives: allel,
-                    ann: Some(ann_strings.clone()),
-                };
-
-                //TODO: support DEL, INV, DUP etc.
-
-                reports.push(r);
-            }
-        }
-
-    }
-
-    Ok(reports)
 }

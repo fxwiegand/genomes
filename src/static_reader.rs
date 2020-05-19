@@ -29,13 +29,13 @@ pub struct StaticAlignmentNucleobase {
 
 #[derive(Serialize, Clone)]
 pub struct StaticVariant {
-    marker_type: String,
-    reference: String,
-    alternatives: Option<String>,
-    start_position: f64,
-    end_position: f64,
-    row: i8,
-    var_type: VariantType,
+    pub(crate) marker_type: String,
+    pub(crate) reference: String,
+    pub(crate) alternatives: Option<String>,
+    pub(crate) start_position: f64,
+    pub(crate) end_position: f64,
+    pub(crate) row: i8,
+    pub(crate) var_type: VariantType,
 }
 
 
