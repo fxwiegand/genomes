@@ -2,6 +2,7 @@ extern crate rust_htslib;
 extern crate bit_vec;
 
 use std::path::Path;
+use std::error::Error;
 use rust_htslib::bcf::Read;
 use regex::Regex;
 
@@ -31,7 +32,7 @@ pub struct Report {
     pub(crate) position: i64,
     pub(crate) reference: String,
     pub(crate) alternatives: String,
-    pub(crate) ann: Vec<Vec<String>>,
+    pub(crate) ann: Option<Vec<Vec<String>>>,
 }
 
 pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<Variant> {
@@ -164,7 +165,7 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
     variants
 }
 
-pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
+pub(crate) fn read_vcf(path: &Path) -> Result<Vec<Report>, Box<dyn Error>> {
     let mut vcf = rust_htslib::bcf::Reader::from_path(&path).unwrap();
     let header = vcf.header().clone();
 
@@ -186,10 +187,10 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
             id.push(c as char);
         }
 
-        let ann = variant.info(b"ANN").string();
         let mut ann_strings = Vec::new();
+        let ann = variant.info(b"ANN").string()?;
 
-        if let Some(ann) = ann.unwrap() {
+        if let Some(ann) = ann {
             for entry in ann {
                 let fields: Vec<_> = entry.split(|c| *c == b'|').collect();
                 let mut s = Vec::new();
@@ -232,7 +233,7 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
                     position: variant.pos(),
                     reference: rfrce.clone(),
                     alternatives: allel,
-                    ann: ann_strings.clone(),
+                    ann: Some(ann_strings.clone()),
                 };
 
                 //TODO: support DEL, INV, DUP etc.
@@ -243,5 +244,5 @@ pub(crate) fn read_vcf(path: &Path) -> Vec<Report> {
 
     }
 
-    reports
+    Ok(reports)
 }

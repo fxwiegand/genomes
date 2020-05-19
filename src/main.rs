@@ -39,6 +39,7 @@ use json_generator::{create_data, manipulate_json};
 use rocket_contrib::templates::Template;
 use tera::{Tera, Context};
 use std::collections::HashMap;
+use std::error::Error;
 
 
 #[get("/reference/<chromosome>/<from>/<to>")]
@@ -62,12 +63,12 @@ fn variant(params: State<ArgMatches>, chromosome: String, from: u64, to: u64) ->
 #[get("/")]
 fn index(params: State<ArgMatches>) -> Template {
     let mut context = HashMap::new();
-    context.insert("variants", read_vcf(Path::new(params.value_of("vcf file").unwrap())));
+    context.insert("variants", read_vcf(Path::new(params.value_of("vcf file").unwrap())).unwrap());
 
     Template::render("report", &context)
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>>{
     let matches = App::new("gensbock")
         .version("1.0")
         .author("Felix W. <fxwiegand@wgdnet.de>")
@@ -137,6 +138,7 @@ fn main() {
                 .mount("/api/v1", routes![reference, alignment, variant])
                 .attach(Compression::fairing())
                 .launch();
+            Ok(())
         },
         Some("static") => {
             let static_matches = matches.subcommand_matches("static").unwrap();
@@ -152,7 +154,8 @@ fn main() {
             let data = create_data(&fasta_path,&vcf_path,&bam_path,chromosome,from,to);
             let out = manipulate_json(data, from, to);
 
-            io::stdout().write(out.to_string().as_bytes()).unwrap();
+            io::stdout().write(out.to_string().as_bytes())?;
+            Ok(())
         },
         Some("report") => {
             let params = matches.subcommand_matches("report").unwrap().clone();
@@ -161,11 +164,11 @@ fn main() {
                 let mut templates = Tera::default();
                 templates.add_raw_template("report.html.tera", include_str!("../templates/report.html.tera")).unwrap();
                 let mut context = Context::new();
-                context.insert("variants", &read_vcf(Path::new(params.value_of("vcf file").unwrap())));
+                context.insert("variants", &read_vcf(Path::new(params.value_of("vcf file").unwrap()))?);
 
                 let html = templates.render("report.html.tera", &context).unwrap();
 
-                stdout().write(html.as_bytes()).unwrap();
+                stdout().write(html.as_bytes())?;
             } else {
                 rocket::ignite()
                     .manage(params)
@@ -173,8 +176,12 @@ fn main() {
                     .attach(Template::fairing())
                     .launch();
             }
+            Ok(())
         },
-        None        => println!("Try using a subcommand. Type help for more."),
+        None        => {
+           println!("Try using a subcommand. Type help for more.");
+           Ok(())
+        },
         _           => unreachable!(), // Assuming you've listed all direct children above, this is unreachable
     }
 }
