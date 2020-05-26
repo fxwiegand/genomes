@@ -8,8 +8,6 @@ pub fn read_fasta(path: &Path, chrom: String, start: u64, stop: u64) -> Vec<Nucl
 
     let mut seq:Vec<u8> = Vec::new();
 
-    println!("Reading genome number {} from {:?} to {:?}. ", &chrom.clone(), start.clone(), stop.clone());
-
     reader.fetch(&chrom, start, stop).unwrap();
     reader.read(& mut seq).unwrap();
 
