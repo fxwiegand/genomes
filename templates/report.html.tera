@@ -37,7 +37,7 @@
                             data-position="{{ variant.position }}"
                             data-reference="{{ variant.reference }}"
                             data-alternatives="{{ variant.alternatives | safe }}"
-                            data-vis="{{ variant.vis }}"
+                            data-vis="{{ variant.vis | escape }}"
                             {% for attr in variant.ann %}
                                 {% set rowloop = loop.index %}
                                 {% for a in attr %}
