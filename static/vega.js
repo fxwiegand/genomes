@@ -167,7 +167,7 @@ async function buildVega(chrom, fr, to) {
     cont.forEach(function (a) {
         if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
             a.base = a.marker_type;
-        } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing") {
+        } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing" || a.marker_type === "Inversion" || a.marker_type === "Duplicate") {
             a.typ = a.marker_type;
         }
         if (a.marker_type === "Insertion") {
@@ -371,7 +371,7 @@ async function buildVega(chrom, fr, to) {
             upd.forEach(function (a) {
                 if (a.marker_type === "A" || a.marker_type === "G" || a.marker_type === "T" || a.marker_type === "C") {
                     a.base = a.marker_type;
-                } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing") {
+                } else if (a.marker_type === "Deletion" || a.marker_type === "Match" || a.marker_type === "Insertion" || a.marker_type === "Pairing" || a.marker_type === "Inversion" || a.marker_type === "Duplicate") {
                     a.typ = a.marker_type;
                 }
                 if (a.marker_type === "Insertion") {
