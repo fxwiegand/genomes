@@ -1,7 +1,7 @@
 import json
 import sys
 
-with open('client/vegaSpecs.json', 'r') as vspec:
+with open('static/vegaSpecs.json', 'r') as vspec:
     vdata = json.load(vspec)
 
 with open('data.json', 'r') as datafile:

@@ -113,7 +113,7 @@ fn main() {
 
             rocket::ignite()
                 .manage(params)
-                .mount("/",  StaticFiles::from("client"))
+                .mount("/",  StaticFiles::from("static"))
                 .mount("/api/v1", routes![reference, alignment, variant])
                 .attach(Compression::fairing())
                 .launch();
