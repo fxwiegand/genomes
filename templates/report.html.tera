@@ -35,6 +35,7 @@
                             data-name="{{ variant.name }}"
                             data-id="{{ variant.id }}"
                             data-position="{{ variant.position }}"
+                            data-type="{{ variant.var_type }}"
                             data-reference="{{ variant.reference }}"
                             data-alternatives="{{ variant.alternatives | safe }}"
                             data-vis="{{ variant.vis | escape }}"
@@ -62,7 +63,7 @@
 
             <script>
                 // customize column_values to display the attributes of your choice to the sidebar
-                let column_values = ['id', 'position', 'reference', 'alternatives', 'ann[1][3]', 'ann[1][5]', 'ann[1][6]','ann[1][7]'];
+                let column_values = ['id', 'position', 'reference', 'alternatives', 'type', 'ann[1][3]', 'ann[1][5]', 'ann[1][6]','ann[1][7]'];
 
                 $(document).ready(function () {
                     $("html").on('click', '.variant-row', function () {

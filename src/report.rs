@@ -3,7 +3,7 @@ use std::error::Error;
 use rust_htslib::bcf::Read;
 use rustc_serialize::json::Json;
 use static_reader::{StaticVariant, get_static_reads};
-use variant_reader::{VariantType,};
+use variant_reader::{VariantType};
 use json_generator::manipulate_json;
 use fasta_reader::read_fasta;
 
@@ -14,6 +14,7 @@ pub struct Report {
     pub(crate) name: String,
     pub(crate) position: i64,
     pub(crate) reference: String,
+    pub(crate) var_type: VariantType,
     pub(crate) alternatives: Option<String>,
     pub(crate) ann: Option<Vec<Vec<String>>>,
     pub(crate) vis: String,
@@ -107,6 +108,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                         name: name.clone(),
                         position: variant.pos(),
                         reference: rfrce.clone(),
+                        var_type: VariantType::Deletion,
                         alternatives: None,
                         ann: Some(ann_strings.clone()),
                         vis: visualization.to_string(),
@@ -134,6 +136,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                         name: name.clone(),
                         position: variant.pos(),
                         reference: rfrce.clone(),
+                        var_type: VariantType::Inversion,
                         alternatives: Some(rev),
                         ann: Some(ann_strings.clone()),
                         vis: visualization.to_string(),
@@ -161,6 +164,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                         name: name.clone(),
                         position: variant.pos(),
                         reference: rfrce.clone(),
+                        var_type: VariantType::Duplicate,
                         alternatives: Some(dup.clone()),
                         ann: Some(ann_strings.clone()),
                         vis: visualization.to_string()
@@ -195,6 +199,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                             name: name.clone(),
                             position: variant.pos(),
                             reference: rfrce.clone(),
+                            var_type: VariantType::Variant,
                             alternatives: Some(allel.clone()),
                             ann: Some(ann_strings.clone()),
                             vis: visualization.to_string()
@@ -220,6 +225,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                             name: name.clone(),
                             position: variant.pos(),
                             reference: rfrce.clone(),
+                            var_type: VariantType::Insertion,
                             alternatives: Some(allel.clone()),
                             ann: Some(ann_strings.clone()),
                             vis: visualization.to_string()
@@ -245,6 +251,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                             name: name.clone(),
                             position: variant.pos(),
                             reference: rfrce.clone(),
+                            var_type: VariantType::Deletion,
                             alternatives: Some(allel.clone()),
                             ann: Some(ann_strings.clone()),
                             vis: visualization.to_string()
