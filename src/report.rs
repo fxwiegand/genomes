@@ -100,8 +100,8 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                         var_type: VariantType::Deletion,
                     };
 
-                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + 75);
-                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + 75);
+                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
+                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
 
                     let r = Report {
                         id: id.clone(),
@@ -128,8 +128,8 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                         var_type: VariantType::Inversion,
                     };
 
-                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + 75);
-                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + 75);
+                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
+                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
 
                     let r = Report {
                         id: id.clone(),
@@ -156,8 +156,8 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                         var_type: VariantType::Duplicate,
                     };
 
-                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + 75);
-                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + 75);
+                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
+                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
 
                     let r = Report {
                         id: id.clone(),
@@ -191,8 +191,8 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                             var_type: VariantType::Variant,
                         };
 
-                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + 75);
-                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + 75);
+                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
+                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
 
                         let r = Report {
                             id: id.clone(),
@@ -217,8 +217,8 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                             var_type: VariantType::Insertion,
                         };
 
-                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + 75);
-                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + 75);
+                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
+                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
 
                         let r = Report {
                             id: id.clone(),
@@ -243,8 +243,8 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                             var_type: VariantType::Deletion,
                         };
 
-                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + 75);
-                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + 75);
+                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
+                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
 
                         let r = Report {
                             id: id.clone(),
