@@ -52,7 +52,7 @@ pub fn create_data(fasta_path: &Path, vcf_path: &Path, bam_path: &Path, chrom: S
 
 
 pub fn manipulate_json(data: Json, from: u64, to: u64) -> Value {
-    let vega_path = Path::new("./client/vegaSpecs.json");
+    let vega_path = Path::new("./static/vegaSpecs.json");
     let json_string = fs::read_to_string(vega_path).unwrap();
 
     let mut vega_specs :Value = serde_json::from_str(&json_string).unwrap();
@@ -75,7 +75,7 @@ pub fn manipulate_json(data: Json, from: u64, to: u64) -> Value {
         }
     }
 
-    vega_specs["width"] = json!(700);
+    vega_specs["width"] = json!("700");
     let domain = json!([from, to]);
 
     vega_specs["scales"][0]["domain"] = domain;
