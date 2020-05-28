@@ -75,7 +75,7 @@ pub fn manipulate_json(data: Json, from: u64, to: u64) -> Value {
         }
     }
 
-    vega_specs["width"] = json!("700");
+    vega_specs["width"] = json!(700);
     let domain = json!([from, to]);
 
     vega_specs["scales"][0]["domain"] = domain;

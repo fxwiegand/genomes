@@ -68,6 +68,7 @@
                 $(document).ready(function () {
                     $("html").on('click', '.variant-row', function () {
                         let specs = $(this).data('vis');
+                        specs.width = $('#vis').width() - 40;
                         let v = vegaEmbed('#vis', specs);
                         $("#sidebar").empty();
                         $.each($(this).data(), function(i, v) {
@@ -81,7 +82,7 @@
         </div>
         <div class="row">
             <div class="col-8">
-                <div id="vis" class="justify-content-center"></div>
+                <div id="vis" class="justify-content-center" style="width: 100%"></div>
             </div>
 
         </div>
