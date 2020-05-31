@@ -1,3 +1,5 @@
+![build & test](https://github.com/koesterlab/genomes/workflows/build%20&%20test/badge.svg)
+
 # Genomes
 
 A web based tool for genome visualization 
