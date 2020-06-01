@@ -269,48 +269,28 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
 }
 
 pub fn create_report_data(fasta_path: &Path, variant: StaticVariant, bam_path: &Path, chrom: String, from: u64, to: u64) -> Json {
-    // Daten hier sammeln
-    let fasta = json!(read_fasta(fasta_path.clone(), chrom.clone(), from, to));
+    let mut data = Vec::new();
+
+    for f in read_fasta(fasta_path.clone(), chrom.clone(), from, to) {
+        let nucleobase = json!(f);
+        data.push(nucleobase);
+    }
 
     let (bases, matches) = get_static_reads(bam_path, fasta_path, chrom.clone(), from, to);
 
-    let alignments1 = json!(bases);
-    let alignments2 = json!(matches);
-
-
-    let mut v = Vec::new();
-    v.push(variant);
-    let variant = json!(v);
-
-    let fasta_string = fasta.to_string();
-    let f = fasta_string.trim_end_matches(']');
-
-    let alignment_string1 = alignments1.to_string();
-    let alignment_string2 = alignments2.to_string();
-
-    let mut a1 = alignment_string1.replace('[', "");
-    a1 = a1.replace(']',"");
-
-    let mut a2 = alignment_string2.replace('[', "");
-    a2 = a2.replace(']',"");
-
-    let variant_string = variant.to_string();
-    let v = variant_string.trim_start_matches('[');
-    let v_empty = v.trim_end_matches(']');
-
-    static T: &str = ",";
-
-    let r:String;
-
-    if v_empty.is_empty() {
-        r = [f,T,&a1,T,&a2,v].concat();
-    } else if a1.is_empty() {
-        r = [f,T,&a1,&a2,T,v].concat();
-    } else {
-        r = [f,T,&a1,T,&a2,T,v].concat();
+    for b in bases {
+        let base = json!(b);
+        data.push(base);
     }
 
-    let values = Json::from_str(&r).unwrap();
+    for m in matches {
+        let mat = json!(m);
+        data.push(mat);
+    }
+
+    data.push(json!(variant));
+
+    let values = Json::from_str(&json!(data).to_string()).unwrap();
 
     values
 }
