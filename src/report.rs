@@ -1,13 +1,12 @@
-use std::path::Path;
-use std::error::Error;
+use fasta_reader::read_fasta;
+use json_generator::manipulate_json;
 use rust_htslib::bcf::Read;
 use rustc_serialize::json::Json;
-use static_reader::{StaticVariant, get_static_reads};
-use variant_reader::{VariantType};
-use json_generator::manipulate_json;
-use fasta_reader::read_fasta;
 use serde_json::Value;
-
+use static_reader::{get_static_reads, StaticVariant};
+use std::error::Error;
+use std::path::Path;
+use variant_reader::VariantType;
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct Report {
@@ -21,8 +20,12 @@ pub struct Report {
     pub(crate) vis: String,
 }
 
-
-pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, chrom: String) -> Result<Vec<Report>, Box<dyn Error>> {
+pub(crate) fn make_report(
+    vcf_path: &Path,
+    fasta_path: &Path,
+    bam_path: &Path,
+    chrom: String,
+) -> Result<Vec<Report>, Box<dyn Error>> {
     let mut vcf = rust_htslib::bcf::Reader::from_path(&vcf_path).unwrap();
     let header = vcf.header().clone();
 
@@ -71,9 +74,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
             }
         }
 
-
         let alleles = variant.alleles();
-
 
         if alleles.len() > 0 {
             let ref_vec = alleles[0].clone();
@@ -160,11 +161,29 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                 let visualization: Value;
 
                 if variant.pos() < 75 {
-                    let content = create_report_data(fasta_path, var.clone(), bam_path, chrom.clone(), 0, end_position as u64 + 75);
+                    let content = create_report_data(
+                        fasta_path,
+                        var.clone(),
+                        bam_path,
+                        chrom.clone(),
+                        0,
+                        end_position as u64 + 75,
+                    );
                     visualization = manipulate_json(content, 0, end_position as u64 + 75);
                 } else {
-                    let content = create_report_data(fasta_path, var.clone(), bam_path, chrom.clone(), variant.pos() as u64 - 75, end_position as u64 + 75);
-                    visualization = manipulate_json(content, variant.pos() as u64 - 75, end_position as u64 + 75);
+                    let content = create_report_data(
+                        fasta_path,
+                        var.clone(),
+                        bam_path,
+                        chrom.clone(),
+                        variant.pos() as u64 - 75,
+                        end_position as u64 + 75,
+                    );
+                    visualization = manipulate_json(
+                        content,
+                        variant.pos() as u64 - 75,
+                        end_position as u64 + 75,
+                    );
                 }
 
                 let r = Report {
@@ -186,7 +205,14 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
     Ok(reports.clone())
 }
 
-pub fn create_report_data(fasta_path: &Path, variant: StaticVariant, bam_path: &Path, chrom: String, from: u64, to: u64) -> Json {
+pub fn create_report_data(
+    fasta_path: &Path,
+    variant: StaticVariant,
+    bam_path: &Path,
+    chrom: String,
+    from: u64,
+    to: u64,
+) -> Json {
     let mut data = Vec::new();
 
     for f in read_fasta(fasta_path.clone(), chrom.clone(), from, to) {

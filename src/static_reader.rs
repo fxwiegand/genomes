@@ -1,9 +1,8 @@
+use alignment_reader::Marker;
+use alignment_reader::{make_nucleobases, read_indexed_bam, AlignmentMatch, AlignmentNucleobase};
 use std::collections::BTreeMap;
 use std::path::Path;
-use alignment_reader::{AlignmentNucleobase, AlignmentMatch,read_indexed_bam, make_nucleobases};
-use alignment_reader::Marker;
-use variant_reader::{Variant, read_indexed_vcf, VariantType};
-
+use variant_reader::{read_indexed_vcf, Variant, VariantType};
 
 #[derive(Serialize, Clone, Debug)]
 pub struct StaticAlignmentMatch {
@@ -12,9 +11,8 @@ pub struct StaticAlignmentMatch {
     end_position: f64,
     flags: BTreeMap<u16, &'static str>,
     name: String,
-    row: u8
+    row: u8,
 }
-
 
 #[derive(Serialize, Clone)]
 pub struct StaticAlignmentNucleobase {
@@ -24,7 +22,7 @@ pub struct StaticAlignmentNucleobase {
     end_position: f64,
     flags: BTreeMap<u16, &'static str>,
     name: String,
-    row:u8,
+    row: u8,
 }
 
 #[derive(Serialize, Clone)]
@@ -38,8 +36,7 @@ pub struct StaticVariant {
     pub(crate) var_type: VariantType,
 }
 
-
-pub fn decode_static_flags(flag_vec :Vec<u16>) -> BTreeMap<u16, &'static str> {
+pub fn decode_static_flags(flag_vec: Vec<u16>) -> BTreeMap<u16, &'static str> {
     let mut string_map = BTreeMap::new();
 
     const FLAG_1: &'static str = "template having multiple segments in sequencing";
@@ -47,7 +44,8 @@ pub fn decode_static_flags(flag_vec :Vec<u16>) -> BTreeMap<u16, &'static str> {
     const FLAG_3: &'static str = "segment unmapped";
     const FLAG_4: &'static str = "next segment in the template unmapped";
     const FLAG_5: &'static str = "SEQ being reverse complemented";
-    const FLAG_6: &'static str = "SEQ of the next segment in the template being reverse complemented";
+    const FLAG_6: &'static str =
+        "SEQ of the next segment in the template being reverse complemented";
     const FLAG_7: &'static str = "the first segment in the template ";
     const FLAG_8: &'static str = "the last segment in the template";
     const FLAG_9: &'static str = "secondary alignment";
@@ -80,10 +78,13 @@ pub fn decode_static_flags(flag_vec :Vec<u16>) -> BTreeMap<u16, &'static str> {
     string_map
 }
 
-fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
+fn calc_rows(
+    reads: Vec<AlignmentNucleobase>,
+    matches: Vec<AlignmentMatch>,
+) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
     let mut row_ends = vec![0; 30];
 
-    let mut read_names:BTreeMap<String, u8> = BTreeMap::new();
+    let mut read_names: BTreeMap<String, u8> = BTreeMap::new();
 
     let mut reads_wr: Vec<StaticAlignmentNucleobase> = Vec::new();
     let mut matches_wr: Vec<StaticAlignmentMatch> = Vec::new();
@@ -116,7 +117,6 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
         };
 
         matches_wr.push(base);
-
     }
 
     for r in reads {
@@ -148,14 +148,19 @@ fn calc_rows(reads: Vec<AlignmentNucleobase>, matches: Vec<AlignmentMatch>) -> (
         };
 
         reads_wr.push(base);
-
     }
 
     (reads_wr, matches_wr)
 }
 
-pub fn get_static_reads(path: &Path, fasta_path: &Path, chrom: String, from: u64, to: u64) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
-    let alignments = read_indexed_bam(path,chrom.clone(), from, to);
+pub fn get_static_reads(
+    path: &Path,
+    fasta_path: &Path,
+    chrom: String,
+    from: u64,
+    to: u64,
+) -> (Vec<StaticAlignmentNucleobase>, Vec<StaticAlignmentMatch>) {
+    let alignments = read_indexed_bam(path, chrom.clone(), from, to);
     let (msm, m) = make_nucleobases(fasta_path, chrom, alignments, from, to);
     let static_bases = calc_rows(msm, m);
 
@@ -163,7 +168,7 @@ pub fn get_static_reads(path: &Path, fasta_path: &Path, chrom: String, from: u64
 }
 
 fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
-    let mut row_ends : Vec<f64> = vec![0 as f64; 10];
+    let mut row_ends: Vec<f64> = vec![0 as f64; 10];
 
     let mut vars: Vec<StaticVariant> = Vec::new();
 
@@ -173,7 +178,7 @@ fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
                 let row = i as i8;
                 row_ends[i] = r.end_position;
 
-                let v = StaticVariant{
+                let v = StaticVariant {
                     marker_type: r.marker_type,
                     reference: r.reference,
                     alternatives: r.alternatives,
@@ -189,7 +194,6 @@ fn calc_variant_rows(variants: Vec<Variant>) -> Vec<StaticVariant> {
             }
         }
     }
-
 
     vars
 }

@@ -1,9 +1,9 @@
-extern crate rust_htslib;
 extern crate bit_vec;
+extern crate rust_htslib;
 
-use std::path::Path;
-use rust_htslib::bcf::Read;
 use regex::Regex;
+use rust_htslib::bcf::Read;
+use std::path::Path;
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct Variant {
@@ -58,7 +58,6 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
         };
         let alleles = rec.alleles();
 
-
         let ref_vec = alleles[0].clone();
         let mut rfrce = String::from("");
 
@@ -98,7 +97,7 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
 
                 variants.push(var);
             } else if alt == b"<DUP>" {
-                let dup: String = [rfrce.clone(),rfrce.clone()].concat();
+                let dup: String = [rfrce.clone(), rfrce.clone()].concat();
 
                 let var = Variant {
                     marker_type: var_string,
