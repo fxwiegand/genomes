@@ -6,6 +6,7 @@ use static_reader::{StaticVariant, get_static_reads};
 use variant_reader::{VariantType};
 use json_generator::manipulate_json;
 use fasta_reader::read_fasta;
+use serde_json::Value;
 
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
@@ -156,8 +157,15 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
                     var_type: var_type,
                 };
 
-                let content = create_report_data(fasta_path, var.clone(), bam_path, chrom.clone(), variant.pos() as u64 - 75, end_position as u64 + 75);
-                let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_position as u64 + 75);
+                let visualization: Value;
+
+                if variant.pos() < 75 {
+                    let content = create_report_data(fasta_path, var.clone(), bam_path, chrom.clone(), 0, end_position as u64 + 75);
+                    visualization = manipulate_json(content, 0, end_position as u64 + 75);
+                } else {
+                    let content = create_report_data(fasta_path, var.clone(), bam_path, chrom.clone(), variant.pos() as u64 - 75, end_position as u64 + 75);
+                    visualization = manipulate_json(content, variant.pos() as u64 - 75, end_position as u64 + 75);
+                }
 
                 let r = Report {
                     id: id.clone(),
