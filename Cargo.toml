@@ -1,6 +1,6 @@
 [package]
 name = "genomes"
-version = "0.0.1"
+version = "0.1.1"
 
 publish = false
 
@@ -21,3 +21,7 @@ tera = "1"
 git = "https://github.com/SergioBenitez/Rocket"
 default-features = false
 features = ["gzip_compression","json","serve","tera_templates"]
+
+[[bin]]
+name = "genomes"
+path = "src/main.rs"

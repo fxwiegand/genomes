@@ -19,7 +19,7 @@ fn test_report() {
     assert!(
         Command::new("bash")
             .arg("-c")
-            .arg("target/debug/genomes report -r tests/resources/test.bam tests/resources/ref.fa tests/resources/report-test.vcf.gz chr1 > tests/report.html")
+            .arg("target/release/genomes report -r tests/resources/test.bam tests/resources/ref.fa tests/resources/report-test.vcf.gz chr1 > tests/report.html")
             .spawn()
             .unwrap()
             .wait()
