@@ -4,7 +4,12 @@ use fasta_reader::get_fasta_length;
 
 #[test]
 fn reference_test() {
-    let ref_bases = read_fasta(Path::new("tests/resources/ref.fa"), String::from("chr1"), 1, 10);
+    let ref_bases = read_fasta(
+        Path::new("tests/resources/ref.fa"),
+        String::from("chr1"),
+        1,
+        10,
+    );
 
     let mut compare_ref = Vec::new();
 
@@ -15,21 +20,26 @@ fn reference_test() {
             start_position: pos - 0.5,
             end_position: pos + 0.5,
             marker_type: char,
-            row: 0
+            row: 0,
         };
         compare_ref.push(base);
         pos += 1.0;
     }
-    assert_eq!(compare_ref,ref_bases);
+    assert_eq!(compare_ref, ref_bases);
 }
 
 #[test]
 fn empty_reference_test() {
-    let ref_bases = read_fasta(Path::new("tests/resources/ref.fa"), String::from("chr1"), 11, 11);
+    let ref_bases = read_fasta(
+        Path::new("tests/resources/ref.fa"),
+        String::from("chr1"),
+        11,
+        11,
+    );
 
-    let compare_ref:Vec<Nucleobase> = Vec::new();
+    let compare_ref: Vec<Nucleobase> = Vec::new();
 
-    assert_eq!(compare_ref,ref_bases);
+    assert_eq!(compare_ref, ref_bases);
 }
 
 

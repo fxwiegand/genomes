@@ -1,12 +1,12 @@
-use std::path::Path;
-use std::error::Error;
+use fasta_reader::read_fasta;
+use json_generator::manipulate_json;
 use rust_htslib::bcf::Read;
 use rustc_serialize::json::Json;
-use static_reader::{StaticVariant, get_static_reads};
-use variant_reader::{VariantType};
-use json_generator::manipulate_json;
-use fasta_reader::read_fasta;
-
+use serde_json::Value;
+use static_reader::{get_static_reads, StaticVariant};
+use std::error::Error;
+use std::path::Path;
+use variant_reader::VariantType;
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct Report {
@@ -20,8 +20,12 @@ pub struct Report {
     pub(crate) vis: String,
 }
 
-
-pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, chrom: String) -> Result<Vec<Report>, Box<dyn Error>> {
+pub(crate) fn make_report(
+    vcf_path: &Path,
+    fasta_path: &Path,
+    bam_path: &Path,
+    chrom: String,
+) -> Result<Vec<Report>, Box<dyn Error>> {
     let mut vcf = rust_htslib::bcf::Reader::from_path(&vcf_path).unwrap();
     let header = vcf.header().clone();
 
@@ -70,9 +74,7 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
             }
         }
 
-
         let alleles = variant.alleles();
-
 
         if alleles.len() > 0 {
             let ref_vec = alleles[0].clone();
@@ -88,229 +90,151 @@ pub(crate) fn make_report(vcf_path: &Path, fasta_path: &Path, bam_path: &Path, c
             for i in 1..alleles.len() {
                 let alt = alleles[i];
                 let var_string = String::from("Variant");
+                let var_type: VariantType;
+                let alternatives: Option<String>;
+                let end_position: f64;
+                let plot_start_position;
 
-                if alt == b"<DEL>" {
-                    let var = StaticVariant {
-                        marker_type: var_string,
-                        reference: rfrce.clone(),
-                        alternatives: None,
-                        start_position: pos as f64 - 0.5,
-                        end_position: end_pos.unwrap(),
-                        row: -1,
-                        var_type: VariantType::Deletion,
-                    };
+                match alt {
+                    b"<DEL>" => {
+                        var_type = VariantType::Deletion;
+                        alternatives = None;
+                        end_position = end_pos.unwrap();
+                        plot_start_position = pos as f64 - 0.5;
+                    }
+                    b"<INV>" => {
+                        var_type = VariantType::Inversion;
+                        let rev: String = rfrce.chars().rev().collect();
+                        alternatives = Some(rev.clone());
+                        end_position = end_pos.unwrap();
+                        plot_start_position = pos as f64 - 0.5;
+                    }
+                    b"<DUP>" => {
+                        var_type = VariantType::Duplicate;
+                        let dup: String = [rfrce.clone(), rfrce.clone()].concat();
+                        alternatives = Some(dup.clone());
+                        end_position = end_pos.unwrap();
+                        plot_start_position = pos as f64 - 0.5;
+                    }
+                    _ => {
+                        let mut allel = String::from("");
 
-                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
-                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
+                        for c in alt {
+                            if *c as char != '<' && *c as char != '>' {
+                                allel.push(*c as char);
+                            }
+                        }
 
-                    let r = Report {
-                        id: id.clone(),
-                        name: name.clone(),
-                        position: variant.pos(),
-                        reference: rfrce.clone(),
-                        var_type: VariantType::Deletion,
-                        alternatives: None,
-                        ann: Some(ann_strings.clone()),
-                        vis: visualization.to_string(),
-                    };
-
-                    reports.push(r);
-                } else if alt == b"<INV>" {
-                    let rev: String = rfrce.chars().rev().collect();
-
-                    let var = StaticVariant {
-                        marker_type: var_string,
-                        reference: rfrce.clone(),
-                        alternatives: Some(rev.clone()),
-                        start_position: pos as f64 - 0.5,
-                        end_position: end_pos.unwrap(),
-                        row: -1,
-                        var_type: VariantType::Inversion,
-                    };
-
-                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
-                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
-
-                    let r = Report {
-                        id: id.clone(),
-                        name: name.clone(),
-                        position: variant.pos(),
-                        reference: rfrce.clone(),
-                        var_type: VariantType::Inversion,
-                        alternatives: Some(rev),
-                        ann: Some(ann_strings.clone()),
-                        vis: visualization.to_string(),
-                    };
-
-                    reports.push(r);
-                } else if alt == b"<DUP>" {
-                    let dup: String = [rfrce.clone(),rfrce.clone()].concat();
-
-                    let var = StaticVariant {
-                        marker_type: var_string,
-                        reference: rfrce.clone(),
-                        alternatives: Some(dup.clone()),
-                        start_position: pos as f64 - 0.5,
-                        end_position: end_pos.unwrap(),
-                        row: -1,
-                        var_type: VariantType::Duplicate,
-                    };
-
-                    let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
-                    let visualization = manipulate_json(content, variant.pos() as u64 - 75, end_pos.unwrap() as u64 + 75);
-
-                    let r = Report {
-                        id: id.clone(),
-                        name: name.clone(),
-                        position: variant.pos(),
-                        reference: rfrce.clone(),
-                        var_type: VariantType::Duplicate,
-                        alternatives: Some(dup.clone()),
-                        ann: Some(ann_strings.clone()),
-                        vis: visualization.to_string()
-                    };
-
-                    reports.push(r);
-                } else {
-                    let mut allel = String::from("");
-
-                    for c in alt {
-                        if *c as char != '<' && *c as char != '>' {
-                            allel.push(*c as char);
+                        match allel.len() {
+                            a if a < rfrce.len() => {
+                                plot_start_position = pos as f64 + 0.5; // start position + 1 due to alignment with deletions from bam (example: ref: ACTT alt: A  -> deletion is just CTT)
+                                end_position = pos as f64 - 0.5 + len as f64;
+                                var_type = VariantType::Deletion;
+                                alternatives = Some(allel.clone());
+                            }
+                            a if a > rfrce.len() => {
+                                plot_start_position = pos as f64;
+                                end_position = pos as f64 + len as f64;
+                                var_type = VariantType::Insertion;
+                                alternatives = Some(allel.clone());
+                            }
+                            _ => {
+                                plot_start_position = pos as f64 - 0.5;
+                                end_position = pos as f64 - 0.5 + len as f64;
+                                var_type = VariantType::Variant;
+                                alternatives = Some(allel.clone());
+                            }
                         }
                     }
-
-                    if allel.len() == rfrce.len() {
-                        let var = StaticVariant {
-                            marker_type: var_string,
-                            reference: rfrce.clone(),
-                            alternatives: Some(allel.clone()),
-                            start_position: pos as f64 - 0.5,
-                            end_position: pos as f64 - 0.5 + len as f64,
-                            row: -1,
-                            var_type: VariantType::Variant,
-                        };
-
-                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
-                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
-
-                        let r = Report {
-                            id: id.clone(),
-                            name: name.clone(),
-                            position: variant.pos(),
-                            reference: rfrce.clone(),
-                            var_type: VariantType::Variant,
-                            alternatives: Some(allel.clone()),
-                            ann: Some(ann_strings.clone()),
-                            vis: visualization.to_string()
-                        };
-
-                        reports.push(r);
-                    } else if allel.len() > rfrce.len() {
-                        let var = StaticVariant {
-                            marker_type: var_string,
-                            reference: rfrce.clone(),
-                            alternatives: Some(allel.clone()),
-                            start_position: pos as f64, // start end end + 0.5 due to alignment with insertions from bam
-                            end_position: pos as f64 + len as f64,
-                            row: -1,
-                            var_type: VariantType::Insertion,
-                        };
-
-                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
-                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
-
-                        let r = Report {
-                            id: id.clone(),
-                            name: name.clone(),
-                            position: variant.pos(),
-                            reference: rfrce.clone(),
-                            var_type: VariantType::Insertion,
-                            alternatives: Some(allel.clone()),
-                            ann: Some(ann_strings.clone()),
-                            vis: visualization.to_string()
-                        };
-
-                        reports.push(r);
-                    } else {
-                        let var = StaticVariant {
-                            marker_type: var_string,
-                            reference: rfrce.clone(),
-                            alternatives: Some(allel.clone()),
-                            start_position: pos as f64 + 0.5, // start position + 1 due to alignment with deletions from bam (example: ref: ACTT alt: A  -> deletion is just CTT)
-                            end_position: pos as f64 - 0.5 + len as f64,
-                            row: -1,
-                            var_type: VariantType::Deletion,
-                        };
-
-                        let content = create_report_data(fasta_path, var, bam_path, chrom.clone(), variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
-                        let visualization = manipulate_json(content, variant.pos() as u64 - 75, variant.pos() as u64 + len as u64 + 75);
-
-                        let r = Report {
-                            id: id.clone(),
-                            name: name.clone(),
-                            position: variant.pos(),
-                            reference: rfrce.clone(),
-                            var_type: VariantType::Deletion,
-                            alternatives: Some(allel.clone()),
-                            ann: Some(ann_strings.clone()),
-                            vis: visualization.to_string()
-                        };
-
-                        reports.push(r);
-                    }
                 }
+
+                let var = StaticVariant {
+                    marker_type: var_string,
+                    reference: rfrce.clone(),
+                    alternatives: alternatives,
+                    start_position: plot_start_position,
+                    end_position: end_position,
+                    row: -1,
+                    var_type: var_type,
+                };
+
+                let visualization: Value;
+
+                if variant.pos() < 75 {
+                    let content = create_report_data(
+                        fasta_path,
+                        var.clone(),
+                        bam_path,
+                        chrom.clone(),
+                        0,
+                        end_position as u64 + 75,
+                    );
+                    visualization = manipulate_json(content, 0, end_position as u64 + 75);
+                } else {
+                    let content = create_report_data(
+                        fasta_path,
+                        var.clone(),
+                        bam_path,
+                        chrom.clone(),
+                        variant.pos() as u64 - 75,
+                        end_position as u64 + 75,
+                    );
+                    visualization = manipulate_json(
+                        content,
+                        variant.pos() as u64 - 75,
+                        end_position as u64 + 75,
+                    );
+                }
+
+                let r = Report {
+                    id: id.clone(),
+                    name: name.clone(),
+                    position: variant.pos(),
+                    reference: rfrce.clone(),
+                    var_type: var.var_type,
+                    alternatives: var.alternatives,
+                    ann: Some(ann_strings.clone()),
+                    vis: visualization.to_string(),
+                };
+
+                reports.push(r);
             }
         }
-
     }
 
     Ok(reports.clone())
 }
 
-pub fn create_report_data(fasta_path: &Path, variant: StaticVariant, bam_path: &Path, chrom: String, from: u64, to: u64) -> Json {
-    // Daten hier sammeln
-    let fasta = json!(read_fasta(fasta_path.clone(), chrom.clone(), from, to));
+pub fn create_report_data(
+    fasta_path: &Path,
+    variant: StaticVariant,
+    bam_path: &Path,
+    chrom: String,
+    from: u64,
+    to: u64,
+) -> Json {
+    let mut data = Vec::new();
+
+    for f in read_fasta(fasta_path.clone(), chrom.clone(), from, to) {
+        let nucleobase = json!(f);
+        data.push(nucleobase);
+    }
 
     let (bases, matches) = get_static_reads(bam_path, fasta_path, chrom.clone(), from, to);
 
-    let alignments1 = json!(bases);
-    let alignments2 = json!(matches);
-
-
-    let mut v = Vec::new();
-    v.push(variant);
-    let variant = json!(v);
-
-    let fasta_string = fasta.to_string();
-    let f = fasta_string.trim_end_matches(']');
-
-    let alignment_string1 = alignments1.to_string();
-    let alignment_string2 = alignments2.to_string();
-
-    let mut a1 = alignment_string1.replace('[', "");
-    a1 = a1.replace(']',"");
-
-    let mut a2 = alignment_string2.replace('[', "");
-    a2 = a2.replace(']',"");
-
-    let variant_string = variant.to_string();
-    let v = variant_string.trim_start_matches('[');
-    let v_empty = v.trim_end_matches(']');
-
-    static T: &str = ",";
-
-    let r:String;
-
-    if v_empty.is_empty() {
-        r = [f,T,&a1,T,&a2,v].concat();
-    } else if a1.is_empty() {
-        r = [f,T,&a1,&a2,T,v].concat();
-    } else {
-        r = [f,T,&a1,T,&a2,T,v].concat();
+    for b in bases {
+        let base = json!(b);
+        data.push(base);
     }
 
-    let values = Json::from_str(&r).unwrap();
+    for m in matches {
+        let mat = json!(m);
+        data.push(mat);
+    }
+
+    data.push(json!(variant));
+
+    let values = Json::from_str(&json!(data).to_string()).unwrap();
 
     values
 }
