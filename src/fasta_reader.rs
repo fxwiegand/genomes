@@ -28,6 +28,15 @@ pub fn read_fasta(path: &Path, chrom: String, start: u64, stop: u64) -> Vec<Nucl
 
 }
 
+pub fn get_fasta_length(path: &Path) -> u64 {
+    let index = fasta::Index::with_fasta_file(&path).unwrap();
+    let sequences = index.sequences();
+
+    let length = sequences[0].len;
+
+    length
+}
+
 #[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct Nucleobase {
     pub(crate) start_position: f64,
