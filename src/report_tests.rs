@@ -1,5 +1,5 @@
-use std::process::Command;
 use std::fs;
+use std::process::Command;
 
 /// Compare an output file to the expected output and delete the output file.
 fn test_output(result: &str, expected: &str) {

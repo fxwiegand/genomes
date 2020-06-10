@@ -30,9 +30,9 @@ mod alignment_tests;
 #[cfg(test)]
 mod reference_tests;
 #[cfg(test)]
-mod variant_tests;
-#[cfg(test)]
 mod report_tests;
+#[cfg(test)]
+mod variant_tests;
 
 use alignment_reader::{get_reads, AlignmentMatch, AlignmentNucleobase};
 use clap::{App, Arg, ArgMatches, SubCommand};

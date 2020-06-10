@@ -1,6 +1,6 @@
 use super::*;
-use std::path::Path;
 use fasta_reader::get_fasta_length;
+use std::path::Path;
 
 #[test]
 fn reference_test() {
@@ -42,12 +42,11 @@ fn empty_reference_test() {
     assert_eq!(compare_ref, ref_bases);
 }
 
-
 #[test]
 fn get_reference_length_test() {
     let ref_length = get_fasta_length(Path::new("tests/resources/ref.fa"));
 
     let compare_length: u64 = 123;
 
-    assert_eq!(ref_length,compare_length);
+    assert_eq!(ref_length, compare_length);
 }

@@ -1,4 +1,4 @@
-use fasta_reader::{read_fasta, get_fasta_length};
+use fasta_reader::{get_fasta_length, read_fasta};
 use json_generator::manipulate_json;
 use rust_htslib::bcf::Read;
 use rustc_serialize::json::Json;
@@ -180,7 +180,8 @@ pub(crate) fn make_report(
                         variant.pos() as u64 - 75,
                         fasta_length - 1,
                     );
-                    visualization = manipulate_json(content, variant.pos() as u64 - 75, fasta_length - 1);
+                    visualization =
+                        manipulate_json(content, variant.pos() as u64 - 75, fasta_length - 1);
                 } else {
                     let content = create_report_data(
                         fasta_path,
