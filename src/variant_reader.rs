@@ -58,15 +58,10 @@ pub fn read_indexed_vcf(path: &Path, chrom: String, from: u64, to: u64) -> Vec<V
         };
         let alleles = rec.alleles();
 
-        let ref_vec = alleles[0].clone();
-        let mut rfrce = String::from("");
+        let ref_vec = alleles[0].to_owned();
+        let rfrce = String::from_utf8(ref_vec).unwrap();
 
-        let mut len: u8 = 0;
-
-        for c in ref_vec {
-            rfrce.push(*c as char);
-            len += 1;
-        }
+        let len: u8 = rfrce.len() as u8;
 
         for i in 1..alleles.len() {
             let alt = alleles[i];

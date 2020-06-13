@@ -130,21 +130,15 @@ fn make_alignment(record: bam::Record) -> Alignment {
 
     //Sequenz
     let seq = record.seq().as_bytes();
-    let mut sequenz = String::from("");
-    for b in seq {
-        sequenz.push(b as char);
-    }
+    let sequenz = String::from_utf8(seq).unwrap();
 
     //Flags
     let flgs = record.flags();
     let flag_string = decode_flags(flgs);
 
     //Name
-    let n = record.qname();
-    let mut name = String::from("");
-    for a in n {
-        name.push(*a as char);
-    }
+    let n = record.qname().to_owned();
+    let name = String::from_utf8(n).unwrap();
 
     let read = Alignment {
         sequence: sequenz,

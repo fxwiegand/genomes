@@ -34,18 +34,12 @@ pub(crate) fn make_report(
     for v in vcf.records() {
         let mut variant = v.unwrap();
 
-        let n = header.rid2name(variant.rid().unwrap()).unwrap();
+        let n = header.rid2name(variant.rid().unwrap()).unwrap().to_owned();
         let i = variant.id();
 
-        let mut name = String::from("");
-        for c in n {
-            name.push(*c as char);
-        }
+        let name = String::from_utf8(n).unwrap();
 
-        let mut id = String::from("");
-        for c in i {
-            id.push(c as char);
-        }
+        let id = String::from_utf8(i).unwrap();
 
         let pos = variant.pos();
         let end_pos = match variant.info(b"END").integer() {
@@ -66,8 +60,7 @@ pub(crate) fn make_report(
                 let fields: Vec<_> = entry.split(|c| *c == b'|').collect();
                 let mut s = Vec::new();
                 for f in fields {
-                    let mut attr = String::from("");
-                    attr.push_str(std::str::from_utf8(f).unwrap());
+                    let attr = String::from_utf8(f.to_owned()).unwrap();
                     s.push(attr);
                 }
                 ann_strings.push(s);
@@ -77,15 +70,10 @@ pub(crate) fn make_report(
         let alleles = variant.alleles();
 
         if alleles.len() > 0 {
-            let ref_vec = alleles[0].clone();
-            let mut rfrce = String::from("");
+            let ref_vec = alleles[0].to_owned();
+            let rfrce = String::from_utf8(ref_vec).unwrap();
 
-            let mut len: u8 = 0;
-
-            for c in ref_vec {
-                rfrce.push(*c as char);
-                len += 1;
-            }
+            let len: u8 = rfrce.len() as u8;
 
             for i in 1..alleles.len() {
                 let alt = alleles[i];
